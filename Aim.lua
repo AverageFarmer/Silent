@@ -1,3 +1,4 @@
+
 --[[ // CREDITS \\--
 
     YESOK FOR DEVELOPMENT
@@ -11,6 +12,13 @@ https://v3rmillion.net/member.php?action=profile&uid=490270
 --]]
 
 warn("Loading...")
+getgenv().SelectedPart = "Head"
+getgenv().VisibiltyCheck = false
+getgenv().TargetESP = true
+getgenv().FOV = 200
+getgenv().CircleVisibility = true
+getgenv().Distance = 500
+getgenv().Rainbow = Color3.new(0.952941, 0.921568, 0.921568)
 
 local Players = game:GetService("Players")
 local UserInput = game:GetService("UserInputService")
@@ -25,7 +33,6 @@ local Camera = workspace.CurrentCamera
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 PlayerGui:SetTopbarTransparency(1)
 local Mouse = LocalPlayer:GetMouse()
-local 
 getgenv().methodsTable = {"Ray", "Raycast", "FindPartOnRay", "FindPartOnRayWithIgnoreList", "FindPartOnRayWithWhitelist"}
 
 local rigType = string.split(tostring(LocalPlayer.Character:WaitForChild("Humanoid").RigType), ".")[3]
@@ -481,7 +488,7 @@ spawn(function()
         Circle.Color = getgenv().Rainbow
         lineX.Color = getgenv().Rainbow
         lineY.Color = getgenv().Rainbow
-	Circle.Radius = getgenv().FOV
+	    Circle.Radius = getgenv().FOV
         Circle.Position = Vector2.new(Mouse.X,Mouse.Y+Middle)
         TargetText.Position = Vector2.new(Mouse.X,Mouse.Y+Middle-180)
         lineX.From = Vector2.new((Mouse.X)+Length+1,Mouse.Y-0.5+Middle)
