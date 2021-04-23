@@ -4,10 +4,10 @@
     YESOK FOR DEVELOPMENT
 https://v3rmillion.net/member.php?action=profile&uid=514695
 
-    JAN FOR ESP
+JAN FOR ESP
 https://v3rmillion.net/member.php?action=profile&uid=557102
 
-    CRISHOUX FOR STRUCID/NERF-FPS FUNCTIONS
+CRISHOUX FOR STRUCID/NERF-FPS FUNCTIONS
 https://v3rmillion.net/member.php?action=profile&uid=490270
 --]]
 
@@ -29,6 +29,7 @@ PlayerGui:SetTopbarTransparency(1)
 local Mouse = LocalPlayer:GetMouse()
 getgenv().methodsTable = {"Ray", "Raycast", "FindPartOnRay", "FindPartOnRayWithIgnoreList", "FindPartOnRayWithWhitelist"}
 
+local LastUpdate = 0
 local rigType = string.split(tostring(LocalPlayer.Character:WaitForChild("Humanoid").RigType), ".")[3]
 local selected_teamType = "Regular"
 local selected_rigType
@@ -379,64 +380,68 @@ end
 
 local function updateEsp(player, folder)
     RunServ:BindToRenderStep("Get_Target_ESP", 1, function()
-        local playerCharacter = characterType(player)
-        local xMin = Camera.ViewportSize.X
-        local yMin = Camera.ViewportSize.Y
-        local xMax = 0
-        local yMax = 0
 
-        if returnVisibility(player) and teamType(player) ~= teamType(LocalPlayer) or FFA() and returnVisibility(player) then
-            if player ~= LocalPlayer and player == getTarget() and playerCharacter and playerCharacter:FindFirstChild("Humanoid") and playerCharacter.Humanoid.Health > 0 then
-                local box = folder
-                local _, onScreen = Camera:WorldToScreenPoint(playerCharacter[getgenv().SelectedPart].Position)
-                if onScreen and box then
-                    box.Visible = true
-                    local function getCorners(obj, size)
-                        local corners = {
-                            Vector3.new(obj.X+size.X/2, obj.Y+size.Y/2, obj.Z+size.Z/2);
-                            Vector3.new(obj.X-size.X/2, obj.Y+size.Y/2, obj.Z+size.Z/2);
-                            
-                            Vector3.new(obj.X-size.X/2, obj.Y-size.Y/2, obj.Z-size.Z/2);
-                            Vector3.new(obj.X+size.X/2, obj.Y-size.Y/2, obj.Z-size.Z/2);
-                            
-                            Vector3.new(obj.X-size.X/2, obj.Y+size.Y/2, obj.Z-size.Z/2);
-                            Vector3.new(obj.X+size.X/2, obj.Y+size.Y/2, obj.Z-size.Z/2);
-                            
-                            Vector3.new(obj.X-size.X/2, obj.Y-size.Y/2, obj.Z+size.Z/2);
-                            Vector3.new(obj.X+size.X/2, obj.Y-size.Y/2, obj.Z+size.Z/2);
-                        }
-                        return corners
-                    end
-                    local cornerCount = 1
-                    local allCorners = {}
-                    for _, bodyPart in next, playerCharacter:GetChildren() do
-                        if selected_rigType[bodyPart.Name] then
-                            local fetchCorners = getCorners(bodyPart.CFrame, bodyPart.Size)
-                            for _, corner in next, fetchCorners do
-                                table.insert(allCorners, cornerCount, corner)
-                                cornerCount = cornerCount + 1
+        if os.time - LastUpdate >= .1 then
+            LastUpdate = os.time()
+            local playerCharacter = characterType(player)
+            local xMin = Camera.ViewportSize.X
+            local yMin = Camera.ViewportSize.Y
+            local xMax = 0
+            local yMax = 0
+
+            if returnVisibility(player) and teamType(player) ~= teamType(LocalPlayer) or FFA() and returnVisibility(player) then
+                if player ~= LocalPlayer and player == getTarget() and playerCharacter and playerCharacter:FindFirstChild("Humanoid") and playerCharacter.Humanoid.Health > 0 then
+                    local box = folder
+                    local _, onScreen = Camera:WorldToScreenPoint(playerCharacter[getgenv().SelectedPart].Position)
+                    if onScreen and box then
+                        box.Visible = true
+                        local function getCorners(obj, size)
+                            local corners = {
+                                Vector3.new(obj.X+size.X/2, obj.Y+size.Y/2, obj.Z+size.Z/2);
+                                Vector3.new(obj.X-size.X/2, obj.Y+size.Y/2, obj.Z+size.Z/2);
+                                
+                                Vector3.new(obj.X-size.X/2, obj.Y-size.Y/2, obj.Z-size.Z/2);
+                                Vector3.new(obj.X+size.X/2, obj.Y-size.Y/2, obj.Z-size.Z/2);
+                                
+                                Vector3.new(obj.X-size.X/2, obj.Y+size.Y/2, obj.Z-size.Z/2);
+                                Vector3.new(obj.X+size.X/2, obj.Y+size.Y/2, obj.Z-size.Z/2);
+                                
+                                Vector3.new(obj.X-size.X/2, obj.Y-size.Y/2, obj.Z+size.Z/2);
+                                Vector3.new(obj.X+size.X/2, obj.Y-size.Y/2, obj.Z+size.Z/2);
+                            }
+                            return corners
+                        end
+                        local cornerCount = 1
+                        local allCorners = {}
+                        for _, bodyPart in next, playerCharacter:GetChildren() do
+                            if selected_rigType[bodyPart.Name] then
+                                local fetchCorners = getCorners(bodyPart.CFrame, bodyPart.Size)
+                                for _, corner in next, fetchCorners do
+                                    table.insert(allCorners, cornerCount, corner)
+                                    cornerCount = cornerCount + 1
+                                end
                             end
                         end
+                        for _, corner in next, allCorners do
+                            local pos = Camera:WorldToScreenPoint(corner)
+                            if pos.X > xMax then
+                                xMax = pos.X
+                            end
+                            if pos.X < xMin then
+                                xMin = pos.X
+                            end
+                            if pos.Y > yMax then
+                                yMax = pos.Y
+                            end
+                            if pos.Y < yMin then
+                                yMin = pos.Y
+                            end
+                        end
+                        local xSize = xMax - xMin
+                        local ySize = yMax - yMin
+                        box.Position = UDim2.new(0,xMin+(Vector2.new(xMax,0)-Vector2.new(xMin,0)).Magnitude/2,0,yMin+(Vector2.new(0,yMax)-Vector2.new(0,yMin)).magnitude/2)
+                        box.Size = UDim2.new(0,xSize,0,ySize)
                     end
-                    for _, corner in next, allCorners do
-                        local pos = Camera:WorldToScreenPoint(corner)
-                        if pos.X > xMax then
-                            xMax = pos.X
-                        end
-                        if pos.X < xMin then
-                            xMin = pos.X
-                        end
-                        if pos.Y > yMax then
-                            yMax = pos.Y
-                        end
-                        if pos.Y < yMin then
-                            yMin = pos.Y
-                        end
-                    end
-                    local xSize = xMax - xMin
-                    local ySize = yMax - yMin
-                    box.Position = UDim2.new(0,xMin+(Vector2.new(xMax,0)-Vector2.new(xMin,0)).Magnitude/2,0,yMin+(Vector2.new(0,yMax)-Vector2.new(0,yMin)).magnitude/2)
-                    box.Size = UDim2.new(0,xSize,0,ySize)
                 end
             end
         end
