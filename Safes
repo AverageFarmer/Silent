@@ -1,5 +1,4 @@
 
-
 local Players = game.Players
 local Player = Players.LocalPlayer
 local Mouse = Player:GetMouse()
@@ -17,7 +16,7 @@ local IDs = {
 	["1563717192"] = true,
 	["4617700"] = true,
 	["733113229"] = true,
-	["1522304] = true,
+	["1522304"] = true
 }
 
 function CanRun()
@@ -29,6 +28,7 @@ function CanRun()
 
 	return false
 end
+
 wait(1)
 print(CanRun())
 if not CanRun() then return end
