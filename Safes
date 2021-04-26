@@ -37,7 +37,9 @@ local Http = game:GetService("HttpService")
 local UIS = game:GetService("UserInputService")
 
 local PickUpRemote = game:GetService("ReplicatedStorage")["Events"]["PIC_PU"]
+local PickUpCash = game:GetService("ReplicatedStorage")["Events"]["CZDPZUS"]
 
+local CashFolder = game:GetService("Workspace").Filter.SpawnedBread
 local ScarpSpawn = game:GetService("Workspace")["Filter"]["SpawnedPiles"]
 local Dealers = game:GetService("Workspace")["Map"]["Shopz"]
 local Safes = game:GetService("Workspace")["Map"]["BredMakurz"]
@@ -261,6 +263,20 @@ while wait() do
 
 				if (Player.Character["Left Leg"].Position - Prim.Position).Magnitude <= 4 then
 					PickUpRemote:FireServer(Prim)
+				end
+			end
+		end
+
+		for i,v in pairs(CashFolder:GetChildren()) do
+			if v and v.PrimaryPart then
+				local Prim = v.PrimaryPart
+
+				if v:IsA("BasePart") then
+					Prim = v
+				end
+
+				if (Player.Character["Left Leg"].Position - Prim.Position).Magnitude <= 4 then
+					PickUpCash:FireServer(Prim)
 				end
 			end
 		end
