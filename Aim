@@ -466,35 +466,15 @@ spawn(function()
     TargetText.Visible = true
     TargetText.Color = Color3.fromRGB(255,0,0)
 
-    local lineX = Drawing.new("Line")
-    lineX.Transparency = 1
-    lineX.Thickness = 1.5
-    lineX.Visible = true
-    lineX.Color = Color3.fromRGB(255,0,0)
-
-    local lineY = Drawing.new("Line")
-    lineX.Transparency = 1
-    lineY.Thickness = 1.5
-    lineY.Visible = true
-    lineY.Color = Color3.fromRGB(255,0,0)
-
     RunServ:BindToRenderStep("Get_Fov",1,function()
         local Length = 10
         local Middle = 37
         Circle.Visible = getgenv().CircleVisibility
         TargetText.Visible = getgenv().CircleVisibility
-        lineX.Visible = getgenv().CircleVisibility
-        lineY.Visible = getgenv().CircleVisibility 
         Circle.Color = getgenv().Rainbow
-        lineX.Color = getgenv().Rainbow
-        lineY.Color = getgenv().Rainbow
 	    Circle.Radius = getgenv().FOV
         Circle.Position = Vector2.new(Mouse.X,Mouse.Y+Middle)
         TargetText.Position = Vector2.new(Mouse.X,Mouse.Y+Middle-180)
-        lineX.From = Vector2.new((Mouse.X)+Length+1,Mouse.Y-0.5+Middle)
-        lineX.To = Vector2.new(Mouse.X-Length,Mouse.Y-0.5+Middle)
-        lineY.From = Vector2.new(Mouse.X,Mouse.Y+Length+Middle)
-        lineY.To = Vector2.new(Mouse.X,Mouse.Y-Length+Middle)
         TargetText.Text = getgenv().SelectedTarget
     end)
 end)
