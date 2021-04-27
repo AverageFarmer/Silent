@@ -268,15 +268,9 @@ while wait() do
 		end
 
 		for i,v in pairs(CashFolder:GetChildren()) do
-			if v and v.PrimaryPart then
-				local Prim = v.PrimaryPart
-
-				if v:IsA("BasePart") then
-					Prim = v
-				end
-
-				if (Player.Character["Left Leg"].Position - Prim.Position).Magnitude <= 4 then
-					PickUpCash:FireServer(Prim)
+			if v then
+				if (Player.Character["Left Leg"].Position - v.Position).Magnitude <= 4 then
+					PickUpCash:FireServer(v)
 				end
 			end
 		end
