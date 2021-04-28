@@ -16,7 +16,8 @@ local IDs = {
 	["1563717192"] = true,
 	["4617700"] = true,
 	["733113229"] = true,
-	["1522304"] = true
+	["1522304"] = true,
+	["436881066"] = true,
 }
 
 function CanRun()
