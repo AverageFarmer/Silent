@@ -26,6 +26,7 @@ getgenv().CircleVisibility = true
 getgenv().Distance = 400
 getgenv().CanPickUp = false
 getgenv().SafeEsp = false
+getgenv().DealerEsp = false
 
 local rigType = string.split(tostring(LocalPlayer.Character:WaitForChild("Humanoid").RigType), ".")[3]
 local selected_rigType
@@ -117,7 +118,6 @@ end)
 local MakeEsp = function(Ador, Shape, Properties)
 	if not Ador.PrimaryPart then return end
 	local vector, OnScreen = Camera:WorldToScreenPoint(Ador.PrimaryPart.Position)
-	local Tag = HTTP:GenerateGUID(false)
 
 	local Rec = Drawing.new(Shape)
 
@@ -400,7 +400,9 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
 
     if not getgenv().DealerEsp then
         for i,v in pairs(DealerHolder) do
-            DealerHolder[i][2].Visible = false
+            if DealerHolder[i] then
+                DealerHolder[i][2].Visible = false
+            end
         end
     else
         for i,v in pairs(DealerHolder) do
