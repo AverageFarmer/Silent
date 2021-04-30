@@ -1,3 +1,7 @@
+_G.MainColor = Color3.new()
+_G.SecondaryColor = Color3.new(0.176470, 0.933333, 0.176470)
+_G.TertiaryColor = Color3.new(0.254901, 0.254901, 0.254901)
+_G.ArrowColor = Color3.new(0.176470, 0.933333, 0.176470)
 
 local Players = game:GetService("Players")
 local UserInput = game:GetService("UserInputService")
@@ -75,7 +79,7 @@ local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/Aika
 local SilentAim = library:CreateWindow("Silent Aim") -- Creates the window
 local Esps = library:CreateWindow("Esps")
 
-local Aim = SilentAim:CreateFolder("Settings") -- Creates the folder(U will put here your buttons,etc)
+local Aim = SilentAim:CreateFolder("Silent Aim") -- Creates the folder(U will put here your buttons,etc)
 local SafeEsp = Esps:CreateFolder("SafeEsp")
 local DealerEsp = Esps:CreateFolder("DealerEsp")
 
@@ -95,9 +99,21 @@ Aim:Slider("FOV",{
     getgenv().FOV = value
 end)
 
+Aim:Label("Targeted Part",{
+    TextSize = 16; -- Self Explaining
+    TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
+    BgColor = Color3.fromRGB(97, 233, 43); -- Self Explaining 
+})
+
 Aim:Dropdown("Head", selected_rigType, true, function(Part) --true/false, replaces the current title "Dropdown" with the option that t
     getgenv().SelectedPart = Part
 end)
+
+Aim:Label("Config",{
+    TextSize = 16; -- Self Explaining
+    TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
+    BgColor = Color3.fromRGB(97, 233, 43); -- Self Explaining 
+})
 
 Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
     getgenv().AimToggle = not getgenv().AimToggle
@@ -192,7 +208,7 @@ end
 function MakeDealerDots()
 	for i,v in pairs(Dealers:GetChildren()) do
 		local Model, Rec = MakeEsp(v:FindFirstChildOfClass("Model"), "Square", {
-			Size = Vector2.new(2,2),
+			Size = Vector2.new(3,3),
 			Filled = true,
             Color = Color3.new(0.992156, 0, 0),
             Visible = false
