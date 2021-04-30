@@ -72,10 +72,11 @@ end
 local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/AikaV3rm/UiLib/master/Lib.lua')))()
 
 local SilentAim = library:CreateWindow("Silent Aim") -- Creates the window
-local SafeEsp = library:CreateWindow("SafeEsp")
+local Esps = library:CreateWindow("Esps")
 
 local Aim = SilentAim:CreateFolder("Settings") -- Creates the folder(U will put here your buttons,etc)
-local SafeSettings = SafeEsp:CreateFolder("Settings")
+local SafeEsp = Esps:CreateFolder("SafeEsp")
+local DealerEsp = Esps:CreateFolder("DealerEsp")
 
 --Aim:Toggle("Enable",function(bool)
 --    getgenv().AimToggle = bool
@@ -97,16 +98,20 @@ Aim:Dropdown("Head", selected_rigType, true, function(Part) --true/false, replac
     getgenv().SelectedPart = Part
 end)
 
-Aim:Bind("Bind",Enum.KeyCode.Y,function() --Default bind
+Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
     getgenv().AimToggle = not getgenv().AimToggle
 end)
 
-SafeSettings:Bind("Bind", Enum.KeyCode.T, function()
-    getgenv().SafeEsp = not getgenv().SafeEsp
+SafeEsp:Toggle("Toggle", function(bool)
+    getgenv().SafeEsp = bool
     
     if getgenv().SafeEsp then
         MakeSafeDots()
     end
+end)
+
+DealerEsp:Toggle("Toggle", function(bool)
+    getgenv().DealerEsp = bool
 end)
 
 local MakeEsp = function(Ador, Shape, Properties)
@@ -122,7 +127,7 @@ local MakeEsp = function(Ador, Shape, Properties)
 
 	local Size
 
-	if Shape == "Rectangle" then
+	if Shape == "Rectangle" or Shape == "Square" then
 		Size = Rec.Size
 	else
 		Size = Rec.Radius
@@ -184,6 +189,19 @@ function MakeSafeDots()
 	end
 end
 
+function MakeDealerDots()
+	for i,v in pairs(Dealers:GetChildren()) do
+		local Model, Rec = MakeEsp(v:FindFirstChildOfClass("Model"), "Square", {
+			Size = Vector2.new(2,2),
+			Filled = true,
+            Color = Color3.new(0.992156, 0, 0)
+		})
+
+		DealerHolder[HTTP:GenerateGUID(false)] = {Model, Rec}
+	end
+end
+
+MakeDealerDots()
 MakeSafeDots()
 
 local function characterType(player)
@@ -355,7 +373,6 @@ RunServ:BindToRenderStep("Get_Target",1,function()
 end)
 
 RunServ:BindToRenderStep("Hova upid", 1, function()
-    
     if not getgenv().SafeEsp then
         for i,v in pairs(SafeHolder) do
             SafeHolder[i][2]:Remove()
@@ -377,6 +394,21 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
             else
                 v[2].Color = SafeOnColor
             end
+        end
+    end
+
+    if not getgenv().DealerEsp then
+        for i,v in pairs(DealerHolder) do
+            SafeHolder[i][2].Visible = false
+        end
+    else
+        for i,v in pairs(DealerHolder) do
+            local vector, OnScreen = Camera:WorldToScreenPoint(v[1].PrimaryPart.Position)        
+            local Size = 3
+            local Position = Vector2.new(vector.X - Size.X/2, vector.Y - Size.Y/2)
+    
+            v[2].Position = Position
+            v[2].Visible = OnScreen
         end
     end
 end)
