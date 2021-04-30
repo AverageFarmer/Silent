@@ -194,7 +194,8 @@ function MakeDealerDots()
 		local Model, Rec = MakeEsp(v:FindFirstChildOfClass("Model"), "Square", {
 			Size = Vector2.new(2,2),
 			Filled = true,
-            Color = Color3.new(0.992156, 0, 0)
+            Color = Color3.new(0.992156, 0, 0),
+            Visible = false
 		})
 
 		DealerHolder[HTTP:GenerateGUID(false)] = {Model, Rec}
@@ -404,7 +405,7 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
     else
         for i,v in pairs(DealerHolder) do
             local vector, OnScreen = Camera:WorldToScreenPoint(v[1].PrimaryPart.Position)        
-            local Size = 3
+            local Size = v[2].Size
             local Position = Vector2.new(vector.X - Size.X/2, vector.Y - Size.Y/2)
     
             v[2].Position = Position
