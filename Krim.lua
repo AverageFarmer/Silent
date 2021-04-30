@@ -1,7 +1,3 @@
-_G.MainColor = Color3.new()
-_G.SecondaryColor = Color3.new(0.176470, 0.933333, 0.176470)
-_G.TertiaryColor = Color3.new(0.254901, 0.254901, 0.254901)
-_G.ArrowColor = Color3.new(0.176470, 0.933333, 0.176470)
 
 local Players = game:GetService("Players")
 local UserInput = game:GetService("UserInputService")
@@ -75,6 +71,10 @@ elseif rigType == "R15" then
 end
 
 local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/AikaV3rm/UiLib/master/Lib.lua')))()
+_G.MainColor = Color3.new()
+_G.SecondaryColor = Color3.new(0.176470, 0.933333, 0.176470)
+_G.TertiaryColor = Color3.new(0.254901, 0.254901, 0.254901)
+_G.ArrowColor = Color3.new(0.176470, 0.933333, 0.176470)
 
 local SilentAim = library:CreateWindow("Silent Aim") -- Creates the window
 local Esps = library:CreateWindow("Esps")
