@@ -400,12 +400,12 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
 
     if not getgenv().DealerEsp then
         for i,v in pairs(DealerHolder) do
-            SafeHolder[i][2].Visible = false
+            DealerHolder[i][2].Visible = false
         end
     else
         for i,v in pairs(DealerHolder) do
             local vector, OnScreen = Camera:WorldToScreenPoint(v[1].PrimaryPart.Position)        
-            local Size = v[2].Size
+            local Size = Vector2.new(2,2)
             local Position = Vector2.new(vector.X - Size.X/2, vector.Y - Size.Y/2)
     
             v[2].Position = Position
