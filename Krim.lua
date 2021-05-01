@@ -137,7 +137,7 @@ WeaponOptions:Slider("GunFOV",{
     getgenv().GunFOV = value
 end)
 
-WeaponOptions:Slider("GunFOV",{
+WeaponOptions:Slider("MeleeFOV",{
     min = 5; -- min value of the slider
     max = 250; -- max value of the slider
     precise = false; -- max 2 decimals
@@ -393,7 +393,7 @@ function getTarget()
             if playerCharacter then
                 local playerHumanoid = playerCharacter:FindFirstChild("Humanoid")
                 local playerHumanoidRP = playerCharacter:FindFirstChild(getgenv().SelectedPart)
-                if playerHumanoidRP and playerHumanoid then
+                if playerHumanoidRP and playerHumanoid and playerHumanoid.Health > 0 then
                     local hitVector, onScreen = Camera:WorldToScreenPoint(playerHumanoidRP.Position)
                     if onScreen and playerHumanoid.Health > 0 then
                         local CCF = Camera.CFrame.p
