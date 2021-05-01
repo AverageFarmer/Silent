@@ -225,19 +225,20 @@ local function characterType(player)
 end
 
 function CheckForWeapon()
+    local Character = LocalPlayer.Character
     for i,v in pairs(Guns) do
-        if characterType:FindFirstChild(v.Name) then
+        if Character:FindFirstChild(v.Name) then
             return "GunFOV"
         end
     end
 
     for i,v in pairs(Melees) do
-        if characterType:FindFirstChild(v.Name) then
+        if Character:FindFirstChild(v.Name) then
             return "MeleeFOV"
         end
     end
 
-    if characterType:FindFirstChild("Fist") then
+    if Character:FindFirstChild("Fist") then
         return "MeleeFOV"
     end
 
