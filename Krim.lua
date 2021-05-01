@@ -32,6 +32,7 @@ getgenv().DealerEsp = false
 getgenv().AutoFOV = false
 getgenv().MeleeFOV = 250
 getgenv().GunFOV = 150
+getgenv().HitChance = 100
 
 local rigType = string.split(tostring(LocalPlayer.Character:WaitForChild("Humanoid").RigType), ".")[3]
 local selected_rigType
