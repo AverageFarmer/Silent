@@ -238,7 +238,7 @@ function CheckForWeapon()
         end
     end
 
-    if Character:FindFirstChild("Fist") then
+    if Character:FindFirstChild("Fists") then
         return "MeleeFOV"
     end
 
@@ -368,15 +368,14 @@ spawn(function()
             if getgenv().AutoFOV then
                 if Item then
                     TweenService:Create(FOVSize, TweenInfo.new(.2, Enum.EasingStyle.Back), {Value = getgenv()[Item]}):Play()
-                    Circle.Radius = FOVSize.Value
                 else
-                    Circle.Radius = getgenv().FOV
                     TweenService:Create(FOVSize, TweenInfo.new(.2, Enum.EasingStyle.Back), {Value = getgenv().FOV}):Play()
                 end
             else
                 TweenService:Create(FOVSize, TweenInfo.new(.2, Enum.EasingStyle.Back), {Value = getgenv().FOV}):Play()
             end
-
+            
+            Circle.Radius = FOVSize.Value
         else
             Circle.Visible = false
             TargetText.Visible = false
