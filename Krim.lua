@@ -1,4 +1,3 @@
-
 local Players = game:GetService("Players")
 local UserInput = game:GetService("UserInputService")
 local HTTP = game:GetService("HttpService")
@@ -72,16 +71,20 @@ end
 
 local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/AikaV3rm/UiLib/master/Lib.lua')))()
 _G.MainColor = Color3.new()
-_G.SecondaryColor = Color3.new(0.176470, 0.933333, 0.176470)
-_G.TertiaryColor = Color3.new(0.254901, 0.254901, 0.254901)
-_G.ArrowColor = Color3.new(0.176470, 0.933333, 0.176470)
+_G.SecondaryColor = Color3.new(0.098039, 0.533333, 0.098039)
+_G.TertiaryColor = Color3.new(0.101960, 0.101960, 0.101960)
+_G.ArrowColor = Color3.new(0.690196, 0.925490, 0.690196)
 
 local SilentAim = library:CreateWindow("Silent Aim") -- Creates the window
 local Esps = library:CreateWindow("Esps")
+local Misc = library:CreateWindow("Misc")
 
 local Aim = SilentAim:CreateFolder("Silent Aim") -- Creates the folder(U will put here your buttons,etc)
+
 local SafeEsp = Esps:CreateFolder("SafeEsp")
 local DealerEsp = Esps:CreateFolder("DealerEsp")
+
+local MiscOptions = Misc:CreateFolder("Options")
 
 --Aim:Toggle("Enable",function(bool)
 --    getgenv().AimToggle = bool
@@ -119,6 +122,10 @@ Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
     getgenv().AimToggle = not getgenv().AimToggle
 end)
 
+Aim:Toggle("Auto FOV", function(bool)
+    getgenv().AutoFOV = bool
+end)
+
 SafeEsp:Toggle("Toggle", function(bool)
     getgenv().SafeEsp = bool
     
@@ -129,6 +136,16 @@ end)
 
 DealerEsp:Toggle("Toggle", function(bool)
     getgenv().DealerEsp = bool
+end)
+
+MiscOptions:Label("Auto Pick Up", {
+    TextSize = 16; -- Self Explaining
+    TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
+    BgColor = Color3.fromRGB(97, 233, 43); -- Self Explaining 
+})
+
+MiscOptions:Toggle("Cash and Scrap", function(bool)
+    getgenv().CanPickUp = not getgenv().CanPickUp
 end)
 
 local MakeEsp = function(Ador, Shape, Properties)
