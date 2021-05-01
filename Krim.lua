@@ -97,18 +97,6 @@ local MiscOptions = Misc:CreateFolder("Options")
 --    getgenv().AimToggle = bool
 --end)
 
-Aim:Toggle("Visible", function(bool)
-    getgenv().CircleVisibility = bool
-end)
-
-Aim:Slider("FOV",{
-    min = 5; -- min value of the slider
-    max = 250; -- max value of the slider
-    precise = false; -- max 2 decimals
-},function(value)
-    getgenv().FOV = value
-end)
-
 Aim:Label("Targeted Part",{
     TextSize = 16; -- Self Explaining
     TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
@@ -125,8 +113,36 @@ Aim:Label("Config",{
     BgColor = Color3.fromRGB(97, 233, 43); -- Self Explaining 
 })
 
+Aim:Toggle("Visible", function(bool)
+    getgenv().CircleVisibility = bool
+end)
+
+Aim:Slider("FOV",{
+    min = 5; -- min value of the slider
+    max = 250; -- max value of the slider
+    precise = false; -- max 2 decimals
+},function(value)
+    getgenv().FOV = value
+end)
+
+Aim:Slider("Distance",{
+    min = 50; -- min value of the slider
+    max = 1000; -- max value of the slider
+    precise = false; -- max 2 decimals
+},function(value)
+    getgenv().Distance = value
+end)
+
 Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
     getgenv().AimToggle = not getgenv().AimToggle
+end)
+
+WeaponOptions:Slider("Gun Hit Chance",{
+    min = 10; -- min value of the slider
+    max = 100; -- max value of the slider
+    precise = false; -- max 2 decimals
+},function(value)
+    --getgenv().HitChance = value
 end)
 
 WeaponOptions:Slider("GunFOV",{
@@ -139,7 +155,7 @@ end)
 
 WeaponOptions:Slider("MeleeFOV",{
     min = 5; -- min value of the slider
-    max = 250; -- max value of the slider
+    max = 350; -- max value of the slider
     precise = false; -- max 2 decimals
 },function(value)
     getgenv().MeleeFOV = value
@@ -242,7 +258,7 @@ function CheckForWeapon()
         return "MeleeFOV"
     end
 
-    return false
+    return "FOV"
 end
 
 function MakeSafeDots()
@@ -366,15 +382,11 @@ spawn(function()
             local Item = CheckForWeapon()
 
             if getgenv().AutoFOV then
-                if Item then
-                    TweenService:Create(FOVSize, TweenInfo.new(.2, Enum.EasingStyle.Back), {Value = getgenv()[Item]}):Play()
-                else
-                    TweenService:Create(FOVSize, TweenInfo.new(.2, Enum.EasingStyle.Back), {Value = getgenv().FOV}):Play()
-                end
+                TweenService:Create(FOVSize, TweenInfo.new(.2, Enum.EasingStyle.Back), {Value = getgenv()[Item]}):Play()
             else
                 TweenService:Create(FOVSize, TweenInfo.new(.2, Enum.EasingStyle.Back), {Value = getgenv().FOV}):Play()
             end
-            
+
             Circle.Radius = FOVSize.Value
         else
             Circle.Visible = false
@@ -399,7 +411,7 @@ function getTarget()
                         local CCF = Camera.CFrame.p
                         if workspace:FindPartOnRayWithIgnoreList(Ray.new(CCF, (playerHumanoidRP.Position-CCF).Unit * getgenv().Distance),{Player}) then
                             local hitTargMagnitude = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(hitVector.X, hitVector.Y)).Magnitude
-                            if hitTargMagnitude < closestTarg and hitTargMagnitude <= getgenv().FOV then
+                            if hitTargMagnitude < closestTarg and hitTargMagnitude <= getgenv()[CheckForWeapon()] then
                                 Target = Player
                                 closestTarg = hitTargMagnitude
                             end
