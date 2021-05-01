@@ -142,7 +142,7 @@ WeaponOptions:Slider("Gun Hit Chance",{
     max = 100; -- max value of the slider
     precise = false; -- max 2 decimals
 },function(value)
-    --getgenv().HitChance = value
+    getgenv().HitChance = value
 end)
 
 WeaponOptions:Slider("GunFOV",{
@@ -470,7 +470,9 @@ RunServ:BindToRenderStep("Get_Target",1,function()
         end
         if UserInput:IsMouseButtonPressed(0) then
             if Target then
-                Hit = Target.Character[getgenv().SelectedPart]
+                if math.random(10,100) <= getgenv().HitChance then
+                    Hit = Target.Character[getgenv().SelectedPart]
+                end
             end
         else
             Hit = nil
