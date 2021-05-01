@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local UserInput = game:GetService("UserInputService")
 local HTTP = game:GetService("HttpService")
 local RunServ = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
@@ -15,6 +16,8 @@ local CashFolder = game:GetService("Workspace").Filter.SpawnedBread
 local ScarpSpawn = game:GetService("Workspace")["Filter"]["SpawnedPiles"]
 local Dealers = game:GetService("Workspace")["Map"]["Shopz"]
 local Safes = game:GetService("Workspace")["Map"]["BredMakurz"]
+local Melees = game:GetService("ReplicatedStorage").Storage.ItemStats.Melees:GetChildren()
+local Guns = game:GetService("ReplicatedStorage").Storage.ItemStats.Guns:GetChildren()
 
 getgenv().methodsTable = {"Ray", "Raycast", "FindPartOnRay", "FindPartOnRayWithIgnoreList", "FindPartOnRayWithWhitelist"}
 getgenv().Rainbow = Color3.new(0.952941, 0.921568, 0.921568)
@@ -26,6 +29,9 @@ getgenv().Distance = 400
 getgenv().CanPickUp = false
 getgenv().SafeEsp = false
 getgenv().DealerEsp = false
+getgenv().AutoFOV = false
+getgenv().MeleeFOV = 250
+getgenv().GunFOV = 150
 
 local rigType = string.split(tostring(LocalPlayer.Character:WaitForChild("Humanoid").RigType), ".")[3]
 local selected_rigType
@@ -80,6 +86,7 @@ local Esps = library:CreateWindow("Esps")
 local Misc = library:CreateWindow("Misc")
 
 local Aim = SilentAim:CreateFolder("Silent Aim") -- Creates the folder(U will put here your buttons,etc)
+local WeaponOptions = SilentAim:CreateFolder("WeaponSettings")
 
 local SafeEsp = Esps:CreateFolder("SafeEsp")
 local DealerEsp = Esps:CreateFolder("DealerEsp")
@@ -122,7 +129,23 @@ Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
     getgenv().AimToggle = not getgenv().AimToggle
 end)
 
-Aim:Toggle("Auto FOV", function(bool)
+WeaponOptions:Slider("GunFOV",{
+    min = 5; -- min value of the slider
+    max = 250; -- max value of the slider
+    precise = false; -- max 2 decimals
+},function(value)
+    getgenv().GunFOV = value
+end)
+
+WeaponOptions:Slider("GunFOV",{
+    min = 5; -- min value of the slider
+    max = 250; -- max value of the slider
+    precise = false; -- max 2 decimals
+},function(value)
+    getgenv().MeleeFOV = value
+end)
+
+WeaponOptions:Toggle("Auto FOV", function(bool)
     getgenv().AutoFOV = bool
 end)
 
@@ -194,6 +217,33 @@ function refresh()
     end
 end
 
+local function characterType(player)
+    if player.Character or workspace:FindFirstChild(player.Name) then
+        local playerCharacter = player.Character or workspace:FindFirstChild(player.Name)
+        return playerCharacter
+    end
+end
+
+function CheckForWeapon()
+    for i,v in pairs(Guns) do
+        if characterType:FindFirstChild(v.Name) then
+            return "GunFOV"
+        end
+    end
+
+    for i,v in pairs(Melees) do
+        if characterType:FindFirstChild(v.Name) then
+            return "MeleeFOV"
+        end
+    end
+
+    if characterType:FindFirstChild("Fist") then
+        return "MeleeFOV"
+    end
+
+    return false
+end
+
 function MakeSafeDots()
 	for i,v in pairs(Safes:GetChildren()) do
 		if not v:FindFirstChild("Values") and v:FindFirstChild("Values"):FindFirstChild("Health") then continue end
@@ -238,12 +288,6 @@ end
 MakeDealerDots()
 MakeSafeDots()
 
-local function characterType(player)
-    if player.Character or workspace:FindFirstChild(player.Name) then
-        local playerCharacter = player.Character or workspace:FindFirstChild(player.Name)
-        return playerCharacter
-    end
-end
 
 local function teamType(player)
     if player.Team or player.TeamColor then
@@ -304,7 +348,10 @@ spawn(function()
     TargetText.Center = true
     TargetText.Visible = true
     TargetText.Color = Color3.fromRGB(255, 251, 0)
-    
+
+    local FOVSize = Instance.new("NumberValue")
+    FOVSize.Value = getgenv().FOV
+
     RunServ:BindToRenderStep("Get_Fov",1,function()
         if getgenv().AimToggle then
             local Length = 10
@@ -312,10 +359,23 @@ spawn(function()
             Circle.Visible = getgenv().CircleVisibility
             TargetText.Visible = getgenv().CircleVisibility
             Circle.Color = getgenv().Rainbow
-            Circle.Radius = getgenv().FOV
             Circle.Position = Vector2.new(Mouse.X,Mouse.Y+Middle)
             TargetText.Position = Vector2.new(Mouse.X,Mouse.Y+Middle-180)
             TargetText.Text = getgenv().SelectedTarget
+            local Item = CheckForWeapon()
+
+            if getgenv().AutoFOV then
+                if Item then
+                    TweenService:Create(FOVSize, TweenInfo.new(.2, Enum.EasingStyle.Back), {Value = getgenv()[Item]}):Play()
+                    Circle.Radius = FOVSize.Value
+                else
+                    Circle.Radius = getgenv().FOV
+                    TweenService:Create(FOVSize, TweenInfo.new(.2, Enum.EasingStyle.Back), {Value = getgenv().FOV}):Play()
+                end
+            else
+                TweenService:Create(FOVSize, TweenInfo.new(.2, Enum.EasingStyle.Back), {Value = getgenv().FOV}):Play()
+            end
+
         else
             Circle.Visible = false
             TargetText.Visible = false
