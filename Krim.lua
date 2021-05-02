@@ -221,7 +221,7 @@ MiscOptions:Toggle("Cash and Scrap", function(bool)
 end)
 
 function CheckAvalibility(Dealer)
-    for i,v in pairs(Dealer:FindFirstChild("CurrentStocks")) do
+    for i,v in pairs(Dealer:FindFirstChild("CurrentStocks"):GetChildren()) do
         if v.Name == getgenv().SelectedItem and v.Value ~= 0 then
             return true
         end
