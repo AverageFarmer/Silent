@@ -86,7 +86,7 @@ local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/Aika
 _G.MainColor = Color3.new()
 _G.SecondaryColor = Color3.new(0.098039, 0.533333, 0.098039)
 _G.TertiaryColor = Color3.new(0.101960, 0.101960, 0.101960)
-_G.ArrowColor = Color3.new(0.690196, 0.925490, 0.690196)
+_G.ArrowColor = Color3.new(0.050980, 0.333333, 0.050980)
 
 local SilentAim = library:CreateWindow("Silent Aim") -- Creates the window
 local Esps = library:CreateWindow("Esps")
@@ -437,6 +437,24 @@ spawn(function()
     end)
 end)
 
+function RayCast(Position, Direction, IgnoreList, IgnoreWater)
+	local Pos
+	local RayParams = RaycastParams.new()
+	RayParams.FilterDescendantsInstances = IgnoreList
+	RayParams.FilterType = Enum.RaycastFilterType.Blacklist
+	RayParams.IgnoreWater = IgnoreWater or false
+
+	local Ray = workspace:Raycast(Position, Direction.unit , RayParams)
+
+	if Ray and Ray.Instance then
+		return Ray.Instance, Ray.Position, Ray.Material, Ray.Normal
+	else
+		Pos = (CFrame.new(Position) * CFrame.new(Direction)).p
+	end
+
+	return nil, Pos, nil, nil
+end
+
 function getTarget()
 	local closestTarg = math.huge
 	local Target = nil
@@ -451,7 +469,8 @@ function getTarget()
                     local hitVector, onScreen = Camera:WorldToScreenPoint(playerHumanoidRP.Position)
                     if onScreen and playerHumanoid.Health > 0 then
                         local CCF = Camera.CFrame.p
-                        if workspace:FindPartOnRayWithIgnoreList(Ray.new(CCF, (playerHumanoidRP.Position-CCF).Unit * getgenv().Distance),{Player}) then
+                        local Hit = RayCast(CCF, (playerHumanoidRP.Position-CCF).Unit * getgenv().Distance, {Player})
+                        if Hit then
                             local hitTargMagnitude = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(hitVector.X, hitVector.Y)).Magnitude
                             if hitTargMagnitude < closestTarg and hitTargMagnitude <= getgenv()[CheckForWeapon()] then
                                 Target = Player
