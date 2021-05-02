@@ -16,8 +16,13 @@ local CashFolder = game:GetService("Workspace").Filter.SpawnedBread
 local ScarpSpawn = game:GetService("Workspace")["Filter"]["SpawnedPiles"]
 local Dealers = game:GetService("Workspace")["Map"]["Shopz"]
 local Safes = game:GetService("Workspace")["Map"]["BredMakurz"]
-local Melees = game:GetService("ReplicatedStorage").Storage.ItemStats.Melees:GetChildren()
-local Guns = game:GetService("ReplicatedStorage").Storage.ItemStats.Guns:GetChildren()
+local ItemStats = game:GetService("ReplicatedStorage").Storage.ItemStats
+local Melees = ItemStats.Melees:GetChildren()
+local Guns = ItemStats.Guns:GetChildren()
+local Throwables = ItemStats.Throwables:GetChildren()
+local MiscFolder = ItemStats.Misc:GetChildren()
+local Armour = ItemStats.Armour:GetChildren()
+local ItemList = {}
 
 getgenv().methodsTable = {"Ray", "Raycast", "FindPartOnRay", "FindPartOnRayWithIgnoreList", "FindPartOnRayWithWhitelist"}
 getgenv().Rainbow = Color3.new(0.952941, 0.921568, 0.921568)
@@ -33,6 +38,7 @@ getgenv().AutoFOV = false
 getgenv().MeleeFOV = 250
 getgenv().GunFOV = 150
 getgenv().HitChance = 100
+getgenv().SelectedItem = "None"
 
 local rigType = string.split(tostring(LocalPlayer.Character:WaitForChild("Humanoid").RigType), ".")[3]
 local selected_rigType
@@ -97,6 +103,28 @@ local MiscOptions = Misc:CreateFolder("Options")
 --Aim:Toggle("Enable",function(bool)
 --    getgenv().AimToggle = bool
 --end)
+
+table.insert(ItemList, "None")
+for i,v in pairs(Armour) do
+    table.insert(ItemList, v.Name)
+end
+
+for i,v in pairs(Melees) do
+    table.insert(ItemList, v.Name)
+end
+
+for i,v in pairs(Guns) do
+    table.insert(ItemList, v.Name)
+end
+
+for i,v in pairs(MiscFolder) do
+    table.insert(ItemList, v.Name)
+end
+
+for i,v in pairs(Throwables) do
+    table.insert(ItemList, v.Name)
+end
+
 
 Aim:Label("Targeted Part",{
     TextSize = 16; -- Self Explaining
@@ -178,6 +206,10 @@ DealerEsp:Toggle("Toggle", function(bool)
     getgenv().DealerEsp = bool
 end)
 
+DealerEsp:Dropdown("None", ItemList, true, function(Item) --true/false, replaces the current title "Dropdown" with the option that t
+    getgenv().SelectedItem = Item
+end)
+
 MiscOptions:Label("Auto Pick Up", {
     TextSize = 16; -- Self Explaining
     TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
@@ -187,6 +219,15 @@ MiscOptions:Label("Auto Pick Up", {
 MiscOptions:Toggle("Cash and Scrap", function(bool)
     getgenv().CanPickUp = not getgenv().CanPickUp
 end)
+
+function CheckAvalibility(Dealer)
+    for i,v in pairs(Dealer:FindFirstChild("CurrentStocks")) do
+        if v.Name == getgenv().SelectedItem and v.Value ~= 0 then
+            return true
+        end
+    end
+    return false
+end
 
 local MakeEsp = function(Ador, Shape, Properties)
 	if not Ador.PrimaryPart then return end
@@ -520,6 +561,7 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
     
             v[2].Position = Position
             v[2].Visible = OnScreen
+            v[2].Color = (CheckAvalibility(v[1].Parent) and Color3.new(0.729411, 0.741176, 0.109803)) or Color3.new(1, 0, 0)
         end
     end
 end)
