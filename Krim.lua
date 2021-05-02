@@ -556,7 +556,7 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
     else
         for i,v in pairs(DealerHolder) do
             local vector, OnScreen = Camera:WorldToScreenPoint(v[1].PrimaryPart.Position)        
-            local Size = Vector2.new(2,2)
+            local Size = Vector2.new(4,4)
             local Position = Vector2.new(vector.X - Size.X/2, vector.Y - Size.Y/2)
     
             v[2].Position = Position
