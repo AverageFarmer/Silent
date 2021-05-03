@@ -438,7 +438,7 @@ spawn(function()
     end)
 end)
 
-function RayCast(Position, Direction, IgnoreList, IgnoreWater)
+function RayCast(Position, Direction, MaxDistance, IgnoreList, IgnoreWater)
 	local Pos
 	local RayParams = RaycastParams.new()
 	RayParams.FilterDescendantsInstances = IgnoreList
@@ -470,8 +470,8 @@ function getTarget()
                     local hitVector, onScreen = Camera:WorldToScreenPoint(playerHumanoidRP.Position)
                     if onScreen and playerHumanoid.Health > 0 then
                         local CCF = Camera.CFrame.p
-                        
-                        if RayCast(CCF, (playerHumanoidRP.Position-CCF).Unit * getgenv().Distance, {Player}) then
+                        local Raycast = RayCast(CCF, (playerHumanoidRP.Position-CCF).Unit * getgenv().Distance, {Player})
+                        if workspace:FindPartOnRayWithIgnoreList(Ray.new(CCF, (playerHumanoidRP.Position-CCF).Unit * getgenv().Distance),{Player}) then
                             local hitTargMagnitude = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(hitVector.X, hitVector.Y)).Magnitude
                             if hitTargMagnitude < closestTarg and hitTargMagnitude <= getgenv()[CheckForWeapon()] then
                                 Target = Player
