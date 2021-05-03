@@ -586,9 +586,10 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
     end
 end)
 
-while wait() do
-	if getgenv().CanPickUp then
-		wait(1)
+RunServ:BindToRenderStep("Dropss", 1, function()
+	if getgenv().CanPickUp and (os.time() - LastUpdated) >= 1 then
+        LastUpdated = os.time()
+        
 		for i,v in pairs(ScarpSpawn:GetChildren()) do
 			if v and v.PrimaryPart then
 				local Prim = v.PrimaryPart
@@ -607,4 +608,4 @@ while wait() do
 			end
 		end
 	end
-end
+end)
