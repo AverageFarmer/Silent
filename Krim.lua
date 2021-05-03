@@ -531,6 +531,8 @@ RunServ:BindToRenderStep("Get_Target",1,function()
             getgenv().SelectedTarget = Target.Name .. "\n" .. math.floor((LocalPlayer.Character[getgenv().SelectedPart].Position - Target.Character[getgenv().SelectedPart].Position).magnitude) .. " Studs"
         end
         if UserInput:IsMouseButtonPressed(0) and (os.time() - LastUpdated) >= .1 then
+            LastUpdated = os.time()
+            
             if Target then
                 if math.random(10,100) <= getgenv().HitChance then
                     Hit = Target.Character[getgenv().SelectedPart]
