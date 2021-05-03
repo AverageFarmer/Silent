@@ -23,6 +23,7 @@ local Throwables = ItemStats.Throwables:GetChildren()
 local MiscFolder = ItemStats.Misc:GetChildren()
 local Armour = ItemStats.Armour:GetChildren()
 local ItemList = {}
+local LastUpdated = 0
 
 getgenv().methodsTable = {"Ray", "Raycast", "FindPartOnRay", "FindPartOnRayWithIgnoreList", "FindPartOnRayWithWhitelist"}
 getgenv().Rainbow = Color3.new(0.952941, 0.921568, 0.921568)
@@ -529,8 +530,7 @@ RunServ:BindToRenderStep("Get_Target",1,function()
         else
             getgenv().SelectedTarget = Target.Name .. "\n" .. math.floor((LocalPlayer.Character[getgenv().SelectedPart].Position - Target.Character[getgenv().SelectedPart].Position).magnitude) .. " Studs"
         end
-        if UserInput:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
-            print("hit")
+        if UserInput:IsMouseButtonPressed(0) and (os.time() - LastUpdated) >= .1 then
             if Target then
                 if math.random(10,100) <= getgenv().HitChance then
                     Hit = Target.Character[getgenv().SelectedPart]
