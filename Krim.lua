@@ -469,8 +469,8 @@ function getTarget()
                     local hitVector, onScreen = Camera:WorldToScreenPoint(playerHumanoidRP.Position)
                     if onScreen and playerHumanoid.Health > 0 then
                         local CCF = Camera.CFrame.p
-                        local Hit = RayCast(CCF, (playerHumanoidRP.Position-CCF).Unit * getgenv().Distance, {Player})
-                        if Hit then
+                        
+                        if RayCast(CCF, (playerHumanoidRP.Position-CCF).Unit * getgenv().Distance, {Player}) then
                             local hitTargMagnitude = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(hitVector.X, hitVector.Y)).Magnitude
                             if hitTargMagnitude < closestTarg and hitTargMagnitude <= getgenv()[CheckForWeapon()] then
                                 Target = Player
@@ -529,7 +529,8 @@ RunServ:BindToRenderStep("Get_Target",1,function()
         else
             getgenv().SelectedTarget = Target.Name .. "\n" .. math.floor((LocalPlayer.Character[getgenv().SelectedPart].Position - Target.Character[getgenv().SelectedPart].Position).magnitude) .. " Studs"
         end
-        if UserInput:IsMouseButtonPressed(0) then
+        if UserInput:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
+            print("hit")
             if Target then
                 if math.random(10,100) <= getgenv().HitChance then
                     Hit = Target.Character[getgenv().SelectedPart]
