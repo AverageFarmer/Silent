@@ -529,7 +529,7 @@ RunServ:BindToRenderStep("Get_Target",1,function()
         else
             getgenv().SelectedTarget = Target.Name .. "\n" .. math.floor((LocalPlayer.Character[getgenv().SelectedPart].Position - Target.Character[getgenv().SelectedPart].Position).magnitude) .. " Studs"
         end
-        if UserInput:IsMouseButtonPressed(0) and (os.time() - LastUpdated) >= .1 then
+        if UserInput:IsMouseButtonPressed(0) then
             LastUpdated = os.time()
 
             if Target then
