@@ -40,6 +40,8 @@ getgenv().MeleeFOV = 250
 getgenv().GunFOV = 150
 getgenv().HitChance = 100
 getgenv().SelectedItem = "None"
+getgenv().SafeHolder = getgenv().SafeHolder or {}
+getgenv().DealerHolder = getgenv().DealerHolder or {}
 
 local rigType = string.split(tostring(LocalPlayer.Character:WaitForChild("Humanoid").RigType), ".")[3]
 local selected_rigType
@@ -47,7 +49,6 @@ local selected_rigType
 local rigTypeR6 = {
     "Head",
 	"Torso",
-	"LowerTorso",
 	"Left Arm",
 	"Right Arm",
 	"Left Leg",
@@ -71,8 +72,6 @@ local rigTypeR15 = {
     "LeftFoot",
     "RightFoot",
 }
-local SafeHolder = {}
-local DealerHolder = {}
 local SafeOnColor = Color3.fromRGB(34, 226, 16)
 local SafeOffColor = Color3.fromRGB(93, 93, 93)
 local CanPickUp = false
@@ -266,9 +265,9 @@ end)
 
 function refresh()
     if getgenv().SafeEsp then
-        for i,v in pairs(SafeHolder) do
-            SafeHolder[i][2]:Remove()
-            SafeHolder[i] = nil
+        for i,v in pairs(getgenv().SafeHolder) do
+            getgenv().SafeHolder[i][2]:Remove()
+            getgenv().SafeHolder[i] = nil
         end
         
         wait()
@@ -314,7 +313,7 @@ function MakeSafeDots()
 			Filled = true
 		})
 
-		SafeHolder[HTTP:GenerateGUID(false)] = {Model, Rec}
+		getgenv().SafeHolder[HTTP:GenerateGUID(false)] = {Model, Rec}
 
 		if Health.Value <= 0 then 
 			Rec.Color = SafeOffColor
@@ -341,7 +340,7 @@ function MakeDealerDots()
             Visible = false
 		})
 
-		DealerHolder[HTTP:GenerateGUID(false)] = {Model, Rec}
+		getgenv().DealerHolder[HTTP:GenerateGUID(false)] = {Model, Rec}
 	end
 end
 
@@ -469,7 +468,7 @@ function getTarget()
                 if playerHumanoidRP and playerHumanoid and playerHumanoid.Health > 0 then
                     local hitVector, onScreen = Camera:WorldToScreenPoint(playerHumanoidRP.Position)
                     if onScreen and playerHumanoid.Health > 0 then
-                        local CCF = Camera.CFrame.p
+                        local CCF = Camera.CFrame.Position
                         if workspace:FindPartOnRayWithIgnoreList(Ray.new(CCF, (playerHumanoidRP.Position-CCF).Unit * getgenv().Distance),{Player}) then
                             local hitTargMagnitude = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(hitVector.X, hitVector.Y)).Magnitude
                             if hitTargMagnitude < closestTarg and hitTargMagnitude <= getgenv()[CheckForWeapon()] then
@@ -545,12 +544,12 @@ end)
 
 RunServ:BindToRenderStep("Hova upid", 1, function()
     if not getgenv().SafeEsp then
-        for i,v in pairs(SafeHolder) do
-            SafeHolder[i][2]:Remove()
-            SafeHolder[i] = nil
+        for i,v in pairs(getgenv().SafeHolder) do
+            getgenv().SafeHolder[i][2]:Remove()
+            getgenv().SafeHolder[i] = nil
         end
     else
-        for i,v in pairs(SafeHolder) do
+        for i,v in pairs(getgenv().SafeHolder) do
             local vector, OnScreen = Camera:WorldToScreenPoint(v[1].PrimaryPart.Position)        
             local Size = 3
             local Position = Vector2.new(vector.X - Size/2, vector.Y - Size/2)
@@ -569,13 +568,13 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
     end
 
     if not getgenv().DealerEsp then
-        for i,v in pairs(DealerHolder) do
-            if DealerHolder[i] then
-                DealerHolder[i][2].Visible = false
+        for i,v in pairs(getgenv().DealerHolder) do
+            if getgenv().DealerHolder[i] then
+                getgenv().DealerHolder[i][2].Visible = false
             end
         end
     else
-        for i,v in pairs(DealerHolder) do
+        for i,v in pairs(getgenv().DealerHolder) do
             local vector, OnScreen = Camera:WorldToScreenPoint(v[1].PrimaryPart.Position)        
             local Size = Vector2.new(4,4)
             local Position = Vector2.new(vector.X - Size.X/2, vector.Y - Size.Y/2)
