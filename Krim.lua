@@ -25,6 +25,11 @@ local Armour = ItemStats.Armour:GetChildren()
 local ItemList = {}
 local LastUpdated = 0
 
+RunServ:UnbindFromRenderStep("Get_Fov")
+RunServ:UnbindFromRenderStep("Get_Target")
+RunServ:UnbindFromRenderStep("Hova Upid")
+RunServ:UnbindFromRenderStep("Dropss")
+
 getgenv().methodsTable = {"Ray", "Raycast", "FindPartOnRay", "FindPartOnRayWithIgnoreList", "FindPartOnRayWithWhitelist"}
 getgenv().Rainbow = Color3.new(0.952941, 0.921568, 0.921568)
 getgenv().SelectedPart = "Head"
@@ -164,7 +169,36 @@ end)
 
 Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
     getgenv().AimToggle = not getgenv().AimToggle
+
+    if getgenv().AimToggle then
+        RunServ:BindToRenderStep("Get_Target",1,function()
+            if getgenv().AimToggle then
+                local Target = getTarget()
+                if not Target then
+                    Hit = nil
+                    getgenv().SelectedTarget = ""
+                else
+                    getgenv().SelectedTarget = Target.Name .. "\n" .. math.floor((LocalPlayer.Character[getgenv().SelectedPart].Position - Target.Character[getgenv().SelectedPart].Position).magnitude) .. " Studs"
+                end
+                if UserInput:IsMouseButtonPressed(0) then
+                    LastUpdated = os.time()
+        
+                    if Target then
+                        if math.random(10,100) <= getgenv().HitChance then
+                            Hit = Target.Character[getgenv().SelectedPart]
+                        end
+                    end
+                else
+                    Hit = nil
+                end
+            end
+        end)
+    else
+        RunServ:UnbindFromRenderStep("Get_Target")
+    end
 end)
+
+Aim:Destroy()
 
 WeaponOptions:Slider("Gun Hit Chance",{
     min = 10; -- min value of the slider
@@ -347,7 +381,6 @@ end
 MakeDealerDots()
 MakeSafeDots()
 
-
 local function teamType(player)
     if player.Team or player.TeamColor then
         local teamplayer = player.Team or player.TeamColor
@@ -519,28 +552,7 @@ hookfunc = hookfunction(workspace.FindPartOnRayWithIgnoreList, function(...)
     return hookfunc(unpack(args))
 end)
 
-RunServ:BindToRenderStep("Get_Target",1,function()
-    if getgenv().AimToggle then
-        local Target = getTarget()
-        if not Target then
-            Hit = nil
-            getgenv().SelectedTarget = ""
-        else
-            getgenv().SelectedTarget = Target.Name .. "\n" .. math.floor((LocalPlayer.Character[getgenv().SelectedPart].Position - Target.Character[getgenv().SelectedPart].Position).magnitude) .. " Studs"
-        end
-        if UserInput:IsMouseButtonPressed(0) then
-            LastUpdated = os.time()
 
-            if Target then
-                if math.random(10,100) <= getgenv().HitChance then
-                    Hit = Target.Character[getgenv().SelectedPart]
-                end
-            end
-        else
-            Hit = nil
-        end
-    end
-end)
 
 RunServ:BindToRenderStep("Hova upid", 1, function()
     if not getgenv().SafeEsp then
@@ -589,7 +601,7 @@ end)
 RunServ:BindToRenderStep("Dropss", 1, function()
 	if getgenv().CanPickUp and (os.time() - LastUpdated) >= 1 then
         LastUpdated = os.time()
-        
+
 		for i,v in pairs(ScarpSpawn:GetChildren()) do
 			if v and v.PrimaryPart then
 				local Prim = v.PrimaryPart
