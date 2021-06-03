@@ -198,7 +198,7 @@ Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
     end
 end)
 
-Aim:Destroy()
+Aim:DestroyGui()
 
 WeaponOptions:Slider("Gun Hit Chance",{
     min = 10; -- min value of the slider
