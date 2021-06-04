@@ -23,6 +23,7 @@ local Throwables = ItemStats.Throwables:GetChildren()
 local MiscFolder = ItemStats.Misc:GetChildren()
 local Armour = ItemStats.Armour:GetChildren()
 local ItemList = {}
+local ScrapHolder = {}
 local LastUpdated = 0
 
 RunServ:UnbindFromRenderStep("Get_Fov")
@@ -39,6 +40,7 @@ getgenv().CircleVisibility = true
 getgenv().Distance = 400
 getgenv().CanPickUp = false
 getgenv().SafeEsp = false
+getgenv().ScrapEsp = false
 getgenv().DealerEsp = false
 getgenv().AutoFOV = false
 getgenv().MeleeFOV = 250
@@ -47,6 +49,7 @@ getgenv().HitChance = 100
 getgenv().SelectedItem = "None"
 getgenv().SafeHolder = getgenv().SafeHolder or {}
 getgenv().DealerHolder = getgenv().DealerHolder or {}
+getgenv().ScrapHolder = getgenv().ScrapHolder or {}
 
 local rigType = string.split(tostring(LocalPlayer.Character:WaitForChild("Humanoid").RigType), ".")[3]
 local selected_rigType
@@ -102,6 +105,7 @@ local WeaponOptions = SilentAim:CreateFolder("WeaponSettings")
 
 local SafeEsp = Esps:CreateFolder("SafeEsp")
 local DealerEsp = Esps:CreateFolder("DealerEsp")
+local ScrapEsp = Esps:CreateFolder("ScrapEsp")
 
 local MiscOptions = Misc:CreateFolder("Options")
 
@@ -234,6 +238,10 @@ SafeEsp:Toggle("Toggle", function(bool)
     if getgenv().SafeEsp then
         MakeSafeDots()
     end
+end)
+
+ScrapEsp:Toggle("Toggle", function(bool)
+    getgenv().ScrapEsp = bool
 end)
 
 DealerEsp:Toggle("Toggle", function(bool)
@@ -375,6 +383,17 @@ function MakeDealerDots()
 		})
 
 		getgenv().DealerHolder[HTTP:GenerateGUID(false)] = {Model, Rec}
+	end
+end
+
+function MakeScrapDots()
+	for i,v in pairs(ScarpSpawn:GetChildren()) do
+		local Model, Rec = MakeEsp(v, "Square", {
+			Size = Vector2.new(4,4),
+			Filled = false
+		})
+
+		getgenv().ScrapHolder[HTTP:GenerateGUID(false)] = {Model, Rec}
 	end
 end
 
@@ -552,8 +571,6 @@ hookfunc = hookfunction(workspace.FindPartOnRayWithIgnoreList, function(...)
     return hookfunc(unpack(args))
 end)
 
-
-
 RunServ:BindToRenderStep("Hova upid", 1, function()
     if not getgenv().SafeEsp then
         for i,v in pairs(getgenv().SafeHolder) do
@@ -576,6 +593,25 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
             else
                 v[2].Color = SafeOnColor
             end
+        end
+    end
+
+    if not getgenv().ScrapEsp then
+        for i,v in pairs(getgenv().ScrapHolder) do
+            getgenv().ScrapHolder[i][2]:Remove()
+            getgenv().ScrapHolder[i] = nil
+        end
+    else
+        for i,v in pairs(getgenv().ScrapHolder) do
+            if not v[1] then v[2]:Remove() continue end
+            local vector, OnScreen = Camera:WorldToScreenPoint(v[1].PrimaryPart.Position)
+    
+            v[2].Visible = OnScreen
+    
+            local Size = 10
+            local Position = Vector2.new(vector.X - Size/2, vector.Y - Size/2)
+            v[2].Position = Position
+            v[2].Color = v[1].PrimaryPart:FindFirstChild("Particle").Color.Keypoints[1].Value
         end
     end
 
