@@ -242,6 +242,10 @@ end)
 
 ScrapEsp:Toggle("Toggle", function(bool)
     getgenv().ScrapEsp = bool
+
+    if getgenv().ScrapEsp then
+        MakeScrapDots()
+    end
 end)
 
 DealerEsp:Toggle("Toggle", function(bool)
@@ -399,7 +403,7 @@ end
 function MakeScrapDots()
 	for i,v in pairs(ScarpSpawn:GetChildren()) do
 		local Model, Rec = MakeEsp(v, "Square", {
-			Size = Vector2.new(4,4),
+			Size = Vector2.new(3,3),
 			Filled = false
 		})
 
@@ -618,9 +622,10 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
             local vector, OnScreen = Camera:WorldToScreenPoint(v[1].PrimaryPart.Position)
     
             v[2].Visible = OnScreen
+            v[2].Filled = false
     
-            local Size = 10
-            local Position = Vector2.new(vector.X - Size/2, vector.Y - Size/2)
+            local Size = Vector2.new(4,4)
+            local Position = Vector2.new(vector.X - Size.X/2, vector.Y - Size.Y/2)
             v[2].Position = Position
             v[2].Color = v[1].PrimaryPart:FindFirstChild("Particle").Color.Keypoints[1].Value
         end
@@ -635,7 +640,7 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
     else
         for i,v in pairs(getgenv().DealerHolder) do
             local vector, OnScreen = Camera:WorldToScreenPoint(v[1].PrimaryPart.Position)        
-            local Size = Vector2.new(4,4)
+            local Size = Vector2.new(3,3)
             local Position = Vector2.new(vector.X - Size.X/2, vector.Y - Size.Y/2)
     
             v[2].Position = Position
