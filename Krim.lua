@@ -175,7 +175,7 @@ Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
     getgenv().AimToggle = not getgenv().AimToggle
 
     if getgenv().AimToggle then
-        RunServ:BindToRenderStep("Get_Target",1,function()
+        RunServ:BindToRenderStep("Get_Target",3,function()
             if getgenv().AimToggle then
                 local Target = getTarget()
                 if not Target then
@@ -188,7 +188,7 @@ Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
                     LastUpdated = os.time()
         
                     if Target then
-                        if math.random(10,100) <= getgenv().HitChance then
+                        if math.random(10,100) <= getgenv().HitChance and  then
                             Hit = Target.Character[getgenv().SelectedPart]
                         end
                     end
@@ -478,7 +478,7 @@ spawn(function()
     local FOVSize = Instance.new("NumberValue")
     FOVSize.Value = getgenv().FOV
 
-    RunServ:BindToRenderStep("Get_Fov",1,function()
+    RunServ:BindToRenderStep("Get_Fov",4,function()
         if getgenv().AimToggle then
             local Length = 10
             local Middle = 37
@@ -502,6 +502,8 @@ spawn(function()
             TargetText.Visible = false
         end
     end)
+
+    
 end)
 
 function RayCast(Position, Direction, MaxDistance, IgnoreList, IgnoreWater)
@@ -650,7 +652,7 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
     end
 end)
 
-RunServ:BindToRenderStep("Dropss", 1, function()
+RunServ:BindToRenderStep("Dropss", 2, function()
 	if getgenv().CanPickUp and (os.time() - LastUpdated) >= 1 then
         LastUpdated = os.time()
 
