@@ -315,6 +315,16 @@ function refresh()
         wait()
         MakeSafeDots()
     end
+
+    if getgenv().ScrapEsp then
+        for i,v in pairs(getgenv().ScrapHolder) do
+            getgenv().ScrapHolder[i][2]:Remove()
+            getgenv().ScrapHolder[i] = nil
+        end
+        
+        wait()
+        MakeScrapDots()
+    end
 end
 
 local function characterType(player)
@@ -399,6 +409,7 @@ end
 
 MakeDealerDots()
 MakeSafeDots()
+--MakeScrapDots()
 
 local function teamType(player)
     if player.Team or player.TeamColor then
