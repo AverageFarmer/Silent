@@ -23,7 +23,6 @@ local Throwables = ItemStats.Throwables:GetChildren()
 local MiscFolder = ItemStats.Misc:GetChildren()
 local Armour = ItemStats.Armour:GetChildren()
 local ItemList = {}
-local ScrapHolder = {}
 local LastUpdated = 0
 
 RunServ:UnbindFromRenderStep("Get_Fov")
@@ -568,6 +567,7 @@ mt.__namecall = newcclosure(function(...)
     local args = {...}
     for _, rayMethod in next, getgenv().methodsTable do
         if tostring(method) == rayMethod and Hit then
+            print(rayMethod)
             returnRay(args, Hit)
             return namecall(unpack(args))
         end
