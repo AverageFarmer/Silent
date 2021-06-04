@@ -188,7 +188,9 @@ Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
                     LastUpdated = os.time()
         
                     if Target then
-                        if math.random(10,100) <= getgenv().HitChance and  then
+                        local Item = CheckForWeapon()
+
+                        if math.random(10,100) <= getgenv().HitChance and Item == "GunFOV" then
                             Hit = Target.Character[getgenv().SelectedPart]
                         end
                     end
