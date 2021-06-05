@@ -628,7 +628,7 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
             v[2].Visible = OnScreen
             v[2].Filled = false
     
-            local Size = Vector2.new(4,4)
+            local Size = Vector2.new(3.5,3.5)
             local Position = Vector2.new(vector.X - Size.X/2, vector.Y - Size.Y/2)
             v[2].Position = Position
             v[2].Color = v[1].PrimaryPart:FindFirstChild("Particle").Color.Keypoints[1].Value
