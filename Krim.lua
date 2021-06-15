@@ -571,7 +571,6 @@ mt.__namecall = newcclosure(function(...)
     local args = {...}
     for _, rayMethod in next, getgenv().methodsTable do
         if tostring(method) == rayMethod and Hit then
-            print(rayMethod)
             returnRay(args, Hit)
             return namecall(unpack(args))
         end
