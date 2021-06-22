@@ -15,7 +15,7 @@ local PickUpRemote = game:GetService("ReplicatedStorage")["Events"]["PIC_PU"]
 local PickUpCash = game:GetService("ReplicatedStorage")["Events"]["CZDPZUS"]
 
 local CashFolder = game:GetService("Workspace").Filter.SpawnedBread
-local ScarpSpawn = game:GetService("Workspace")["Filter"]["SpawnedPiles"]
+local ScarpSpawn = game:GetService("Workspace")["Filter"]["SpawnedPiIes"]
 local Dealers = game:GetService("Workspace")["Map"]["Shopz"]
 local Safes = game:GetService("Workspace")["Map"]["BredMakurz"]
 local ItemStats = game:GetService("ReplicatedStorage").Storage.ItemStats
