@@ -267,10 +267,6 @@ MiscOptions:Label("Auto Pick Up", {
     BgColor = Color3.fromRGB(97, 233, 43); -- Self Explaining 
 })
 
-MiscOptions:Toggle("Cash and Scrap", function(bool)
-    getgenv().CanPickUp = not getgenv().CanPickUp
-end)
-
 function CheckAvalibility(Dealer)
     for i,v in pairs(Dealer:FindFirstChild("CurrentStocks", true):GetChildren()) do
         if v.Name == getgenv().SelectedItem and v.Value ~= 0 then
