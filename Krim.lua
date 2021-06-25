@@ -194,7 +194,7 @@ Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
                         if math.random(10,100) <= getgenv().HitChance and Item == "GunFOV" then
                             Hit = Target.Character[getgenv().SelectedPart]
                         else
-                            Hit = Target.Character[getgenv().SelectedPart]
+                            Hit = nil
                         end
                     end
                 else
