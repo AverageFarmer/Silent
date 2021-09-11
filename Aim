@@ -591,8 +591,3 @@ RunServ:BindToRenderStep("Get_Target",1,function()
 end)
 
 warn("Loaded!")
-
-local Player = game.Players["Leftt_Nut"]
-for i,v in pairs(Player:GetFriendsOnline(200)) do
-    print(i)
-end
