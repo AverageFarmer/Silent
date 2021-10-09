@@ -15,7 +15,7 @@ local PickUpRemote = game:GetService("ReplicatedStorage")["Events"]["PIC_PU"]
 local PickUpCash = game:GetService("ReplicatedStorage")["Events"]["CZDPZUS"]
 
 local CashFolder = game:GetService("Workspace").Filter.SpawnedBread
-local ScarpSpawn = game:GetService("Workspace")["Filter"]["SpawnedPiIes"]
+local ScarpSpawn = game:GetService("Workspace").Filter.SpawnedPiles
 local Dealers = game:GetService("Workspace")["Map"]["Shopz"]
 local Safes = game:GetService("Workspace")["Map"]["BredMakurz"]
 local ItemStats = game:GetService("ReplicatedStorage").Storage.ItemStats
@@ -191,7 +191,7 @@ Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
                     if Target then
                         local Item = CheckForWeapon()
                         if Item == "GunFOV" then
-                            if math.random(10,100) <= getgenv().HitChance then 
+                            if math.random(10,100) >= getgenv().HitChance then
                                 Hit = Target.Character[getgenv().SelectedPart]
                             else
                                 Hit = nil
