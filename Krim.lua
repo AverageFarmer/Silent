@@ -32,7 +32,7 @@ RunServ:UnbindFromRenderStep("Get_Target")
 RunServ:UnbindFromRenderStep("Hova Upid")
 RunServ:UnbindFromRenderStep("Dropss")
 
-getgenv().methodsTable = {"Ray", "Raycast", "FindPartOnRay", "FindPartOnRayWithIgnoreList", "FindPartOnRayWithWhitelist"}
+getgenv().methodsTable = {"Ray", "Raycast"}
 getgenv().Rainbow = Color3.new(0.952941, 0.921568, 0.921568)
 getgenv().SelectedPart = "Head"
 getgenv().VisibiltyCheck = false
@@ -367,7 +367,7 @@ function MakeSafeDots()
 	for i,v in pairs(Safes:GetChildren()) do
 		if not v:FindFirstChild("Values") and v:FindFirstChild("Values"):FindFirstChild("Health") then continue end
 
-		local Health = v.Values.Health
+		local Broken = v.Values.Broken
 		local Model, Rec = MakeEsp(v, "Circle", {
 			Radius = 3,
 			Filled = true
@@ -375,14 +375,14 @@ function MakeSafeDots()
 
 		getgenv().SafeHolder[HTTP:GenerateGUID(false)] = {Model, Rec}
 
-		if Health.Value <= 0 then 
+		if Broken.Value then 
 			Rec.Color = SafeOffColor
 		else
 			Rec.Color = SafeOnColor
 		end
 
-		Health.Changed:Connect(function()
-			if Health.Value <= 0 then 
+		Broken.Changed:Connect(function()
+			if Broken.Value  then 
 				Rec.Color = SafeOffColor
 			else
 				Rec.Color = SafeOnColor
@@ -462,7 +462,7 @@ local function returnRay(args, hit)
     return args[2]
 end
 
-spawn(function()
+task.spawn(function()
     local Circle = Drawing.new('Circle')
     Circle.Transparency = 1
     Circle.Thickness = 1.5
@@ -506,8 +506,6 @@ spawn(function()
             TargetText.Visible = false
         end
     end)
-
-    
 end)
 
 function RayCast(Position, Direction, MaxDistance, IgnoreList, IgnoreWater)
@@ -570,6 +568,7 @@ mt.__namecall = newcclosure(function(...)
     local args = {...}
     for _, rayMethod in next, getgenv().methodsTable do
         if tostring(method) == rayMethod and Hit then
+            print(rayMethod)
             returnRay(args, Hit)
             return namecall(unpack(args))
         end
@@ -584,7 +583,7 @@ mt.__index = newcclosure(function(func, idx)
     return index(func, idx)
 end)
 
-hookfunc = hookfunction(workspace.FindPartOnRayWithIgnoreList, function(...)
+hookfunc = hookfunction(workspace.Raycast, function(...)
     local args = {...}
     if Hit then
         returnRay(args, Hit)
@@ -607,9 +606,9 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
             v[2].Position = Position
             v[2].Visible = OnScreen
     
-            local Health = v[1].Values.Health
+            local Broken = v[1].Values.Broken
     
-            if Health.Value <= 0 then 
+            if Broken.Value then 
                 v[2].Color = SafeOffColor
             else
                 v[2].Color = SafeOnColor
@@ -654,28 +653,4 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
             v[2].Color = (CheckAvalibility(v[1].Parent) and Color3.new(0.729411, 0.741176, 0.109803)) or Color3.new(1, 0, 0)
         end
     end
-end)
-
-RunServ:BindToRenderStep("Dropss", 2, function()
-	if getgenv().CanPickUp and (os.time() - LastUpdated) >= 1 then
-        LastUpdated = os.time()
-
-		for i,v in pairs(ScarpSpawn:GetChildren()) do
-			if v and v.PrimaryPart then
-				local Prim = v.PrimaryPart
-
-				if (LocalPlayer.Character["Left Leg"].Position - Prim.Position).Magnitude <= 4 then
-					PickUpRemote:FireServer(Prim)
-				end
-			end
-		end
-
-		for i,v in pairs(CashFolder:GetChildren()) do
-			if v then
-				if (LocalPlayer.Character["Left Leg"].Position - v.Position).Magnitude <= 4 then
-					PickUpCash:FireServer(v)
-				end
-			end
-		end
-	end
 end)
