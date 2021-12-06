@@ -288,10 +288,10 @@ function AutoFinishLockPicks(Gui)
     
     for i,v in pairs(LPFrame:GetChildren()) do
         if not v:IsA("Frame") then continue end
-        
+
         repeat
             task.wait()
-        until v.Bar.AbsolutePosition.Y >= 465 and v.Bar.AbsolutePosition.Y <= 475
+        until v.Bar.Position.Y.Offset >= 0 and v.Bar.Position.Y.Offset <= 15
         mouse1click()
         task.wait(.2)
     end
