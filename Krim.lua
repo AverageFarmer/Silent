@@ -91,8 +91,6 @@ elseif rigType == "R15" then
     selected_rigType = rigTypeR15
 end
 
-
-
 local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/AikaV3rm/UiLib/master/Lib.lua')))()
 _G.MainColor = Color3.new()
 _G.SecondaryColor = Color3.new(0.866666, 0.447058, 0.058823)
@@ -288,7 +286,7 @@ function AutoFinishLockPicks(Gui)
     local MF = Gui.MF
     local LPFrame = MF.LP_Frame.Frames
     
-    for i,v: Frame in pairs(LPFrame:GetChildren()) do
+    for i,v in pairs(LPFrame:GetChildren()) do
         repeat
             task.wait()
         until v.Bar.AbsolutePosition.Y >= 465 and v.Bar.AbsolutePosition.Y <= 475
