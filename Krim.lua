@@ -287,6 +287,8 @@ function AutoFinishLockPicks(Gui)
     local LPFrame = MF.LP_Frame.Frames
     
     for i,v in pairs(LPFrame:GetChildren()) do
+        if not v:IsA("Frame") then continue end
+        
         repeat
             task.wait()
         until v.Bar.AbsolutePosition.Y >= 465 and v.Bar.AbsolutePosition.Y <= 475
