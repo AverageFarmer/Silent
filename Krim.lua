@@ -51,6 +51,7 @@ getgenv().SelectedItem = "None"
 getgenv().SafeHolder = getgenv().SafeHolder or {}
 getgenv().DealerHolder = getgenv().DealerHolder or {}
 getgenv().ScrapHolder = getgenv().ScrapHolder or {}
+getgenv().AutoLockPick = false
 
 local rigType = string.split(tostring(LocalPlayer.Character:WaitForChild("Humanoid").RigType), ".")[3]
 local selected_rigType
@@ -83,7 +84,6 @@ local rigTypeR15 = {
 }
 local SafeOnColor = Color3.fromRGB(34, 226, 16)
 local SafeOffColor = Color3.fromRGB(93, 93, 93)
-local CanPickUp = false
 
 if rigType == "R6" then
     selected_rigType = rigTypeR6
@@ -91,11 +91,13 @@ elseif rigType == "R15" then
     selected_rigType = rigTypeR15
 end
 
+
+
 local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/AikaV3rm/UiLib/master/Lib.lua')))()
 _G.MainColor = Color3.new()
-_G.SecondaryColor = Color3.new(0.098039, 0.533333, 0.098039)
-_G.TertiaryColor = Color3.new(0.101960, 0.101960, 0.101960)
-_G.ArrowColor = Color3.new(0.050980, 0.333333, 0.050980)
+_G.SecondaryColor = Color3.new(0.866666, 0.447058, 0.058823)
+_G.TertiaryColor = Color3.new(0, 0, 0)
+_G.ArrowColor = Color3.new(0.733333, 0.356862, 0.050980)
 
 local SilentAim = library:CreateWindow("Silent Aim") -- Creates the window
 local Esps = library:CreateWindow("Esps")
@@ -139,7 +141,7 @@ end
 Aim:Label("Targeted Part",{
     TextSize = 16; -- Self Explaining
     TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
-    BgColor = Color3.fromRGB(97, 233, 43); -- Self Explaining 
+    BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
 })
 
 Aim:Dropdown("Head", selected_rigType, true, function(Part) --true/false, replaces the current title "Dropdown" with the option that t
@@ -149,7 +151,7 @@ end)
 Aim:Label("Config",{
     TextSize = 16; -- Self Explaining
     TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
-    BgColor = Color3.fromRGB(97, 233, 43); -- Self Explaining 
+    BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
 })
 
 Aim:Toggle("Visible", function(bool)
@@ -210,8 +212,6 @@ Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
     end
 end)
 
-Aim:DestroyGui()
-
 WeaponOptions:Slider("Gun Hit Chance",{
     min = 10; -- min value of the slider
     max = 100; -- max value of the slider
@@ -264,11 +264,15 @@ DealerEsp:Dropdown("None", ItemList, true, function(Item) --true/false, replaces
     getgenv().SelectedItem = Item
 end)
 
-MiscOptions:Label("Auto Pick Up", {
+MiscOptions:Label("Auto", {
     TextSize = 16; -- Self Explaining
     TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
-    BgColor = Color3.fromRGB(97, 233, 43); -- Self Explaining 
+    BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
 })
+
+MiscOptions:Toggle("Auto Lockpick", function(bool)
+    getgenv().AutoLockPick = bool
+end)
 
 function CheckAvalibility(Dealer)
     for i,v in pairs(Dealer:FindFirstChild("CurrentStocks", true):GetChildren()) do
@@ -277,6 +281,20 @@ function CheckAvalibility(Dealer)
         end
     end
     return false
+end
+
+function AutoFinishLockPicks(Gui)
+    task.wait(.2)
+    local MF = Gui.MF
+    local LPFrame = MF.LP_Frame.Frames
+    
+    for i,v: Frame in pairs(LPFrame:GetChildren()) do
+        repeat
+            task.wait()
+        until v.Bar.AbsolutePosition.Y >= 465 and v.Bar.AbsolutePosition.Y <= 475
+        mouse1click()
+        task.wait(.2)
+    end
 end
 
 local MakeEsp = function(Ador, Shape, Properties)
@@ -313,6 +331,12 @@ ScarpSpawn.ChildAdded:Connect(function(Child)
 	refresh()
 end)
 
+PlayerGui.ChildAdded:Connect(function(child)
+    if child.Name == "LockpickGUI" and getgenv().AutoLockPick then
+        AutoFinishLockPicks(child)
+    end
+end)
+
 function refresh()
     if getgenv().SafeEsp then
         for i,v in pairs(getgenv().SafeHolder) do
@@ -320,7 +344,7 @@ function refresh()
             getgenv().SafeHolder[i] = nil
         end
         
-        wait()
+        task.wait()
         MakeSafeDots()
     end
 
@@ -330,7 +354,7 @@ function refresh()
             getgenv().ScrapHolder[i] = nil
         end
         
-        wait()
+        task.wait()
         MakeScrapDots()
     end
 end
