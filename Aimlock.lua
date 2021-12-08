@@ -137,7 +137,7 @@ local utility; utility = {
             objects.text.Text = str
             objects.text.Visible = true
 
-            wait(1)
+            task.wait(1)
 
             objects.text.Visible = false
         end
@@ -361,7 +361,7 @@ coroutine.wrap(function()
     while task.wait() do
         local func, result = pcall(function()
             utility.update_drawing(objects, "fov", {
-                Radius = aimsp_settings.fov_size,
+                Radius = _G.FOV,
                 Color = (aimsp_settings.use_rainbow and utility.get_rainbow()) or white,
                 instance = "Circle";
             })
