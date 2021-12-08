@@ -288,12 +288,12 @@ function AutoFinishLockPicks(Gui)
     
     for i,v in pairs(LPFrame:GetChildren()) do
         if not v:IsA("Frame") then continue end
+        task.wait(.2)
 
         repeat
             task.wait()
         until v.Bar.Position.Y.Offset >= 0 and v.Bar.Position.Y.Offset <= 15
         mouse1click()
-        task.wait(.2)
     end
 end
 
@@ -359,34 +359,6 @@ function refresh()
     end
 end
 
-local function characterType(player)
-    if player.Character or workspace:FindFirstChild(player.Name) then
-        local playerCharacter = player.Character or workspace:FindFirstChild(player.Name)
-        return playerCharacter
-    end
-end
-
-function CheckForWeapon()
-    local Character = LocalPlayer.Character
-    for i,v in pairs(Guns) do
-        if Character:FindFirstChild(v.Name) then
-            return "GunFOV"
-        end
-    end
-
-    for i,v in pairs(Melees) do
-        if Character:FindFirstChild(v.Name) then
-            return "MeleeFOV"
-        end
-    end
-
-    if Character:FindFirstChild("Fists") then
-        return "MeleeFOV"
-    end
-
-    return "FOV"
-end
-
 function MakeSafeDots()
 	for i,v in pairs(Safes:GetChildren()) do
 		if not v:FindFirstChild("Values") and v:FindFirstChild("Values"):FindFirstChild("Health") then continue end
@@ -443,94 +415,6 @@ MakeDealerDots()
 MakeSafeDots()
 --MakeScrapDots()
 
-local function teamType(player)
-    if player.Team or player.TeamColor then
-        local teamplayer = player.Team or player.TeamColor
-        return teamplayer
-    end
-end
-
-local function FFA()
-    sameTeam = 0
-    for _, player in next, Players:GetPlayers() do
-        if teamType(player) == teamType(LocalPlayer) then
-            sameTeam = sameTeam + 1
-        end
-    end
-    if sameTeam == #Players:GetChildren() then
-        return true
-    else
-        return false
-    end
-end
-
-local function returnVisibility(player)
-    if getgenv().VisibiltyCheck then
-        if characterType(player) then 
-            if player.Character:FindFirstChild(getgenv().SelectedPart) then 
-                CastPoint = {LocalPlayer.Character[getgenv().SelectedPart].Position, player.Character[getgenv().SelectedPart].Position}
-                IgnoreList = {player.Character, LocalPlayer.Character}
-                local castpointparts = workspace.CurrentCamera:GetPartsObscuringTarget(CastPoint, IgnoreList)
-                if unpack(castpointparts) then
-                    return false
-                end
-            end
-        end
-    end
-    return true
-end
-
-local function returnRay(args, hit)
-    CCF = Camera.CFrame.p
-    args[2] = Ray.new(CCF, (hit.Position + Vector3.new(0,(CCF-hit.Position).Magnitude/getgenv().Distance,0) - CCF).unit * (getgenv().Distance * 10))
-    return args[2]
-end
-
-task.spawn(function()
-    local Circle = Drawing.new('Circle')
-    Circle.Transparency = 1
-    Circle.Thickness = 1.5
-    Circle.Visible = true
-    Circle.Color = Color3.fromRGB(255,0,0)
-    Circle.Filled = false
-    Circle.Radius = getgenv().FOV
-    
-    local TargetText = Drawing.new("Text")
-    getgenv().SelectedTarget = ""
-    TargetText.Text = ""
-    TargetText.Size = 17
-    TargetText.Center = true
-    TargetText.Visible = true
-    TargetText.Color = Color3.fromRGB(255, 251, 0)
-
-    local FOVSize = Instance.new("NumberValue")
-    FOVSize.Value = getgenv().FOV
-
-    RunServ:BindToRenderStep("Get_Fov",4,function()
-        if getgenv().AimToggle then
-            local Length = 10
-            local Middle = 37
-            Circle.Visible = getgenv().CircleVisibility
-            TargetText.Visible = getgenv().CircleVisibility
-            Circle.Color = getgenv().Rainbow
-            Circle.Position = Vector2.new(Mouse.X,Mouse.Y+Middle)
-            TargetText.Position = Vector2.new(Mouse.X,Mouse.Y+Middle-180)
-            TargetText.Text = getgenv().SelectedTarget
-            local Item = CheckForWeapon()
-
-            if getgenv().AutoFOV then
-                TweenService:Create(FOVSize, TweenInfo.new(.2, Enum.EasingStyle.Back), {Value = getgenv()[Item]}):Play()
-            else
-                TweenService:Create(FOVSize, TweenInfo.new(.2, Enum.EasingStyle.Back), {Value = getgenv().FOV}):Play()
-            end
-
-            Circle.Radius = FOVSize.Value
-        else
-            Circle.Visible = false
-            TargetText.Visible = false
-        end
-    end)
-end)
 
 function RayCast(Position, Direction, MaxDistance, IgnoreList, IgnoreWater)
 	local Pos
@@ -549,71 +433,6 @@ function RayCast(Position, Direction, MaxDistance, IgnoreList, IgnoreWater)
 
 	return nil, Pos, nil, nil
 end
-
-function getTarget()
-	local closestTarg = math.huge
-	local Target = nil
-    
-	for _, Player in next, Players:GetPlayers() do
-        if Player ~= LocalPlayer and returnVisibility(Player) and teamType(Player) ~= teamType(LocalPlayer) or FFA() and Player ~= LocalPlayer and returnVisibility(Player) then
-            local playerCharacter = characterType(Player)
-            if playerCharacter then
-                local playerHumanoid = playerCharacter:FindFirstChild("Humanoid")
-                local playerHumanoidRP = playerCharacter:FindFirstChild(getgenv().SelectedPart)
-                if playerHumanoidRP and playerHumanoid and playerHumanoid.Health > 0 then
-                    local hitVector, onScreen = Camera:WorldToScreenPoint(playerHumanoidRP.Position)
-                    if onScreen and playerHumanoid.Health > 0 then
-                        local CCF = Camera.CFrame.Position
-                        if workspace:FindPartOnRayWithIgnoreList(Ray.new(CCF, (playerHumanoidRP.Position-CCF).Unit * getgenv().Distance),{Player}) then
-                            local hitTargMagnitude = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(hitVector.X, hitVector.Y)).Magnitude
-                            if hitTargMagnitude < closestTarg and hitTargMagnitude <= getgenv()[CheckForWeapon()] then
-                                Target = Player
-                                closestTarg = hitTargMagnitude
-                            end
-                        else
-                        end
-                    else
-                    end
-                end
-            end
-		end
-	end
-	return Target
-end
-
-local mt = getrawmetatable(game)
-setreadonly(mt, false)
-local index = mt.__index
-local namecall = mt.__namecall
-local hookfunc
-
-mt.__namecall = newcclosure(function(...)
-    local method = getnamecallmethod()
-    local args = {...}
-    for _, rayMethod in next, getgenv().methodsTable do
-        if tostring(method) == rayMethod and Hit then
-            print(rayMethod)
-            returnRay(args, Hit)
-            return namecall(unpack(args))
-        end
-    end
-    return namecall(unpack(args))
-end)
-
-mt.__index = newcclosure(function(func, idx)
-    if func == Mouse and tostring(idx) == "Hit" and Hit then
-        return Hit.CFrame
-    end
-    return index(func, idx)
-end)
-
-hookfunc = hookfunction(workspace.Raycast, function(...)
-    local args = {...}
-    if Hit then
-        returnRay(args, Hit)
-    end
-    return hookfunc(unpack(args))
-end)
 
 RunServ:BindToRenderStep("Hova upid", 1, function()
     if not getgenv().SafeEsp then
