@@ -133,7 +133,7 @@ local utility; utility = {
     end,
 
     update = function(str)
-        if objects.fov.Visible then
+        if _G.Visible then
             objects.text.Text = str
             objects.text.Visible = true
 
