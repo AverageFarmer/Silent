@@ -36,22 +36,20 @@ getgenv().methodsTable = {"Ray", "Raycast"}
 getgenv().Rainbow = Color3.new(0.952941, 0.921568, 0.921568)
 getgenv().SelectedPart = "Head"
 getgenv().VisibiltyCheck = false
-getgenv().FOV = 250
 getgenv().CircleVisibility = true
 getgenv().Distance = 400
 getgenv().CanPickUp = false
 getgenv().SafeEsp = false
 getgenv().ScrapEsp = false
 getgenv().DealerEsp = false
-getgenv().AutoFOV = false
-getgenv().MeleeFOV = 250
-getgenv().GunFOV = 150
-getgenv().HitChance = 100
 getgenv().SelectedItem = "None"
 getgenv().SafeHolder = getgenv().SafeHolder or {}
 getgenv().DealerHolder = getgenv().DealerHolder or {}
 getgenv().ScrapHolder = getgenv().ScrapHolder or {}
 getgenv().AutoLockPick = false
+_G.AimLock = false
+_G.FOV = 250
+_G.Visible = true
 
 local rigType = string.split(tostring(LocalPlayer.Character:WaitForChild("Humanoid").RigType), ".")[3]
 local selected_rigType
@@ -92,17 +90,17 @@ elseif rigType == "R15" then
 end
 
 local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/AikaV3rm/UiLib/master/Lib.lua')))()
+local AimBot = loadstring(game:HttpGet("https://raw.githubusercontent.com/JuiceWarfare/Silent/master/Aimlock.lua"))()
 _G.MainColor = Color3.new()
 _G.SecondaryColor = Color3.new(0.866666, 0.447058, 0.058823)
 _G.TertiaryColor = Color3.new(0, 0, 0)
 _G.ArrowColor = Color3.new(0.733333, 0.356862, 0.050980)
 
-local SilentAim = library:CreateWindow("Silent Aim") -- Creates the window
+local SilentAim = library:CreateWindow("Aim") -- Creates the window
 local Esps = library:CreateWindow("Esps")
 local Misc = library:CreateWindow("Misc")
 
-local Aim = SilentAim:CreateFolder("Silent Aim") -- Creates the folder(U will put here your buttons,etc)
-local WeaponOptions = SilentAim:CreateFolder("WeaponSettings")
+local Aim = SilentAim:CreateFolder("AimLock") -- Creates the folder(U will put here your buttons,etc)
 
 local SafeEsp = Esps:CreateFolder("SafeEsp")
 local DealerEsp = Esps:CreateFolder("DealerEsp")
@@ -135,7 +133,6 @@ for i,v in pairs(Throwables) do
     table.insert(ItemList, v.Name)
 end
 
-
 Aim:Label("Targeted Part",{
     TextSize = 16; -- Self Explaining
     TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
@@ -153,7 +150,7 @@ Aim:Label("Config",{
 })
 
 Aim:Toggle("Visible", function(bool)
-    getgenv().CircleVisibility = bool
+    _G.Visible = bool
 end)
 
 Aim:Slider("FOV",{
@@ -164,78 +161,8 @@ Aim:Slider("FOV",{
     getgenv().FOV = value
 end)
 
-Aim:Slider("Distance",{
-    min = 50; -- min value of the slider
-    max = 1000; -- max value of the slider
-    precise = false; -- max 2 decimals
-},function(value)
-    getgenv().Distance = value
-end)
-
 Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
-    getgenv().AimToggle = not getgenv().AimToggle
-
-    if getgenv().AimToggle then
-        RunServ:BindToRenderStep("Get_Target",3,function()
-            if getgenv().AimToggle then
-                local Target = getTarget()
-                if not Target then
-                    Hit = nil
-                    getgenv().SelectedTarget = ""
-                else
-                    getgenv().SelectedTarget = Target.Name .. "\n" .. math.floor((LocalPlayer.Character[getgenv().SelectedPart].Position - Target.Character[getgenv().SelectedPart].Position).magnitude) .. " Studs"
-                end
-                if UserInput:IsMouseButtonPressed(0) then
-                    LastUpdated = os.time()
-        
-                    if Target then
-                        local Item = CheckForWeapon()
-                        if Item == "GunFOV" then
-                            if math.random(10,100) >= getgenv().HitChance then
-                                Hit = Target.Character[getgenv().SelectedPart]
-                            else
-                                Hit = nil
-                            end
-                        else
-                            Hit = Target.Character[getgenv().SelectedPart]
-                        end
-                    end
-                else
-                    Hit = nil
-                end
-            end
-        end)
-    else
-        RunServ:UnbindFromRenderStep("Get_Target")
-    end
-end)
-
-WeaponOptions:Slider("Gun Hit Chance",{
-    min = 10; -- min value of the slider
-    max = 100; -- max value of the slider
-    precise = false; -- max 2 decimals
-},function(value)
-    getgenv().HitChance = value
-end)
-
-WeaponOptions:Slider("GunFOV",{
-    min = 5; -- min value of the slider
-    max = 250; -- max value of the slider
-    precise = false; -- max 2 decimals
-},function(value)
-    getgenv().GunFOV = value
-end)
-
-WeaponOptions:Slider("MeleeFOV",{
-    min = 5; -- min value of the slider
-    max = 350; -- max value of the slider
-    precise = false; -- max 2 decimals
-},function(value)
-    getgenv().MeleeFOV = value
-end)
-
-WeaponOptions:Toggle("Auto FOV", function(bool)
-    getgenv().AutoFOV = bool
+    _G.AimLock = not _G.AimLock
 end)
 
 SafeEsp:Toggle("Toggle", function(bool)

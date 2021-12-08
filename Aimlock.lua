@@ -256,27 +256,13 @@ uis.InputBegan:Connect(function(key, gmp)
     if gmp then return end
 
     if key.KeyCode == aimsp_settings.allow_toggle.key and aimsp_settings.allow_toggle.allow then
-        debounces.start_aim = not debounces.start_aim
+       -- _G.AimLock = not _G.AimLock
         
-        utility.update("toggled aimbot: " .. tostring(debounces.start_aim))
+        --utility.update("toggled aimbot: " .. tostring(_G.AimLock))
     elseif key.KeyCode == aimsp_settings.toggle_hud_key then
         objects.fov.Visible = not objects.fov.Visible
-    elseif key.KeyCode == aimsp_settings.esp_toggle_key then
-        aimsp_settings.use_esp = not aimsp_settings.use_esp
-
-        utility.update("toggled esp: " .. tostring(aimsp_settings.use_esp))
     end
 end)
-
-if not aimsp_settings.allow_toggle.allow then
-    mouse.Button2Down:Connect(function()
-        debounces.start_aim = true
-    end)
-    
-    mouse.Button2Up:Connect(function()
-        debounces.start_aim = false
-    end)
-end
 
 function delay()
     frame_wait:Wait()
@@ -468,29 +454,14 @@ coroutine.wrap(function()
                         Transparency = 1,
                         Thickness = 1,
                         Radius = radius / 2,
-                        Visible = objects.fov.Visible,
-                        Color = (debounces.start_aim and green) or white,
+                        Visible = _G.Visible,
+                        Color = (_G.AimLock and green) or white,
                         Position = lock_part.scr_pos,
                         instance = "Circle";
                     })
 
-                    if debounces.start_aim then
-                        utility.update_drawing(objects.look_at, "tracer", {
-                            Transparency = 1,
-                            Thickness = 1,
-                            Visible = objects.fov.Visible,
-                            Color = green,
-                            From = center_screen,
-                            To = lock_part.scr_pos,
-                            instance = "Line";
-                        })
-
+                    if _G.AimLock then
                         mousemoverel((lock_part.scr_pos.X - mouse.X) / aimsp_settings.smoothness, (lock_part.scr_pos.Y - (mouse.Y + 36)) / aimsp_settings.smoothness)
-                    else
-                        utility.update_drawing(objects.look_at, "tracer", {
-                            Visible = false,
-                            instance = "Line";
-                        })
                     end
                 else
                     utility.update_drawing(objects.look_at, "point", {
