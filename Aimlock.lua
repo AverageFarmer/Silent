@@ -371,9 +371,10 @@ coroutine.wrap(function()
             })
 
             utility.run_player_check()
-            if _G.Visible or _G.AimLock then
+
+            if _G.Visible and _G.AimLock then
                 objects.fov.Visible = true
-            elseif not _G.Visible or not _G.AimLock then
+            else
                 objects.fov.Visible = false
             end
             local closest_player = nil

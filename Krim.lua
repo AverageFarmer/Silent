@@ -209,18 +209,18 @@ function CheckAvalibility(Dealer)
 end
 
 function AutoFinishLockPicks(Gui)
-    task.wait(.2)
+    task.wait(.3)
     local MF = Gui.MF
     local LPFrame = MF.LP_Frame.Frames
     
     for i,v in pairs(LPFrame:GetChildren()) do
         if not v:IsA("Frame") then continue end
-        task.wait(.3)
-
+        
         repeat
             task.wait()
         until v.Bar.Position.Y.Offset >= 0 and v.Bar.Position.Y.Offset <= 15
         mouse1click()
+        task.wait(.3)
     end
 end
 
