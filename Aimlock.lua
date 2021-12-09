@@ -29,7 +29,7 @@ local screen_size = camera.ViewportSize
 local center_screen = vector2_new((screen_size.X / 2), (screen_size.Y / 2))
 
 --<- allowed modify ->--
-
+local Using = false
 local _aimsp_settings; _aimsp_settings = {
 
     -- aimbot settings
@@ -255,10 +255,16 @@ objects.fov = utility.new_drawing("Circle"){
 uis.InputBegan:Connect(function(key, gmp)
     if gmp then return end
 
-    if key.KeyCode == aimsp_settings.allow_toggle.key and aimsp_settings.allow_toggle.allow then
-       -- _G.AimLock = not _G.AimLock
-        
-        --utility.update("toggled aimbot: " .. tostring(_G.AimLock))
+    if key.UserInputType == Enum.UserInputType.MouseButton2 and _G.AimLock then
+       Using = true
+    end
+end)
+
+uis.InputEnded:Connect(function(key, gmp)
+    if gmp then return end
+
+    if key.UserInputType == Enum.UserInputType.MouseButton2 and _G.AimLock then
+       Using = false
     end
 end)
 
@@ -458,7 +464,7 @@ coroutine.wrap(function()
                         instance = "Circle";
                     })
 
-                    if _G.AimLock then
+                    if Using then
                         mousemoverel((lock_part.scr_pos.X - mouse.X) / aimsp_settings.smoothness, (lock_part.scr_pos.Y - (mouse.Y + 36)) / aimsp_settings.smoothness)
                     end
                 else
