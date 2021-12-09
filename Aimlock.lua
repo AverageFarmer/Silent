@@ -371,7 +371,11 @@ coroutine.wrap(function()
             })
 
             utility.run_player_check()
-            objects.fov.Visible = _G.Visible
+            if _G.Visible or _G.AimLock then
+                objects.fov.Visible = true
+            elseif not _G.Visible or not _G.AimLock then
+                objects.fov.Visible = false
+            end
             local closest_player = nil
             local dist = aimsp_settings.max_dist
             
