@@ -259,8 +259,6 @@ uis.InputBegan:Connect(function(key, gmp)
        -- _G.AimLock = not _G.AimLock
         
         --utility.update("toggled aimbot: " .. tostring(_G.AimLock))
-    elseif key.KeyCode == aimsp_settings.toggle_hud_key then
-        objects.fov.Visible = not objects.fov.Visible
     end
 end)
 
@@ -367,7 +365,7 @@ coroutine.wrap(function()
             })
 
             utility.run_player_check()
-
+            objects.fov.Visible = _G.Visible
             local closest_player = nil
             local dist = aimsp_settings.max_dist
             
