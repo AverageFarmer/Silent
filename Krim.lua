@@ -215,7 +215,7 @@ function AutoFinishLockPicks(Gui)
     
     for i,v in pairs(LPFrame:GetChildren()) do
         if not v:IsA("Frame") then continue end
-        task.wait(.2)
+        task.wait(.3)
 
         repeat
             task.wait()
