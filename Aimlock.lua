@@ -377,6 +377,7 @@ coroutine.wrap(function()
             else
                 objects.fov.Visible = false
             end
+            
             local closest_player = nil
             local dist = aimsp_settings.max_dist
             
