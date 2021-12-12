@@ -154,14 +154,19 @@ local utility; utility = {
     end,
 
     is_part_visible = function(origin_part, part)
-        if not aimsp_settings.use_wallcheck then
+        if not _G.VisibilityCheck then
             return true
         end
 
         local function run_cast(origin_pos)
+            local BlackList = {origin_part.Parent}
+            if camera:FindFirstChild("ViewModel") then
+                table.insert(BlackList, camera:FindFirstChild("ViewModel"))
+            end
+
             local raycast_params = raycast_params_new()
             raycast_params.FilterType = enum_rft_blk
-            raycast_params.FilterDescendantsInstances = {origin_part.Parent}
+            raycast_params.FilterDescendantsInstances = BlackList
             raycast_params.IgnoreWater = true
             
             local raycast_result = workspace:Raycast(origin_pos, (part.Position - origin_pos).Unit * aimsp_settings.max_dist, raycast_params)
@@ -376,6 +381,10 @@ coroutine.wrap(function()
                 objects.fov.Visible = true
             else
                 objects.fov.Visible = false
+            end
+
+            if not _G.AimLock then
+                Using = false
             end
             
             local closest_player = nil

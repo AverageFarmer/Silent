@@ -50,6 +50,7 @@ getgenv().AutoLockPick = false
 _G.AimLock = false
 _G.FOV = 250
 _G.Visible = true
+_G.VisibilityCheck = true
 
 local rigType = string.split(tostring(LocalPlayer.Character:WaitForChild("Humanoid").RigType), ".")[3]
 local selected_rigType
@@ -133,16 +134,6 @@ for i,v in pairs(Throwables) do
     table.insert(ItemList, v.Name)
 end
 
-Aim:Label("Targeted Part",{
-    TextSize = 16; -- Self Explaining
-    TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
-    BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
-})
-
-Aim:Dropdown("Head", selected_rigType, true, function(Part) --true/false, replaces the current title "Dropdown" with the option that t
-    getgenv().SelectedPart = Part
-end)
-
 Aim:Label("Config",{
     TextSize = 16; -- Self Explaining
     TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
@@ -153,12 +144,16 @@ Aim:Toggle("Visible", function(bool)
     _G.Visible = bool
 end)
 
+Aim:Toggle("Visibility Check", function(bool)
+    _G.VisibilityCheck = bool
+end)
+
 Aim:Slider("FOV",{
     min = 5; -- min value of the slider
     max = 250; -- max value of the slider
     precise = false; -- max 2 decimals
 },function(value)
-    getgenv().FOV = value
+   _G.FOV = value
 end)
 
 Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
