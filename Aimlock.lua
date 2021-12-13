@@ -420,9 +420,9 @@ coroutine.wrap(function()
                     elseif aimsp_settings.prefer.closest_to_center_screen then
                         local plr_scr_dist = (center_screen - plr_screen).Magnitude
                         if plr_scr_dist < dist then
-                            print(plr_scr_dist, tostring(plr_scr_dist < dist))
                             dist = plr_scr_dist
                             closest_player = plr_char
+                            print(closest_player)
                         end
                     elseif aimsp_settings.prefer.closest_to_you then
                         local plr_dist = (plr_char.HumanoidRootPart.Position - local_player.Character.HumanoidRootPart.Position).Magnitude
@@ -438,7 +438,7 @@ coroutine.wrap(function()
 
             local visible_parts = {}
             local last
-                        
+
             if closest_player and aimsp_settings.use_aimbot then
                 for idx, part in pairs(closest_player:GetChildren()) do
                     if part:IsA("BasePart") then
