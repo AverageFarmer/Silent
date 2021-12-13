@@ -49,7 +49,7 @@ local _aimsp_settings; _aimsp_settings = {
     },
     toggle_hud_key = Enum.KeyCode.P,
     smoothness = 3, -- anything over 5 = aim assist,  1 = lock on (using 1 might get u banned)
-    fov_size = 150; -- 150-450 = preferred
+    fov_size = 50; -- 150-450 = preferred
 
     -- esp settings
     esp_toggle_key = Enum.KeyCode.O,
@@ -419,8 +419,8 @@ coroutine.wrap(function()
                         end
                     elseif aimsp_settings.prefer.closest_to_center_screen then
                         local plr_scr_dist = (center_screen - plr_screen).Magnitude
-                        print(plr_scr_dist, tostring(plr_scr_dist < dist))
                         if plr_scr_dist < dist then
+                            print(plr_scr_dist, tostring(plr_scr_dist < dist))
                             dist = plr_scr_dist
                             closest_player = plr_char
                         end
@@ -438,7 +438,7 @@ coroutine.wrap(function()
 
             local visible_parts = {}
             local last
-            
+                        
             if closest_player and aimsp_settings.use_aimbot then
                 for idx, part in pairs(closest_player:GetChildren()) do
                     if part:IsA("BasePart") then
