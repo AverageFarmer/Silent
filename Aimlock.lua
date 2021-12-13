@@ -446,7 +446,7 @@ coroutine.wrap(function()
                 end
                 
                 if not utility.is_dead(plr_char) then
-                    local plr_screen = utility.to_screen(plr_char.HumanoidRootPart.Position + (plr_char.HumanoidRootPart.CFrame.UpVector * 2)) -- emulate head pos
+                    local plr_screen = utility.to_screen(plr_char.HumanoidRootPart.Position) -- emulate head pos
                     if aimsp_settings.prefer.looking_at_you then
                         local look_vector = plr_char.HumanoidRootPart.Position + (plr_char.HumanoidRootPart.CFrame.LookVector * mag)
 
