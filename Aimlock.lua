@@ -148,7 +148,7 @@ local utility; utility = {
     end,
     
     to_screen = function(point)
-        local screen_pos, in_screen = camera:WorldToViewportPoint(point)
+        local screen_pos, in_screen = camera:WorldToScreenPoint(point)
         
         return (in_screen and vector2_new(screen_pos.X, screen_pos.Y)) or -1
     end,
@@ -366,6 +366,44 @@ else -- normal players
     end
 end
 
+local function characterType(player)
+    if player.Character or workspace:FindFirstChild(player.Name) then
+        local playerCharacter = player.Character or workspace:FindFirstChild(player.Name)
+        return playerCharacter
+    end
+end
+
+function getTarget()
+	local closestTarg = math.huge
+	local Target = nil
+
+	for _, Player in next, game.Players:GetPlayers() do
+        if Player ~= local_player and utility.is_part_visible(local_player.Character.HumanoidRootPart, Player.Character.Head) then
+            local playerCharacter = characterType(Player)
+            if playerCharacter then
+                local playerHumanoid = playerCharacter:FindFirstChild("Humanoid")
+                local playerHumanoidRP = playerCharacter:FindFirstChild("Head")
+                if playerHumanoidRP and playerHumanoid then
+                    local hitVector, onScreen = camera:WorldToScreenPoint(playerHumanoidRP.Position)
+                    if onScreen and playerHumanoid.Health > 0 then
+                        local CCF = camera.CFrame.p
+                        if workspace:FindPartOnRayWithIgnoreList(Ray.new(CCF, (playerHumanoidRP.Position-CCF).Unit * 9e9),{Player}) then
+                            local hitTargMagnitude = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(hitVector.X, hitVector.Y)).Magnitude
+                            if hitTargMagnitude < closestTarg and hitTargMagnitude <= _G.FOV then
+                                Target = Player
+                                closestTarg = hitTargMagnitude
+                            end
+                        else
+                        end
+                    else
+                    end
+                end
+            end
+		end
+	end
+	return Target
+end
+
 coroutine.wrap(function()
     while task.wait() do
         local func, result = pcall(function()
@@ -418,11 +456,10 @@ coroutine.wrap(function()
                             closest_player = plr_char
                         end
                     elseif aimsp_settings.prefer.closest_to_center_screen then
-                        local plr_scr_dist = (center_screen - plr_screen).Magnitude
-                        if plr_scr_dist < dist then
-                            dist = plr_scr_dist
-                            closest_player = plr_char
-                            print(closest_player)
+                        local Target = getTarget()
+
+                        if Target then
+                            closest_player = Target
                         end
                     elseif aimsp_settings.prefer.closest_to_you then
                         local plr_dist = (plr_char.HumanoidRootPart.Position - local_player.Character.HumanoidRootPart.Position).Magnitude
