@@ -419,10 +419,10 @@ coroutine.wrap(function()
                         end
                     elseif aimsp_settings.prefer.closest_to_center_screen then
                         local plr_scr_dist = (center_screen - plr_screen).Magnitude
+                        print(plr_scr_dist)
                         if plr_scr_dist < dist then
                             dist = plr_scr_dist
                             closest_player = plr_char
-                            print(dist, closest_player.Name)
                         end
                     elseif aimsp_settings.prefer.closest_to_you then
                         local plr_dist = (plr_char.HumanoidRootPart.Position - local_player.Character.HumanoidRootPart.Position).Magnitude
