@@ -457,7 +457,7 @@ coroutine.wrap(function()
                         end
                     elseif aimsp_settings.prefer.closest_to_center_screen then
                         local Target = getTarget()
-
+                        print(Target)
                         if Target then
                             closest_player = Target
                         end
