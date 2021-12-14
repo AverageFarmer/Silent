@@ -174,7 +174,7 @@ local utility; utility = {
             return ((raycast_result and raycast_result.Instance) or dummy_part):IsDescendantOf(part.Parent) 
         end
 
-        local head_pos = (origin_part.Position + (origin_part.CFrame.UpVector * 2) + (origin_part.CFrame.LookVector))
+        local head_pos = (origin_part.Position + (origin_part.CFrame.LookVector))
 
         local cast_table = {
             origin_part.CFrame.UpVector * 2,
@@ -519,7 +519,7 @@ coroutine.wrap(function()
                     })
 
                     if Using then
-                        mousemoverel((lock_part.scr_pos.X - mouse.X) / aimsp_settings.smoothness, (lock_part.scr_pos.Y - (mouse.Y + 36)) / aimsp_settings.smoothness)
+                        mousemoverel((lock_part.scr_pos.X - mouse.X) / aimsp_settings.smoothness, (lock_part.scr_pos.Y - (mouse.Y)) / aimsp_settings.smoothness)
                     end
                 else
                     utility.update_drawing(objects.look_at, "point", {
