@@ -492,12 +492,6 @@ coroutine.wrap(function()
                         end
                     end
                 end
-                
-                if visible_parts["Head"] then
-                    visible_parts[0] = visible_parts["Head"]
-                elseif visible_parts["UpperTorso"] or visible_parts["Torso"] then
-                    visible_parts[0] = visible_parts["UpperTorso"] or visible_parts["Torso"]
-                end
 
                 local lock_part = visible_parts["Head"] or last
 
