@@ -44,8 +44,8 @@ local _aimsp_settings; _aimsp_settings = {
     },
     prefer = {
         looking_at_you = false, -- buggy
-        closest_to_center_screen = true, -- stable
-        closest_to_you = false, -- stable
+        closest_to_center_screen = false, -- stable
+        closest_to_you = true, -- stable
     },
     toggle_hud_key = Enum.KeyCode.P,
     smoothness = 3, -- anything over 5 = aim assist,  1 = lock on (using 1 might get u banned)
@@ -491,6 +491,12 @@ coroutine.wrap(function()
                             end
                         end
                     end
+                end
+                
+                if visible_parts["Head"] then
+                    visible_parts[0] = visible_parts["Head"]
+                elseif visible_parts["UpperTorso"] or visible_parts["Torso"] then
+                    visible_parts[0] = visible_parts["UpperTorso"] or visible_parts["Torso"]
                 end
 
                 local lock_part = visible_parts["Head"] or last
