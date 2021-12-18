@@ -459,7 +459,7 @@ coroutine.wrap(function()
                         local Target = getTarget()
 
                         if Target then
-                            closest_player = Target
+                            closest_player = Target.Character
                         end
                     elseif aimsp_settings.prefer.closest_to_you then
                         local plr_dist = (plr_char.HumanoidRootPart.Position - local_player.Character.HumanoidRootPart.Position).Magnitude
