@@ -378,6 +378,7 @@ function getTarget()
 	local Target = nil
 
 	for _, Player in next, game.Players:GetPlayers() do
+        if not Player.Character then continue end
         if Player ~= local_player and utility.is_part_visible(local_player.Character.HumanoidRootPart, Player.Character.Head) then
             local playerCharacter = characterType(Player)
             if playerCharacter then
