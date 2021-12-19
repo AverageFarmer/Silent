@@ -214,7 +214,7 @@ function AutoFinishLockPicks(Gui)
 
         repeat
             task.wait()
-            if os.time - StartTime >= 2 then return end
+            if os.time() - StartTime >= 2 then return end
         until v.Bar.Position.Y.Offset >= 0 and v.Bar.Position.Y.Offset <= 15
 
         mouse1click()
