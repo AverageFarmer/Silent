@@ -44,8 +44,8 @@ local _aimsp_settings; _aimsp_settings = {
     },
     prefer = {
         looking_at_you = false, -- buggy
-        closest_to_center_screen = false, -- stable
-        closest_to_you = true, -- stable
+        closest_to_center_screen = true, -- stable
+        closest_to_you = false, -- stable
     },
     toggle_hud_key = Enum.KeyCode.P,
     smoothness = 3, -- anything over 5 = aim assist,  1 = lock on (using 1 might get u banned)
@@ -387,7 +387,7 @@ function getTarget()
                     local hitVector, onScreen = camera:WorldToScreenPoint(playerHumanoidRP.Position)
                     if onScreen and playerHumanoid.Health > 0 then
                         local CCF = camera.CFrame.p
-                        if workspace:FindPartOnRayWithIgnoreList(Ray.new(CCF, (playerHumanoidRP.Position-CCF).Unit * 9e9),{Player}) then
+                        if workspace:FindPartOnRayWithIgnoreList(Ray.new(CCF, (playerHumanoidRP.Position-CCF).Unit * 9e9),{Player.Character}) then
                             local hitTargMagnitude = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(hitVector.X, hitVector.Y)).Magnitude
                             if hitTargMagnitude < closestTarg and hitTargMagnitude <= _G.FOV then
                                 Target = Player
