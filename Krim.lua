@@ -210,10 +210,13 @@ function AutoFinishLockPicks(Gui)
     
     for i,v in pairs(LPFrame:GetChildren()) do
         if not v:IsA("Frame") then continue end
-        
+        local StartTime = os.time()
+
         repeat
             task.wait()
+            if os.time - StartTime >= 2 then return end
         until v.Bar.Position.Y.Offset >= 0 and v.Bar.Position.Y.Offset <= 15
+
         mouse1click()
         task.wait(.3)
     end
