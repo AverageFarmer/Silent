@@ -37,7 +37,7 @@ local _aimsp_settings; _aimsp_settings = {
     use_wallcheck = true,
     team_check = true,
     loop_all_humanoids = false, -- will allow aimbot to everything that has a humanoid, likely *VERY* laggy
-    max_dist = 9e9, -- 9e9 = very big
+    max_dist = 2000, -- 9e9 = very big
     allow_toggle = {
         allow = false, -- turning this to false will make the aimbot toggle on right mouse button
         key = Enum.KeyCode.Z;
@@ -400,7 +400,7 @@ function getTarget()
                     local hitVector, onScreen = camera:WorldToScreenPoint(playerHumanoidRP.Position)
                     if onScreen and playerHumanoid.Health > 0 then
                         local CCF = camera.CFrame.Position
-                        if workspace:FindPartOnRayWithIgnoreList(Ray.new(CCF, (playerHumanoidRP.Position-CCF).Unit * 9e9),{Player})  then--RayCast(CCF, (playerHumanoidRP.Position-CCF).Unit, 9e9, {Player}) then
+                        if workspace:FindPartOnRayWithIgnoreList(Ray.new(CCF, (playerHumanoidRP.Position-CCF).Unit * 2000),{Player})  then--RayCast(CCF, (playerHumanoidRP.Position-CCF).Unit, 9e9, {Player}) then
                             local hitTargMagnitude = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(hitVector.X, hitVector.Y)).Magnitude
                             if hitTargMagnitude < closestTarg and hitTargMagnitude <= _G.FOV then
                                 Target = Player
