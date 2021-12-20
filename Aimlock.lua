@@ -400,7 +400,7 @@ function getTarget()
                     local hitVector, onScreen = camera:WorldToScreenPoint(playerHumanoidRP.Position)
                     if onScreen and playerHumanoid.Health > 0 then
                         local CCF = camera.CFrame.Position
-                        if RayCast(CCF, (playerHumanoidRP.Position-CCF).Unit, 9e9, {Player.Character, camera}) then
+                        if RayCast(CCF, (playerHumanoidRP.Position-CCF).Unit, 9e9, {camera}) then
                             local hitTargMagnitude = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(hitVector.X, hitVector.Y)).Magnitude
                             if hitTargMagnitude < closestTarg and hitTargMagnitude <= _G.FOV then
                                 Target = Player
