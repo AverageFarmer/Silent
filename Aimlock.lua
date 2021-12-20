@@ -427,106 +427,108 @@ coroutine.wrap(function()
                 Using = false
             end
             
-            local closest_player = nil
-            local dist = aimsp_settings.max_dist
-            
-            for idx, plr in pairs(get_players()) do -- continue skips current index
-                local plr_char = ((aimsp_settings.loop_all_humanoids or debounces.custom_players) and plr) or plr.Character
-                if plr == local_player then continue; end
-                if plr_char == nil then continue; end
-
-                if debounces.custom_players then -- teamcheck for games with custom chars
-                    if plr_char.Parent == local_player.Character.Parent then continue; end
-                end
+            if _G.AimLock then
+                local closest_player = nil
+                local dist = aimsp_settings.max_dist
                 
-                if aimsp_settings.team_check and not aimsp_settings.loop_all_humanoids and not debounces.custom_players then
-                    if plr.Team then
-                        if plr.TeamColor == local_player.TeamColor then continue; end
-                        if plr.Team == local_player.Team then continue; end
-                    end
-                end
-                
-                if not utility.is_dead(plr_char) then
-                    local plr_screen = utility.to_screen(plr_char.HumanoidRootPart.Position) -- emulate head pos
-                    if aimsp_settings.prefer.looking_at_you then
-                        local look_vector = plr_char.HumanoidRootPart.Position + (plr_char.HumanoidRootPart.CFrame.LookVector * mag)
-
-                        local look_vector_lp_head_dist = (look_vector - local_player.Character.HumanoidRootPart.Position).Magnitude
-                        if look_vector_lp_head_dist < dist and utility.is_inside_fov(plr_screen) then
-                            dist = look_vector_lp_head_dist
-                            closest_player = plr_char
-                        end
-                    elseif aimsp_settings.prefer.closest_to_center_screen then
-                        local Target = getTarget()
-
-                        if Target then
-                            closest_player = Target.Character
-                        end
-                    elseif aimsp_settings.prefer.closest_to_you then
-                        local plr_dist = (plr_char.HumanoidRootPart.Position - local_player.Character.HumanoidRootPart.Position).Magnitude
-                        if plr_dist < dist then
-                            dist = plr_dist
-                            closest_player = plr_char
-                        end
-                    end
-                else
-                    utility.remove_esp(plr_char:GetDebugId())
-                end
-            end
-
-            local visible_parts = {}
-            local last
-
-            if closest_player and aimsp_settings.use_aimbot then
-                for idx, part in pairs(closest_player:GetChildren()) do
-                    if part:IsA("BasePart") then
-                        local screen_pos = utility.to_screen(part.Position)
+                for idx, plr in pairs(get_players()) do -- continue skips current index
+                    local plr_char = ((aimsp_settings.loop_all_humanoids or debounces.custom_players) and plr) or plr.Character
+                    if plr == local_player then continue; end
+                    if plr_char == nil then continue; end
     
-                        if screen_pos ~= -1 then
-                            if utility.is_inside_fov(screen_pos) and utility.is_part_visible(local_player.Character.HumanoidRootPart, part) then
-                                last = {
-                                    scr_pos = screen_pos,
-                                    obj = part;
-                                };
-                                visible_parts[part.Name] = last
+                    if debounces.custom_players then -- teamcheck for games with custom chars
+                        if plr_char.Parent == local_player.Character.Parent then continue; end
+                    end
+                    
+                    if aimsp_settings.team_check and not aimsp_settings.loop_all_humanoids and not debounces.custom_players then
+                        if plr.Team then
+                            if plr.TeamColor == local_player.TeamColor then continue; end
+                            if plr.Team == local_player.Team then continue; end
+                        end
+                    end
+                    
+                    if not utility.is_dead(plr_char) then
+                        local plr_screen = utility.to_screen(plr_char.HumanoidRootPart.Position) -- emulate head pos
+                        if aimsp_settings.prefer.looking_at_you then
+                            local look_vector = plr_char.HumanoidRootPart.Position + (plr_char.HumanoidRootPart.CFrame.LookVector * mag)
+    
+                            local look_vector_lp_head_dist = (look_vector - local_player.Character.HumanoidRootPart.Position).Magnitude
+                            if look_vector_lp_head_dist < dist and utility.is_inside_fov(plr_screen) then
+                                dist = look_vector_lp_head_dist
+                                closest_player = plr_char
+                            end
+                        elseif aimsp_settings.prefer.closest_to_center_screen then
+                            local Target = getTarget()
+    
+                            if Target then
+                                closest_player = Target.Character
+                            end
+                        elseif aimsp_settings.prefer.closest_to_you then
+                            local plr_dist = (plr_char.HumanoidRootPart.Position - local_player.Character.HumanoidRootPart.Position).Magnitude
+                            if plr_dist < dist then
+                                dist = plr_dist
+                                closest_player = plr_char
+                            end
+                        end
+                    else
+                        utility.remove_esp(plr_char:GetDebugId())
+                    end
+                end
+    
+                local visible_parts = {}
+                local last
+    
+                if closest_player and aimsp_settings.use_aimbot then
+                    for idx, part in pairs(closest_player:GetChildren()) do
+                        if part:IsA("BasePart") then
+                            local screen_pos = utility.to_screen(part.Position)
+        
+                            if screen_pos ~= -1 then
+                                if utility.is_inside_fov(screen_pos) and utility.is_part_visible(local_player.Character.HumanoidRootPart, part) then
+                                    last = {
+                                        scr_pos = screen_pos,
+                                        obj = part;
+                                    };
+                                    visible_parts[part.Name] = last
+                                end
                             end
                         end
                     end
-                end
-                
-                if visible_parts["Head"] then
-                    visible_parts[0] = visible_parts["Head"]
-                elseif visible_parts["UpperTorso"] or visible_parts["Torso"] then
-                    visible_parts[0] = visible_parts["UpperTorso"] or visible_parts["Torso"]
-                end
-
-                local lock_part = visible_parts["Head"] or last
-
-                if lock_part then
-                    local scale = (lock_part.obj.Size.Y / 2)
-
-                    local top = utility.to_screen((lock_part.obj.CFrame * cframe_new(0, scale, 0)).Position);
-                    local bottom = utility.to_screen((lock_part.obj.CFrame * cframe_new(0, -scale, 0)).Position);
-                    local radius = -(top - bottom).y;
-
-                    utility.update_drawing(objects.look_at, "point", {
-                        Transparency = 1,
-                        Thickness = 1,
-                        Radius = radius / 2,
-                        Visible = _G.Visible,
-                        Color = (_G.AimLock and green) or white,
-                        Position = lock_part.scr_pos,
-                        instance = "Circle";
-                    })
-
-                    if Using then
-                        mousemoverel((lock_part.scr_pos.X - mouse.X) / aimsp_settings.smoothness, (lock_part.scr_pos.Y - (mouse.Y)) / aimsp_settings.smoothness)
+                    
+                    if visible_parts["Head"] then
+                        visible_parts[0] = visible_parts["Head"]
+                    elseif visible_parts["UpperTorso"] or visible_parts["Torso"] then
+                        visible_parts[0] = visible_parts["UpperTorso"] or visible_parts["Torso"]
                     end
-                else
-                    utility.update_drawing(objects.look_at, "point", {
-                        Visible = false,
-                        instance = "Circle";
-                    })
+    
+                    local lock_part = visible_parts["Head"] or last
+    
+                    if lock_part then
+                        local scale = (lock_part.obj.Size.Y / 2)
+    
+                        local top = utility.to_screen((lock_part.obj.CFrame * cframe_new(0, scale, 0)).Position);
+                        local bottom = utility.to_screen((lock_part.obj.CFrame * cframe_new(0, -scale, 0)).Position);
+                        local radius = -(top - bottom).y;
+    
+                        utility.update_drawing(objects.look_at, "point", {
+                            Transparency = 1,
+                            Thickness = 1,
+                            Radius = radius / 2,
+                            Visible = _G.Visible,
+                            Color = (_G.AimLock and green) or white,
+                            Position = lock_part.scr_pos,
+                            instance = "Circle";
+                        })
+    
+                        if Using then
+                            mousemoverel((lock_part.scr_pos.X - mouse.X) / aimsp_settings.smoothness, (lock_part.scr_pos.Y - (mouse.Y)) / aimsp_settings.smoothness)
+                        end
+                    else
+                        utility.update_drawing(objects.look_at, "point", {
+                            Visible = false,
+                            instance = "Circle";
+                        })
+                    end
                 end
             end
         end)
