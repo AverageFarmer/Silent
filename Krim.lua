@@ -340,25 +340,6 @@ MakeDealerDots()
 MakeSafeDots()
 --MakeScrapDots()
 
-
-function RayCast(Position, Direction, MaxDistance, IgnoreList, IgnoreWater)
-	local Pos
-	local RayParams = RaycastParams.new()
-	RayParams.FilterDescendantsInstances = IgnoreList
-	RayParams.FilterType = Enum.RaycastFilterType.Blacklist
-	RayParams.IgnoreWater = IgnoreWater or false
-
-	local Ray = workspace:Raycast(Position, Direction.unit , RayParams)
-
-	if Ray and Ray.Instance then
-		return Ray.Instance, Ray.Position, Ray.Material, Ray.Normal
-	else
-		Pos = (CFrame.new(Position) * CFrame.new(Direction)).p
-	end
-
-	return nil, Pos, nil, nil
-end
-
 RunServ:BindToRenderStep("Hova upid", 1, function()
     if not getgenv().SafeEsp then
         for i,v in pairs(getgenv().SafeHolder) do

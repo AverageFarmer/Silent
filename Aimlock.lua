@@ -373,6 +373,18 @@ local function characterType(player)
     end
 end
 
+function RayCast(Position, Direction, MaxDistance, IgnoreList, IgnoreWater)
+	local Pos
+	local RayParams = RaycastParams.new()
+	RayParams.FilterDescendantsInstances = IgnoreList
+	RayParams.FilterType = Enum.RaycastFilterType.Blacklist
+	RayParams.IgnoreWater = IgnoreWater or false
+
+	local Ray = workspace:Raycast(Position, Direction.unit * MaxDistance , RayParams)
+
+	return Ray
+end
+
 function getTarget()
 	local closestTarg = math.huge
 	local Target = nil
@@ -387,8 +399,8 @@ function getTarget()
                 if playerHumanoidRP and playerHumanoid then
                     local hitVector, onScreen = camera:WorldToScreenPoint(playerHumanoidRP.Position)
                     if onScreen and playerHumanoid.Health > 0 then
-                        local CCF = camera.CFrame.p
-                        if workspace:FindPartOnRayWithIgnoreList(Ray.new(CCF, (playerHumanoidRP.Position-CCF).Unit * 9e9),{Player.Character}) then
+                        local CCF = camera.CFrame.Position
+                        if RayCast(CCF, (playerHumanoidRP.Position-CCF).Unit, 9e9, {Player.Character, camera}) then
                             local hitTargMagnitude = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(hitVector.X, hitVector.Y)).Magnitude
                             if hitTargMagnitude < closestTarg and hitTargMagnitude <= _G.FOV then
                                 Target = Player
