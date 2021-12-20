@@ -443,7 +443,7 @@ coroutine.wrap(function()
                 local closest_player = nil
                 local dist = aimsp_settings.max_dist
                 
-                for idx, plr in pairs(get_players()) do -- continue skips current index
+                --[[for idx, plr in pairs(get_players()) do -- continue skips current index
                     local plr_char = ((aimsp_settings.loop_all_humanoids or debounces.custom_players) and plr) or plr.Character
                     if plr == local_player then continue; end
                     if plr_char == nil then continue; end
@@ -464,12 +464,12 @@ coroutine.wrap(function()
                     else
                         utility.remove_esp(plr_char:GetDebugId())
                     end
-                end
+                end--]]
     
                 local visible_parts = {}
                 local last
     
-                if closest_player and aimsp_settings.use_aimbot then
+                if closest_player and _G.AimLock then
                     for idx, part in pairs(closest_player:GetChildren()) do
                         if part:IsA("BasePart") then
                             local screen_pos = utility.to_screen(part.Position)
