@@ -452,34 +452,13 @@ coroutine.wrap(function()
                         if plr_char.Parent == local_player.Character.Parent then continue; end
                     end
                     
-                    if aimsp_settings.team_check and not aimsp_settings.loop_all_humanoids and not debounces.custom_players then
-                        if plr.Team then
-                            if plr.TeamColor == local_player.TeamColor then continue; end
-                            if plr.Team == local_player.Team then continue; end
-                        end
-                    end
-                    
                     if not utility.is_dead(plr_char) then
-                        local plr_screen = utility.to_screen(plr_char.HumanoidRootPart.Position) -- emulate head pos
-                        if aimsp_settings.prefer.looking_at_you then
-                            local look_vector = plr_char.HumanoidRootPart.Position + (plr_char.HumanoidRootPart.CFrame.LookVector * mag)
-    
-                            local look_vector_lp_head_dist = (look_vector - local_player.Character.HumanoidRootPart.Position).Magnitude
-                            if look_vector_lp_head_dist < dist and utility.is_inside_fov(plr_screen) then
-                                dist = look_vector_lp_head_dist
-                                closest_player = plr_char
-                            end
-                        elseif aimsp_settings.prefer.closest_to_center_screen then
+                        --local plr_screen = utility.to_screen(plr_char.HumanoidRootPart.Position) -- emulate head pos
+                        if aimsp_settings.prefer.closest_to_center_screen then
                             local Target = getTarget()
     
                             if Target then
                                 closest_player = Target.Character
-                            end
-                        elseif aimsp_settings.prefer.closest_to_you then
-                            local plr_dist = (plr_char.HumanoidRootPart.Position - local_player.Character.HumanoidRootPart.Position).Magnitude
-                            if plr_dist < dist then
-                                dist = plr_dist
-                                closest_player = plr_char
                             end
                         end
                     else
