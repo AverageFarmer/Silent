@@ -204,7 +204,7 @@ function CheckAvalibility(Dealer)
 end
 
 function AutoFinishLockPicks(Gui)
-    task.wait(.3)
+    task.wait(1)
     local MF = Gui.MF
     local LPFrame = MF.LP_Frame.Frames
     
@@ -213,9 +213,9 @@ function AutoFinishLockPicks(Gui)
         local StartTime = os.time()
 
         repeat
-            task.wait()
             if os.time() - StartTime >= 2 then return end
-        until v.Bar.Position.Y.Offset >= 0 and v.Bar.Position.Y.Offset <= 15
+            task.wait()
+        until v.Bar.Position.Y.Offset >= -10 and v.Bar.Position.Y.Offset <= 13
 
         mouse1click()
         task.wait(.3)
