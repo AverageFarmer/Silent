@@ -456,10 +456,33 @@ coroutine.wrap(function()
                             closest_player = plr_char
                         end
                     elseif aimsp_settings.prefer.closest_to_center_screen then
-                        local Target = getTarget()
+                        local Target
+                        local closestTarg = math.huge
+                        if utility.is_part_visible(local_player.Character.HumanoidRootPart, local_player.Character.Head) then
+                            local playerCharacter = characterType(plr)
+                            if playerCharacter then
+                                local playerHumanoid = playerCharacter:FindFirstChild("Humanoid")
+                                local playerHumanoidRP = playerCharacter:FindFirstChild("Head")
+                                if playerHumanoidRP and playerHumanoid then
+                                    local hitVector, onScreen = camera:WorldToScreenPoint(playerHumanoidRP.Position)
+                                    if onScreen and playerHumanoid.Health > 0 then
+                                        local CCF = camera.CFrame.Position
+                                        if workspace:FindPartOnRayWithIgnoreList(Ray.new(CCF, (playerHumanoidRP.Position-CCF).Unit * 9e9),{plr_char}) then
+                                            local hitTargMagnitude = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(hitVector.X, hitVector.Y)).Magnitude
+                                            if hitTargMagnitude < closestTarg and hitTargMagnitude <= _G.FOV then
+                                                Target = playerCharacter
+                                                closestTarg = hitTargMagnitude
+                                            end
+                                        else
+                                        end
+                                    else
+                                    end
+                                end
+                            end
+                        end
 
                         if Target then
-                            closest_player = Target
+                            closest_player = Target.Character
                         end
                     elseif aimsp_settings.prefer.closest_to_you then
                         local plr_dist = (plr_char.HumanoidRootPart.Position - local_player.Character.HumanoidRootPart.Position).Magnitude
