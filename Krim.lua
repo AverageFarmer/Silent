@@ -393,13 +393,15 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
         end
     else
         for i,v in pairs(getgenv().DealerHolder) do
-            local vector, OnScreen = Camera:WorldToScreenPoint(v[1].PrimaryPart.Position)        
-            local Size = Vector2.new(3,3)
-            local Position = Vector2.new(vector.X - Size.X/2, vector.Y - Size.Y/2)
-    
-            v[2].Position = Position
-            v[2].Visible = OnScreen
-            v[2].Color = (CheckAvalibility(v[1].Parent) and Color3.new(0.729411, 0.741176, 0.109803)) or Color3.new(1, 0, 0)
+            if v[1] and v[1].PrimaryPart then
+                local vector, OnScreen = Camera:WorldToScreenPoint(v[1].PrimaryPart.Position)        
+                local Size = Vector2.new(3,3)
+                local Position = Vector2.new(vector.X - Size.X/2, vector.Y - Size.Y/2)
+        
+                v[2].Position = Position
+                v[2].Visible = OnScreen
+                v[2].Color = (CheckAvalibility(v[1].Parent) and Color3.new(0.729411, 0.741176, 0.109803)) or Color3.new(1, 0, 0)
+            end
         end
     end
 end)
