@@ -35,6 +35,7 @@ RunServ:UnbindFromRenderStep("Dropss")
 getgenv().methodsTable = {"Ray", "Raycast"}
 getgenv().Rainbow = Color3.new(0.952941, 0.921568, 0.921568)
 getgenv().SelectedPart = "Head"
+getgenv().Type = "Mouse"
 getgenv().VisibiltyCheck = false
 getgenv().CircleVisibility = true
 getgenv().Distance = 400
@@ -48,7 +49,7 @@ getgenv().DealerHolder = getgenv().DealerHolder or {}
 getgenv().ScrapHolder = getgenv().ScrapHolder or {}
 getgenv().AutoLockPick = false
 _G.AimLock = false
-_G.FOV = 250
+_G.FOV = 100
 _G.Visible = true
 _G.VisibilityCheck = true
 
@@ -134,11 +135,26 @@ for i,v in pairs(Throwables) do
     table.insert(ItemList, v.Name)
 end
 
-Aim:Label("Config",{
+Aim:Label("Select Part",{
     TextSize = 16; -- Self Explaining
     TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
     BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
 })
+
+Aim:Dropdown("Head", rigTypeR6, true, function(Item) --true/false, replaces the current title "Dropdown" with the option that t
+    getgenv().SelectedPart = Item
+end)
+
+Aim:Label("Select Type",{
+    TextSize = 16; -- Self Explaining
+    TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
+    BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
+})
+
+Aim:Dropdown("Mouse", {"Mouse", "Closest"}, true, function(Item) --true/false, replaces the current title "Dropdown" with the option that t
+    getgenv().Type = Item
+end)
+
 
 Aim:Toggle("Visible", function(bool)
     _G.Visible = bool
@@ -394,13 +410,13 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
     else
         for i,v in pairs(getgenv().DealerHolder) do
             if v[1] and v[1].PrimaryPart then
-                local vector, OnScreen = Camera:WorldToScreenPoint(v[1].PrimaryPart.Position)        
+                local vector, OnScreen = Camera:WorldToScreenPoint(getgenv().DealerHolder[i][1].PrimaryPart.Position)        
                 local Size = Vector2.new(3,3)
                 local Position = Vector2.new(vector.X - Size.X/2, vector.Y - Size.Y/2)
         
-                v[2].Position = Position
-                v[2].Visible = OnScreen
-                v[2].Color = (CheckAvalibility(v[1].Parent) and Color3.new(0.729411, 0.741176, 0.109803)) or Color3.new(1, 0, 0)
+                getgenv().DealerHolder[i][2].Position = Position
+                getgenv().DealerHolder[i][2].Visible = OnScreen
+                getgenv().DealerHolder[i][2].Color = (CheckAvalibility(getgenv().DealerHolder[i][1].Parent) and Color3.new(0.729411, 0.741176, 0.109803)) or Color3.new(1, 0, 0)
             end
         end
     end
