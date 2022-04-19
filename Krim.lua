@@ -112,7 +112,7 @@ local ScrapEsp = Esps:CreateFolder("ScrapEsp")
 local MiscOptions = Misc:CreateFolder("Options")
 
 local FovCircle = Drawing.new("Circle")
-FovCircle.Visble = false
+FovCircle.Visible = true
 FovCircle.Filled = false
 FovCircle.Radius = _G.FOV
 FovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
@@ -160,7 +160,7 @@ end)
 
 
 Aim:Toggle("Visible", function(bool)
-    _G.Visible = bool
+    FovCircle.Visible = bool
 end)
 
 Aim:Toggle("Visibility Check", function(bool)
