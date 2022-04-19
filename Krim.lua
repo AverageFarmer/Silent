@@ -87,10 +87,10 @@ local SafeOffColor = Color3.fromRGB(93, 93, 93)
 
 if rigType == "R6" then
     selected_rigType = rigTypeR6
-elseif rigType == "R15" then
-    selected_rigType = rigTypeR15
+    elseif rigType == "R15" then
+        selected_rigType = rigTypeR15
 end
-
+    
 local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/AikaV3rm/UiLib/master/Lib.lua')))()
 local AimBot = loadstring(game:HttpGet("https://raw.githubusercontent.com/JuiceWarfare/Silent/master/Aimlock.lua"))()
 
@@ -111,9 +111,11 @@ local ScrapEsp = Esps:CreateFolder("ScrapEsp")
 
 local MiscOptions = Misc:CreateFolder("Options")
 
---Aim:Toggle("Enable",function(bool)
---    getgenv().AimToggle = bool
---end)
+local FovCircle = Drawing.new("Circle")
+FovCircle.Visble = false
+FovCircle.Filled = false
+FovCircle.Radius = _G.FOV
+FovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
 
 table.insert(ItemList, "None")
 for i,v in pairs(Armour) do
@@ -358,6 +360,11 @@ MakeSafeDots()
 --MakeScrapDots()
 
 RunServ:BindToRenderStep("Hova upid", 1, function()
+
+
+    FovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
+    FovCircle.Radius = _G.FOV
+
     if not getgenv().SafeEsp then
         for i,v in pairs(getgenv().SafeHolder) do
             getgenv().SafeHolder[i][2]:Remove()
