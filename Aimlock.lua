@@ -58,7 +58,6 @@ local AimbotLoop = RunService:BindToRenderStep("updateAimbot", 1, function()
         local Hitbox = Character:FindFirstChild(getgenv().SelectedPart)
 
         if not Hitbox then continue end
-
         table.insert(ValidTargets, {Player, Hitbox, Magnitude, DistanceFromCharacter, Humanoid.Health})
     end
     table.sort(ValidTargets, function(a, b) return a[Index] < b[Index] end)
@@ -73,7 +72,7 @@ local OldNamecall; OldNamecall = hookmetamethod(game, "__namecall", function(sel
             if #ValidTargets ~= 0 then
                 local Target = ValidTargets[1]
                 local Hitbox = Target[2]
-
+                print(Target[1].Name)
                 args[2] = (Hitbox.Position - Camera.CFrame.Position).Unit * (Hitbox.Position - Camera.CFrame.Position).Magnitude
             end
         end

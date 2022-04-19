@@ -93,6 +93,7 @@ end
 
 local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/AikaV3rm/UiLib/master/Lib.lua')))()
 local AimBot = loadstring(game:HttpGet("https://raw.githubusercontent.com/JuiceWarfare/Silent/master/Aimlock.lua"))()
+
 _G.MainColor = Color3.new()
 _G.SecondaryColor = Color3.new(0.866666, 0.447058, 0.058823)
 _G.TertiaryColor = Color3.new(0, 0, 0)
