@@ -404,7 +404,9 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
     if not getgenv().DealerEsp then
         for i,v in pairs(getgenv().DealerHolder) do
             if getgenv().DealerHolder[i] then
-                getgenv().DealerHolder[i][2].Visible = false
+                if getgenv().DealerHolder[i][2] then
+                    getgenv().DealerHolder[i][2].Visible = false
+                end
             end
         end
     else
