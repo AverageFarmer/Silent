@@ -361,9 +361,14 @@ MakeSafeDots()
 
 RunServ:BindToRenderStep("Hova upid", 1, function()
 
+    if not _G.AimLock then
+        FovCircle.Visible = false
+        FovCircle.Radius = _G.FOV
+    else
 
-    FovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
-    FovCircle.Radius = _G.FOV
+        FovCircle.Visible = getgenv().CircleVisibility
+    end
+    FovCircle.Position = Vector2.new(Mouse.X - _G.FOV/2, Mouse.Y - _G.FOV/2)
 
     if not getgenv().SafeEsp then
         for i,v in pairs(getgenv().SafeHolder) do
