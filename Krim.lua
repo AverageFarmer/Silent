@@ -86,7 +86,7 @@ local SafeOnColor = Color3.fromRGB(34, 226, 16)
 local SafeOffColor = Color3.fromRGB(93, 93, 93)
 
 if rigType == "R6" then
-    selected_rigType = rigTypeR6
+        selected_rigType = rigTypeR6
     elseif rigType == "R15" then
         selected_rigType = rigTypeR15
 end
@@ -116,6 +116,7 @@ FovCircle.Visible = true
 FovCircle.Filled = false
 FovCircle.Radius = _G.FOV
 FovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
+FovCircle.Thickness = .1
 
 table.insert(ItemList, "None")
 for i,v in pairs(Armour) do
@@ -365,9 +366,9 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
         FovCircle.Visible = false
         FovCircle.Radius = _G.FOV
     else
-
         FovCircle.Visible = getgenv().CircleVisibility
     end
+
     FovCircle.Position = Vector2.new(Mouse.X - _G.FOV/2, Mouse.Y - _G.FOV/2)
 
     if not getgenv().SafeEsp then

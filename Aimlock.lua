@@ -10,7 +10,6 @@ local Filter = workspace:FindFirstChild("Filter")
 local Debris = workspace:FindFirstChild("Debris")
 
 -- Vars
-local CanAimbot = false
 local ValidTargets = {}
 
 local AimbotLoop = RunService:BindToRenderStep("updateAimbot", 1, function()
@@ -24,7 +23,8 @@ local AimbotLoop = RunService:BindToRenderStep("updateAimbot", 1, function()
         Index = 3
     end
 
-    if not CanAimbot then return end
+    if not (_G.AimLock) then return end
+
     local SelfCharacter = LocalPlayer.Character
     local SelfRootPart, SelfHumanoid = SelfCharacter and SelfCharacter:FindFirstChild("HumanoidRootPart"), SelfCharacter and SelfCharacter:FindFirstChildOfClass("Humanoid")
     if not SelfCharacter or not SelfRootPart or not SelfHumanoid then return end
@@ -67,12 +67,11 @@ local OldNamecall; OldNamecall = hookmetamethod(game, "__namecall", function(sel
     local args = {...}
     local method = tostring(getnamecallmethod())
 
-    if (method == "Raycast") and (CanAimbot) then
+    if (method == "Raycast") and (_G.AimLock) then
         if table.find(args[3].FilterDescendantsInstances, LocalPlayer.Character) ~= 1 and table.find(args[3].FilterDescendantsInstances, Camera) ~= 2 and table.find(args[3].FilterDescendantsInstances, LocalPlayer.Character) ~= nil then
             if #ValidTargets ~= 0 then
                 local Target = ValidTargets[1]
                 local Hitbox = Target[2]
-                print(Target[1].Name)
                 args[2] = (Hitbox.Position - Camera.CFrame.Position).Unit * (Hitbox.Position - Camera.CFrame.Position).Magnitude
             end
         end
