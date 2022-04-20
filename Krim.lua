@@ -117,6 +117,7 @@ FovCircle.Filled = false
 FovCircle.Radius = _G.FOV
 FovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
 FovCircle.Thickness = .1
+FovCircle.Color = Color3.new(1, 1, 1)
 
 table.insert(ItemList, "None")
 for i,v in pairs(Armour) do
