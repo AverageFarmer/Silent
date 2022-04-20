@@ -161,7 +161,7 @@ end)
 
 
 Aim:Toggle("Visible", function(bool)
-    FovCircle.Visible = bool
+    getgenv().CircleVisibility = bool
 end)
 
 Aim:Toggle("Visibility Check", function(bool)
@@ -380,7 +380,7 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
         for i,v in pairs(getgenv().SafeHolder) do
             local vector, OnScreen = Camera:WorldToScreenPoint(v[1].PrimaryPart.Position)        
             local Size = 3
-            local Position = Vector2.new(vector.X - Size/2, vector.Y - Size/2)
+            local Position = Vector2.new(vector.X + Size/2, vector.Y + Size/2)
     
             v[2].Position = Position
             v[2].Visible = OnScreen
