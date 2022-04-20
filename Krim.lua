@@ -48,6 +48,8 @@ getgenv().SafeHolder = getgenv().SafeHolder or {}
 getgenv().DealerHolder = getgenv().DealerHolder or {}
 getgenv().ScrapHolder = getgenv().ScrapHolder or {}
 getgenv().AutoLockPick = false
+getgenv().HitChance = 100
+
 _G.AimLock = false
 _G.FOV = 100
 _G.Visible = true
@@ -160,6 +162,12 @@ Aim:Dropdown("Mouse", {"Mouse", "Closest"}, true, function(Item) --true/false, r
     getgenv().Type = Item
 end)
 
+Aim:Label("Silent Aim",{
+    TextSize = 16; -- Self Explaining
+    TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
+    BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
+})
+
 
 Aim:Toggle("Visible", function(bool)
     getgenv().CircleVisibility = bool
@@ -180,6 +188,21 @@ end)
 Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
     _G.AimLock = not _G.AimLock
 end)
+
+Aim:Label("Select Type",{
+    TextSize = 16; -- Self Explaining
+    TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
+    BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
+})
+
+Aim:Slider("Hit Chance",{
+    min = 1; -- min value of the slider
+    max = 100; -- max value of the slider
+    precise = false; -- max 2 decimals
+},function(value)
+    getgenv().HitChance = value
+end)
+
 
 SafeEsp:Toggle("Toggle", function(bool)
     getgenv().SafeEsp = bool

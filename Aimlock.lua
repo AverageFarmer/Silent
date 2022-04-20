@@ -68,11 +68,13 @@ local OldNamecall; OldNamecall = hookmetamethod(game, "__namecall", function(sel
     local method = tostring(getnamecallmethod())
 
     if (method == "Raycast") and (_G.AimLock) then
-        if table.find(args[3].FilterDescendantsInstances, LocalPlayer.Character) ~= 1 and table.find(args[3].FilterDescendantsInstances, Camera) ~= 2 and table.find(args[3].FilterDescendantsInstances, LocalPlayer.Character) ~= nil then
-            if #ValidTargets ~= 0 then
-                local Target = ValidTargets[1]
-                local Hitbox = Target[2]
-                args[2] = (Hitbox.Position - Camera.CFrame.Position).Unit * (Hitbox.Position - Camera.CFrame.Position).Magnitude
+        if getgenv().HitChance <= math.random(1,100) then
+            if table.find(args[3].FilterDescendantsInstances, LocalPlayer.Character) ~= 1 and table.find(args[3].FilterDescendantsInstances, Camera) ~= 2 and table.find(args[3].FilterDescendantsInstances, LocalPlayer.Character) ~= nil then
+                if #ValidTargets ~= 0 then
+                    local Target = ValidTargets[1]
+                    local Hitbox = Target[2]
+                    args[2] = (Hitbox.Position - Camera.CFrame.Position).Unit * (Hitbox.Position - Camera.CFrame.Position).Magnitude
+                end
             end
         end
     end
