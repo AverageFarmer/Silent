@@ -207,6 +207,12 @@ MiscOptions:Toggle("Auto Lockpick", function(bool)
     Settings.AutoLockPick = bool
 end)
 
+MiscOptions:Label("Other",{
+    TextSize = 16; -- Self Explaining
+    TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
+    BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
+})
+
 MiscOptions:Button("Save Settings", function()
     writefile(UIName, HTTP:JSONEncode(Settings))
 end)
