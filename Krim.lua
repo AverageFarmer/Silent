@@ -230,18 +230,35 @@ function AutoFinishLockPicks(Gui)
     task.wait(1)
     local MF = Gui.MF
     local LPFrame = MF.LP_Frame.Frames
+    local Frames = {}
+    local FrameNames = {
+        "B1",
+        "B2",
+        "B3"
+    }
     
     for i,v in pairs(LPFrame:GetChildren()) do
         if not v:IsA("Frame") then continue end
+        if v.Visible then
+            Frames[v.Name] = v
+        end
+    end
+
+    for i, name in pairs(FrameNames) do
         local StartTime = os.time()
+        local Frame = Frames[name]
 
-        repeat
-            if os.time() - StartTime >= 2 then return end
-            task.wait()
-        until v.Bar.Position.Y.Offset >= -10 and v.Bar.Position.Y.Offset <= 13
-
-        mouse1click()
-        task.wait(.3)
+        if Frame then
+            repeat
+                if os.time() - StartTime >= 3 then return end
+                task.wait()
+            until Frame.Bar.Position.Y.Offset >= -10 and Frame.Bar.Position.Y.Offset <= 13
+        
+            mouse1click()
+            task.wait(.2)
+        else
+            continue
+        end
     end
 end
 
