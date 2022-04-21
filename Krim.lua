@@ -69,7 +69,7 @@ local AimBot = loadstring(game:HttpGet("https://raw.githubusercontent.com/JuiceW
 local FovCircle = Drawing.new("Circle")
 FovCircle.Visible = true
 FovCircle.Filled = false
-FovCircle.Radius = _G.FOV
+FovCircle.Radius = Settings.FOV
 FovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
 FovCircle.Thickness = .1
 FovCircle.Color = Color3.new(1, 1, 1)
@@ -152,11 +152,11 @@ Aim:Slider("FOV",{
     max = 250; -- max value of the slider
     precise = false; -- max 2 decimals
 },function(value)
-   _G.FOV = value
+   Settings.FOV = value
 end)
 
 Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
-    _G.AimLock = not _G.AimLock
+    Settings.AimLock = not Settings.AimLock
 end)
 
 Aim:Label("Select Type",{
@@ -359,13 +359,13 @@ MakeSafeDots()
 
 RunServ:BindToRenderStep("Hova upid", 1, function()
 
-    if not _G.AimLock then
+    if not Settings.AimLock then
         FovCircle.Visible = false
     else
         FovCircle.Visible = Settings.CircleVisibility
     end
     
-    FovCircle.Radius = _G.FOV
+    FovCircle.Radius = Settings.FOV
     FovCircle.Position = Vector2.new(Mouse.X , Mouse.Y + 37)
 
     if not Settings.SafeEsp then

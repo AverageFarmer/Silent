@@ -33,7 +33,7 @@ local AimbotLoop = RunService:BindToRenderStep("updateAimbot", 1, function()
         Index = 3
     end
 
-    if not (_G.AimLock) then return end
+    if not (Settings.AimLock) then return end
 
     local SelfCharacter = LocalPlayer.Character
     local SelfRootPart, SelfHumanoid = SelfCharacter and SelfCharacter:FindFirstChild("HumanoidRootPart"), SelfCharacter and SelfCharacter:FindFirstChildOfClass("Humanoid")
@@ -63,7 +63,7 @@ local AimbotLoop = RunService:BindToRenderStep("updateAimbot", 1, function()
         local Pos, OnScreen = Camera:WorldToViewportPoint(RootPart.Position)
         if not OnScreen then continue end
         local Magnitude = (Vector2.new(Pos.X, Pos.Y) - MousePosition).Magnitude
-        if not (Magnitude < _G.FOV) then continue end
+        if not (Magnitude < Settings.FOV) then continue end
 
         local Hitbox 
         if Settings.RandomSelect then
@@ -83,7 +83,7 @@ local OldNamecall; OldNamecall = hookmetamethod(game, "__namecall", function(sel
     local args = {...}
     local method = tostring(getnamecallmethod())
 
-    if (method == "Raycast") and (_G.AimLock) then
+    if (method == "Raycast") and (Settings.AimLock) then
         if math.random(1,100) <= Settings.HitChance then
             if table.find(args[3].FilterDescendantsInstances, LocalPlayer.Character) ~= 1 and table.find(args[3].FilterDescendantsInstances, Camera) ~= 2 and table.find(args[3].FilterDescendantsInstances, LocalPlayer.Character) ~= nil then
                 if #ValidTargets ~= 0 then
