@@ -161,7 +161,7 @@ end)
 
 HitChance:Set(Settings.HitChance)
 
-local SEsp = SafeEsp:Toggle("Safe", false, "Safe", function(bool)
+local SEsp = SafeEsp:Toggle("Safe", false, "SafeE", function(bool)
     Settings.SafeEsp = bool
     
     if Settings.SafeEsp then
@@ -171,7 +171,7 @@ end)
 
 SEsp:Set(Settings.SafeEsp)
 
-local ScEsp = ScrapEsp:Toggle("Scraps", false, "Scraps", function(bool)
+local ScEsp = ScrapEsp:Toggle("Scraps", false, "ScrapsE", function(bool)
     Settings.ScrapEsp = bool
 
     if Settings.ScrapEsp then
@@ -181,7 +181,7 @@ end)
 
 ScEsp:Set(Settings.ScrapEsp)
 
-local DEsp = DealerEsp:Toggle("Dealer", false, "Dealer", function(bool)
+local DEsp = DealerEsp:Toggle("Dealer", false, "DealerE", function(bool)
     Settings.DealerEsp = bool
 end)
 
