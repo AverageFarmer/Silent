@@ -192,17 +192,15 @@ MiscOptions:Button("Save Settings", function()
     SolarisLib:Notification("Saved", "Your data has been saved")
 end)
 
-function CheckFriends()
-    Friends = {}
-
-    for i,v in pairs(game.Players:GetPlayers()) do
-        if v.Name == LocalPlayer.Name then continue end
-
-        if LocalPlayer:IsFriendsWith(v.UserId) then
-            table.insert(Friends, v.Name)
+function CheckAvalibility(Dealer)
+    for i,v in pairs(Dealer:FindFirstChild("CurrentStocks", true):GetChildren()) do
+        if v.Name == Settings.SelectedItem and v.Value ~= 0 then
+            return true
         end
     end
+    return false
 end
+
 
 function AutoFinishLockPicks(Gui)
     task.wait(1)
