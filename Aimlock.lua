@@ -9,12 +9,22 @@ local Camera = workspace.CurrentCamera
 local Filter = workspace:FindFirstChild("Filter")
 local Debris = workspace:FindFirstChild("Debris")
 
+local R6 = {
+    "Head",
+	"Torso",
+	"Left Arm",
+	"Right Arm",
+	"Left Leg",
+	"Right Leg",
+}
+
 -- Vars
 local ValidTargets = {}
+local Settings = getgenv().Settings
 
 local AimbotLoop = RunService:BindToRenderStep("updateAimbot", 1, function()
     ValidTargets = {}
-    local Type = getgenv().Type
+    local Type = Settings.Type
     local Index = 3
 
     if Type == "Closest" then
@@ -55,7 +65,13 @@ local AimbotLoop = RunService:BindToRenderStep("updateAimbot", 1, function()
         local Magnitude = (Vector2.new(Pos.X, Pos.Y) - MousePosition).Magnitude
         if not (Magnitude < _G.FOV) then continue end
 
-        local Hitbox = Character:FindFirstChild(getgenv().SelectedPart)
+        local Hitbox 
+        if Settings.RandomSelect then
+            local RandomPart = R6[math.random(1, #R6)]     
+            Hitbox = Character:FindFirstChild(RandomPart)
+        else
+            Hitbox = Character:FindFirstChild(Settings.SelectedPart)
+        end
 
         if not Hitbox then continue end
         table.insert(ValidTargets, {Player, Hitbox, Magnitude, DistanceFromCharacter, Humanoid.Health})
@@ -68,7 +84,7 @@ local OldNamecall; OldNamecall = hookmetamethod(game, "__namecall", function(sel
     local method = tostring(getnamecallmethod())
 
     if (method == "Raycast") and (_G.AimLock) then
-        if math.random(1,100) <= getgenv().HitChance then
+        if math.random(1,100) <= Settings.HitChance then
             if table.find(args[3].FilterDescendantsInstances, LocalPlayer.Character) ~= 1 and table.find(args[3].FilterDescendantsInstances, Camera) ~= 2 and table.find(args[3].FilterDescendantsInstances, LocalPlayer.Character) ~= nil then
                 if #ValidTargets ~= 0 then
                     local Target = ValidTargets[1]

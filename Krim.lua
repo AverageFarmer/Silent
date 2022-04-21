@@ -1,20 +1,17 @@
 --sad
-
+local UIName = "Creaminality"
 local Players = game:GetService("Players")
 local UserInput = game:GetService("UserInputService")
 local HTTP = game:GetService("HttpService")
 local RunServ = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-PlayerGui:SetTopbarTransparency(1)
 local Mouse = LocalPlayer:GetMouse()
 local PickUpRemote = game:GetService("ReplicatedStorage")["Events"]["PIC_PU"]
 local PickUpCash = game:GetService("ReplicatedStorage")["Events"]["CZDPZUS"]
 
-local CashFolder = game:GetService("Workspace").Filter.SpawnedBread
 local ScarpSpawn = game:GetService("Workspace").Filter.SpawnedPiles
 local Dealers = game:GetService("Workspace")["Map"]["Shopz"]
 local Safes = game:GetService("Workspace")["Map"]["BredMakurz"]
@@ -25,38 +22,34 @@ local Throwables = ItemStats.Throwables:GetChildren()
 local MiscFolder = ItemStats.Misc:GetChildren()
 local Armour = ItemStats.Armour:GetChildren()
 local ItemList = {}
-local LastUpdated = 0
+local SafeHolder = {}
+local DealerHolder = {}
+local ScrapHolder = {}
 
-RunServ:UnbindFromRenderStep("Get_Fov")
-RunServ:UnbindFromRenderStep("Get_Target")
 RunServ:UnbindFromRenderStep("Hova Upid")
-RunServ:UnbindFromRenderStep("Dropss")
 
-getgenv().methodsTable = {"Ray", "Raycast"}
-getgenv().Rainbow = Color3.new(0.952941, 0.921568, 0.921568)
-getgenv().SelectedPart = "Head"
-getgenv().Type = "Mouse"
-getgenv().VisibiltyCheck = false
-getgenv().CircleVisibility = true
-getgenv().Distance = 400
-getgenv().CanPickUp = false
-getgenv().SafeEsp = false
-getgenv().ScrapEsp = false
-getgenv().DealerEsp = false
-getgenv().SelectedItem = "None"
-getgenv().SafeHolder = getgenv().SafeHolder or {}
-getgenv().DealerHolder = getgenv().DealerHolder or {}
-getgenv().ScrapHolder = getgenv().ScrapHolder or {}
-getgenv().AutoLockPick = false
-getgenv().HitChance = 100
+getgenv().Settings = {
+    SafeEsp = false,
+    ScrapEsp = false,
+    DealerEsp = false,
+    
+    AutoLockPick = false,
+    
+    Type = "Mouse",
+    SelectedPart = "Head",
+    SelectedItem = "None",
+    RandomSelect = false,
+    AimLock = false,
+    FOV = 100,
+    CircleVisibility = true,
+    HitChance = 100,
+}
+local Settings = getgenv().Settings
 
-_G.AimLock = false
-_G.FOV = 100
-_G.Visible = true
-_G.VisibilityCheck = true
-
-local rigType = string.split(tostring(LocalPlayer.Character:WaitForChild("Humanoid").RigType), ".")[3]
-local selected_rigType
+if isfile(UIName) then
+    local data = readfile(UIName)
+    getgenv().Settings = HTTP:JSONDecode(data)
+end
 
 local rigTypeR6 = {
     "Head",
@@ -67,34 +60,19 @@ local rigTypeR6 = {
 	"Right Leg",
 }
 
-local rigTypeR15 = {
-    "Head",
-    "UpperTorso",
-    "LowerTorso",
-    "LeftUpperArm",
-    "RightUpperArm",
-    "RightLowerArm",
-    "LeftLowerArm",
-    "LeftHand",
-    "RightHand",
-    "LeftUpperLeg",
-    "RightUpperLeg",
-    "LeftLowerLeg",
-    "RightLowerLeg",
-    "LeftFoot",
-    "RightFoot",
-}
 local SafeOnColor = Color3.fromRGB(34, 226, 16)
 local SafeOffColor = Color3.fromRGB(93, 93, 93)
-
-if rigType == "R6" then
-        selected_rigType = rigTypeR6
-    elseif rigType == "R15" then
-        selected_rigType = rigTypeR15
-end
     
 local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/AikaV3rm/UiLib/master/Lib.lua')))()
 local AimBot = loadstring(game:HttpGet("https://raw.githubusercontent.com/JuiceWarfare/Silent/master/Aimlock.lua"))()
+
+local FovCircle = Drawing.new("Circle")
+FovCircle.Visible = true
+FovCircle.Filled = false
+FovCircle.Radius = _G.FOV
+FovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
+FovCircle.Thickness = .1
+FovCircle.Color = Color3.new(1, 1, 1)
 
 _G.MainColor = Color3.new()
 _G.SecondaryColor = Color3.new(0.866666, 0.447058, 0.058823)
@@ -112,14 +90,6 @@ local DealerEsp = Esps:CreateFolder("DealerEsp")
 local ScrapEsp = Esps:CreateFolder("ScrapEsp")
 
 local MiscOptions = Misc:CreateFolder("Options")
-
-local FovCircle = Drawing.new("Circle")
-FovCircle.Visible = true
-FovCircle.Filled = false
-FovCircle.Radius = _G.FOV
-FovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
-FovCircle.Thickness = .1
-FovCircle.Color = Color3.new(1, 1, 1)
 
 table.insert(ItemList, "None")
 for i,v in pairs(Armour) do
@@ -149,7 +119,11 @@ Aim:Label("Select Part",{
 })
 
 Aim:Dropdown("Head", rigTypeR6, true, function(Item) --true/false, replaces the current title "Dropdown" with the option that t
-    getgenv().SelectedPart = Item
+    Settings.SelectedPart = Item
+end)
+
+Aim:Toggle("RandomSelect(Override)", function(bool)
+    Settings.RandomSelect = bool
 end)
 
 Aim:Label("Select Type",{
@@ -159,7 +133,7 @@ Aim:Label("Select Type",{
 })
 
 Aim:Dropdown("Mouse", {"Mouse", "Closest"}, true, function(Item) --true/false, replaces the current title "Dropdown" with the option that t
-    getgenv().Type = Item
+    Settings.Type = Item
 end)
 
 Aim:Label("Silent Aim",{
@@ -168,14 +142,10 @@ Aim:Label("Silent Aim",{
     BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
 })
 
-
 Aim:Toggle("Visible", function(bool)
-    getgenv().CircleVisibility = bool
+    Settings.CircleVisibility = bool
 end)
 
-Aim:Toggle("Visibility Check", function(bool)
-    _G.VisibilityCheck = bool
-end)
 
 Aim:Slider("FOV",{
     min = 5; -- min value of the slider
@@ -200,32 +170,31 @@ Aim:Slider("Hit Chance",{
     max = 100; -- max value of the slider
     precise = false; -- max 2 decimals
 },function(value)
-    getgenv().HitChance = value
+    Settings.HitChance = value
 end)
 
-
 SafeEsp:Toggle("Toggle", function(bool)
-    getgenv().SafeEsp = bool
+    Settings.SafeEsp = bool
     
-    if getgenv().SafeEsp then
+    if Settings.SafeEsp then
         MakeSafeDots()
     end
 end)
 
 ScrapEsp:Toggle("Toggle", function(bool)
-    getgenv().ScrapEsp = bool
+    Settings.ScrapEsp = bool
 
-    if getgenv().ScrapEsp then
+    if Settings.ScrapEsp then
         MakeScrapDots()
     end
 end)
 
 DealerEsp:Toggle("Toggle", function(bool)
-    getgenv().DealerEsp = bool
+    Settings.DealerEsp = bool
 end)
 
 DealerEsp:Dropdown("None", ItemList, true, function(Item) --true/false, replaces the current title "Dropdown" with the option that t
-    getgenv().SelectedItem = Item
+    Settings.SelectedItem = Item
 end)
 
 MiscOptions:Label("Auto", {
@@ -235,12 +204,16 @@ MiscOptions:Label("Auto", {
 })
 
 MiscOptions:Toggle("Auto Lockpick", function(bool)
-    getgenv().AutoLockPick = bool
+    Settings.AutoLockPick = bool
+end)
+
+MiscOptions:Button("Save Settings", function()
+    writefile(UIName, HTTP:JSONEncode(Settings))
 end)
 
 function CheckAvalibility(Dealer)
     for i,v in pairs(Dealer:FindFirstChild("CurrentStocks", true):GetChildren()) do
-        if v.Name == getgenv().SelectedItem and v.Value ~= 0 then
+        if v.Name == Settings.SelectedItem and v.Value ~= 0 then
             return true
         end
     end
@@ -301,26 +274,26 @@ ScarpSpawn.ChildAdded:Connect(function(Child)
 end)
 
 PlayerGui.ChildAdded:Connect(function(child)
-    if child.Name == "LockpickGUI" and getgenv().AutoLockPick then
+    if child.Name == "LockpickGUI" and Settings.AutoLockPick then
         AutoFinishLockPicks(child)
     end
 end)
 
 function refresh()
-    if getgenv().SafeEsp then
-        for i,v in pairs(getgenv().SafeHolder) do
-            getgenv().SafeHolder[i][2]:Remove()
-            getgenv().SafeHolder[i] = nil
+    if Settings.SafeEsp then
+        for i,v in pairs(SafeHolder) do
+            SafeHolder[i][2]:Remove()
+            SafeHolder[i] = nil
         end
         
         task.wait()
         MakeSafeDots()
     end
 
-    if getgenv().ScrapEsp then
-        for i,v in pairs(getgenv().ScrapHolder) do
-            getgenv().ScrapHolder[i][2]:Remove()
-            getgenv().ScrapHolder[i] = nil
+    if Settings.ScrapEsp then
+        for i,v in pairs(ScrapHolder) do
+            ScrapHolder[i][2]:Remove()
+            ScrapHolder[i] = nil
         end
         
         task.wait()
@@ -338,7 +311,7 @@ function MakeSafeDots()
 			Filled = true
 		})
 
-		getgenv().SafeHolder[HTTP:GenerateGUID(false)] = {Model, Rec}
+		SafeHolder[HTTP:GenerateGUID(false)] = {Model, Rec}
 
 		if Broken.Value then 
 			Rec.Color = SafeOffColor
@@ -365,7 +338,7 @@ function MakeDealerDots()
             Visible = false
 		})
 
-		getgenv().DealerHolder[HTTP:GenerateGUID(false)] = {Model, Rec}
+		DealerHolder[HTTP:GenerateGUID(false)] = {Model, Rec}
 	end
 end
 
@@ -376,7 +349,7 @@ function MakeScrapDots()
 			Filled = false
 		})
 
-		getgenv().ScrapHolder[HTTP:GenerateGUID(false)] = {Model, Rec}
+		ScrapHolder[HTTP:GenerateGUID(false)] = {Model, Rec}
 	end
 end
 
@@ -389,19 +362,19 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
     if not _G.AimLock then
         FovCircle.Visible = false
     else
-        FovCircle.Visible = getgenv().CircleVisibility
+        FovCircle.Visible = Settings.CircleVisibility
     end
     
     FovCircle.Radius = _G.FOV
     FovCircle.Position = Vector2.new(Mouse.X , Mouse.Y + 37)
 
-    if not getgenv().SafeEsp then
-        for i,v in pairs(getgenv().SafeHolder) do
-            getgenv().SafeHolder[i][2]:Remove()
-            getgenv().SafeHolder[i] = nil
+    if not Settings.SafeEsp then
+        for i,v in pairs(SafeHolder) do
+            SafeHolder[i][2]:Remove()
+            SafeHolder[i] = nil
         end
     else
-        for i,v in pairs(getgenv().SafeHolder) do
+        for i,v in pairs(SafeHolder) do
             local vector, OnScreen = Camera:WorldToScreenPoint(v[1].PrimaryPart.Position)        
             local Size = 3
             local Position = Vector2.new(vector.X + Size/2, vector.Y + Size/2)
@@ -419,13 +392,13 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
         end
     end
 
-    if not getgenv().ScrapEsp then
-        for i,v in pairs(getgenv().ScrapHolder) do
-            getgenv().ScrapHolder[i][2]:Remove()
-            getgenv().ScrapHolder[i] = nil
+    if not Settings.ScrapEsp then
+        for i,v in pairs(ScrapHolder) do
+            ScrapHolder[i][2]:Remove()
+            ScrapHolder[i] = nil
         end
     else
-        for i,v in pairs(getgenv().ScrapHolder) do
+        for i,v in pairs(ScrapHolder) do
             if not v[1] then v[2]:Remove() continue end
             local vector, OnScreen = Camera:WorldToScreenPoint(v[1].PrimaryPart.Position)
     
@@ -439,24 +412,24 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
         end
     end
 
-    if not getgenv().DealerEsp then
-        for i,v in pairs(getgenv().DealerHolder) do
-            if getgenv().DealerHolder[i] then
-                if getgenv().DealerHolder[i][2] then
-                    getgenv().DealerHolder[i][2].Visible = false
+    if not Settings.DealerEsp then
+        for i,v in pairs(DealerHolder) do
+            if DealerHolder[i] then
+                if DealerHolder[i][2] then
+                    DealerHolder[i][2].Visible = false
                 end
             end
         end
     else
-        for i,v in pairs(getgenv().DealerHolder) do
+        for i,v in pairs(DealerHolder) do
             if v[1] and v[1].PrimaryPart then
-                local vector, OnScreen = Camera:WorldToScreenPoint(getgenv().DealerHolder[i][1].PrimaryPart.Position)        
+                local vector, OnScreen = Camera:WorldToScreenPoint(DealerHolder[i][1].PrimaryPart.Position)        
                 local Size = Vector2.new(3,3)
                 local Position = Vector2.new(vector.X - Size.X/2, vector.Y - Size.Y/2)
         
-                getgenv().DealerHolder[i][2].Position = Position
-                getgenv().DealerHolder[i][2].Visible = OnScreen
-                getgenv().DealerHolder[i][2].Color = (CheckAvalibility(getgenv().DealerHolder[i][1].Parent) and Color3.new(0.729411, 0.741176, 0.109803)) or Color3.new(1, 0, 0)
+                DealerHolder[i][2].Position = Position
+                DealerHolder[i][2].Visible = OnScreen
+                DealerHolder[i][2].Color = (CheckAvalibility(DealerHolder[i][1].Parent) and Color3.new(0.729411, 0.741176, 0.109803)) or Color3.new(1, 0, 0)
             end
         end
     end
