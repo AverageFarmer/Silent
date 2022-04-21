@@ -125,47 +125,35 @@ for i,v in pairs(Throwables) do
     table.insert(ItemList, v.Name)
 end
 
-local TDrop = Aim:Dropdown("Targeted Part", rigTypeR6, "Head", "AimDrop", function(Item) --true/false, replaces the current title "Dropdown" with the option that t
+local TDrop = Aim:Dropdown("Targeted Part", rigTypeR6, Settings.SelectedPart, "AimDrop", function(Item) --true/false, replaces the current title "Dropdown" with the option that t
     Settings.SelectedPart = Item
 end)
 
-TDrop:Set(Settings.SelectedPart)
-
-local RndSelect = Aim:Toggle("RandomSelect(Override)", false, "RandomSelect", function(bool)
+local RndSelect = Aim:Toggle("RandomSelect(Override)", Settings.RandomSelect, "RandomSelect", function(bool)
     Settings.RandomSelect = bool
 end)
 
-RndSelect:Set(Settings.RandomSelect)
-
-local AimType = Aim:Dropdown("Aim Type", {"Mouse", "Closest"}, "Mouse", "AimType", function(Item) --true/false, replaces the current title "Dropdown" with the option that t
+local AimType = Aim:Dropdown("Aim Type", {"Mouse", "Closest"}, Settings.Type, "AimType", function(Item) --true/false, replaces the current title "Dropdown" with the option that t
     Settings.Type = Item
 end)
 
-AimType:Set(Settings.Type)
-
-local CircleVis = Aim:Toggle("Visible", true, "Visible" ,function(bool)
+local CircleVis = Aim:Toggle("Visible", Settings.CircleVisibility, "Visible" ,function(bool)
     Settings.CircleVisibility = bool
 end)
 
-CircleVis:Set(Settings.CircleVisibility)
-
-local FOV = Aim:Slider("FOV", Settings.FOV, 250, 5, 1, "FOV", function(value)
+local FOV = Aim:Slider("FOV", Settings.FOV, 250, 45, 1, "FOV", function(value)
    Settings.FOV = value
 end)
-
-FOV:Set(Settings.FOV)
 
 Aim:Bind("Aimbot", Enum.KeyCode.Y, false, "Aimbot", function() --Default bind
     Settings.AimLock = not Settings.AimLock
 end)
 
-local HitChance = Aim:Slider("Hit Chance", 1, 100, 100, 1, "HitChance",function(value)
+local HitChance = Aim:Slider("Hit Chance", Settings.HitChance, 1, 100, 1, "HitChance",function(value)
     Settings.HitChance = value
 end)
 
-HitChance:Set(Settings.HitChance)
-
-local SEsp = SafeEsp:Toggle("Safe", false, "SafeE", function(bool)
+local SEsp = SafeEsp:Toggle("Safe", Settings.SafeEsp, "SafeE", function(bool)
     Settings.SafeEsp = bool
     
     if Settings.SafeEsp then
@@ -173,9 +161,7 @@ local SEsp = SafeEsp:Toggle("Safe", false, "SafeE", function(bool)
     end
 end)
 
-SEsp:Set(Settings.SafeEsp)
-
-local ScEsp = ScrapEsp:Toggle("Scraps", false, "ScrapsE", function(bool)
+local ScEsp = ScrapEsp:Toggle("Scraps", Settings.ScrapEsp, "ScrapsE", function(bool)
     Settings.ScrapEsp = bool
 
     if Settings.ScrapEsp then
@@ -183,13 +169,9 @@ local ScEsp = ScrapEsp:Toggle("Scraps", false, "ScrapsE", function(bool)
     end
 end)
 
-ScEsp:Set(Settings.ScrapEsp)
-
-local DEsp = DealerEsp:Toggle("Dealer", false, "DealerE", function(bool)
+local DEsp = DealerEsp:Toggle("Dealer", Settings.DealerEsp, "DealerE", function(bool)
     Settings.DealerEsp = bool
 end)
-
-DEsp:Set(Settings.DealerEsp)
 
 DealerEsp:Dropdown("Item Check", ItemList, "", "ItemCheck",function(Item) --true/false, replaces the current title "Dropdown" with the option that t
     Settings.SelectedItem = Item
@@ -197,11 +179,9 @@ end)
 
 MiscOptions:Label("Auto")
 
-local AutoLockPick = MiscOptions:Toggle("Auto Lockpick", false, "LockPick", function(bool)
+local AutoLockPick = MiscOptions:Toggle("Auto Lockpick", Settings.AutoLockPick, "LockPick", function(bool)
     Settings.AutoLockPick = bool
 end)
-
-AutoLockPick:Set(Settings.AutoLockPick)
 
 MiscOptions:Label("Other")
 
