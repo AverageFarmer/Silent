@@ -53,6 +53,10 @@ if isfile(UIName) then
     for i,v in pairs(data) do
         getgenv().Settings[i] = v
     end
+
+    for i,v in pairs(getgenv().Settings) do
+        print(i, v)
+    end
     SolarisLib:Notification("Loaded", "Data loaded")
 end
 
