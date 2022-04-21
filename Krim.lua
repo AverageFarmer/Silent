@@ -26,6 +26,7 @@ local ItemList = {}
 local SafeHolder = {}
 local DealerHolder = {}
 local ScrapHolder = {}
+local Friends = {}
 
 RunServ:UnbindFromRenderStep("Hova Upid")
 
@@ -44,6 +45,7 @@ getgenv().Settings = {
     FOV = 100,
     CircleVisibility = true,
     HitChance = 100,
+    Blacklist = false -- Friends aren't targeted by silent aim
 }
 
 if isfile(UIName) then
@@ -52,10 +54,6 @@ if isfile(UIName) then
 
     for i,v in pairs(data) do
         getgenv().Settings[i] = v
-    end
-
-    for i,v in pairs(getgenv().Settings) do
-        print(i, v)
     end
     SolarisLib:Notification("Loaded", "Data loaded")
 end
@@ -141,7 +139,7 @@ local CircleVis = Aim:Toggle("Visible", Settings.CircleVisibility, "Visible" ,fu
     Settings.CircleVisibility = bool
 end)
 
-local FOV = Aim:Slider("FOV", Settings.FOV, 250, 45, 1, "FOV", function(value)
+local FOV = Aim:Slider("FOV", Settings.FOV, 250, 5, 1, "FOV", function(value)
    Settings.FOV = value
 end)
 
@@ -149,8 +147,12 @@ Aim:Bind("Aimbot", Enum.KeyCode.Y, false, "Aimbot", function() --Default bind
     Settings.AimLock = not Settings.AimLock
 end)
 
-local HitChance = Aim:Slider("Hit Chance", Settings.HitChance, 1, 100, 1, "HitChance",function(value)
+local HitChance = Aim:Slider("Hit Chance", Settings.HitChance, 100, 1, 1, "HitChance",function(value)
     Settings.HitChance = value
+end)
+
+Aim:Toggle("Blacklist Friends", Settings.Blacklist, "Blacklist" ,function(bool)
+    Settings.Blacklist = bool
 end)
 
 local SEsp = SafeEsp:Toggle("Safe", Settings.SafeEsp, "SafeE", function(bool)
@@ -190,13 +192,16 @@ MiscOptions:Button("Save Settings", function()
     SolarisLib:Notification("Saved", "Your data has been saved")
 end)
 
-function CheckAvalibility(Dealer)
-    for i,v in pairs(Dealer:FindFirstChild("CurrentStocks", true):GetChildren()) do
-        if v.Name == Settings.SelectedItem and v.Value ~= 0 then
-            return true
+function CheckFriends()
+    Friends = {}
+
+    for i,v in pairs(game.Players:GetPlayers()) do
+        if v.Name == LocalPlayer.Name then continue end
+
+        if LocalPlayer:IsFriendsWith(v.UserId) then
+            table.insert(Friends, v.Name)
         end
     end
-    return false
 end
 
 function AutoFinishLockPicks(Gui)

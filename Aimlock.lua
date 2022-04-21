@@ -54,6 +54,9 @@ local AimbotLoop = RunService:BindToRenderStep("updateAimbot", 1, function()
         local RootPart, Humanoid = Character and Character:FindFirstChild("HumanoidRootPart"), Character and Character:FindFirstChildOfClass("Humanoid")
         if not Character or not RootPart or not Humanoid then continue end
         if Player == LocalPlayer then continue end
+        if Settings.Blacklist then
+            if LocalPlayer:IsFriendsWith(Player.UserId) then continue end
+        end
 
         local Head = Character:FindFirstChild("Head")
         if not Head then continue end
