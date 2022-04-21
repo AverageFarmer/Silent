@@ -48,7 +48,11 @@ getgenv().Settings = {
 
 if isfile(UIName) then
     local data = readfile(UIName)
-    getgenv().Settings = HTTP:JSONDecode(data)
+    data = HTTP:JSONDecode(data)
+
+    for i,v in pairs(data) do
+        getgenv().Settings[i] = v
+    end
     SolarisLib:Notification("Loaded", "Data loaded")
 end
 
@@ -134,7 +138,6 @@ local AimType = Aim:Dropdown("Aim Type", {"Mouse", "Closest"}, "Mouse", "AimType
 end)
 
 AimType:Set(Settings.Type)
-
 
 local CircleVis = Aim:Toggle("Visible", true, "Visible" ,function(bool)
     Settings.CircleVisibility = bool
