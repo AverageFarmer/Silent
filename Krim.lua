@@ -1,3 +1,4 @@
+local SolarisLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/sol"))()
 --sad
 local UIName = "Creaminality.txt"
 local Players = game:GetService("Players")
@@ -49,6 +50,7 @@ local Settings = getgenv().Settings
 if isfile(UIName) then
     local data = readfile(UIName)
     getgenv().Settings = HTTP:JSONDecode(data)
+    SolarisLib:Notification("Loaded", "Data loaded")
 end
 
 local rigTypeR6 = {
@@ -63,7 +65,6 @@ local rigTypeR6 = {
 local SafeOnColor = Color3.fromRGB(34, 226, 16)
 local SafeOffColor = Color3.fromRGB(93, 93, 93)
     
-local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/AikaV3rm/UiLib/master/Lib.lua')))()
 local AimBot = loadstring(game:HttpGet("https://raw.githubusercontent.com/JuiceWarfare/Silent/master/Aimlock.lua"))()
 
 local FovCircle = Drawing.new("Circle")
@@ -79,17 +80,21 @@ _G.SecondaryColor = Color3.new(0.866666, 0.447058, 0.058823)
 _G.TertiaryColor = Color3.new(0, 0, 0)
 _G.ArrowColor = Color3.new(0.733333, 0.356862, 0.050980)
 
-local SilentAim = library:CreateWindow("Aim") -- Creates the window
-local Esps = library:CreateWindow("Esps")
-local Misc = library:CreateWindow("Misc")
+local window = SolarisLib:New({
+    Name = "Creaminality",
+    FolderToSave = "CreamStuff"
+})
+local SilentAim = window:Tab("Aim") -- Creates the window
+local Esps = window:Tab("Esps")
+local Misc = window:Tab("Misc")
 
-local Aim = SilentAim:CreateFolder("AimLock") -- Creates the folder(U will put here your buttons,etc)
+local Aim = SilentAim:Section("AimLock") -- Creates the folder(U will put here your buttons,etc)
 
-local SafeEsp = Esps:CreateFolder("SafeEsp")
-local DealerEsp = Esps:CreateFolder("DealerEsp")
-local ScrapEsp = Esps:CreateFolder("ScrapEsp")
+local SafeEsp = Esps:Section("SafeEsp")
+local DealerEsp = Esps:Section("DealerEsp")
+local ScrapEsp = Esps:Section("ScrapEsp")
 
-local MiscOptions = Misc:CreateFolder("Options")
+local MiscOptions = Misc:Section("Options")
 
 table.insert(ItemList, "None")
 for i,v in pairs(Armour) do
@@ -112,68 +117,49 @@ for i,v in pairs(Throwables) do
     table.insert(ItemList, v.Name)
 end
 
-Aim:Label("Select Part",{
-    TextSize = 16; -- Self Explaining
-    TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
-    BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
-})
-
-Aim:Dropdown("Head", rigTypeR6, true, function(Item) --true/false, replaces the current title "Dropdown" with the option that t
+local TDrop = Aim:Dropdown("Targeted Part", rigTypeR6, "Head", "AimDrop", function(Item) --true/false, replaces the current title "Dropdown" with the option that t
     Settings.SelectedPart = Item
 end)
 
-Aim:Toggle("RandomSelect(Override)", function(bool)
+TDrop:Set(Settings.SelectedPart)
+
+local RndSelect = Aim:Toggle("RandomSelect(Override)", false, "RandomSelect", function(bool)
     Settings.RandomSelect = bool
 end)
 
-Aim:Label("Select Type",{
-    TextSize = 16; -- Self Explaining
-    TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
-    BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
-})
+RndSelect:Set(Settings.RandomSelect)
 
-Aim:Dropdown("Mouse", {"Mouse", "Closest"}, true, function(Item) --true/false, replaces the current title "Dropdown" with the option that t
+local AimType = Aim:Dropdown("Aim Type", {"Mouse", "Closest"}, "Mouse", "AimType", function(Item) --true/false, replaces the current title "Dropdown" with the option that t
     Settings.Type = Item
 end)
 
-Aim:Label("Silent Aim",{
-    TextSize = 16; -- Self Explaining
-    TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
-    BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
-})
+AimType:Set(Settings.Type)
 
-Aim:Toggle("Visible", function(bool)
+Aim:Label("Silent Aim")
+
+local CircleVis = Aim:Toggle("Visible", true, "Visible" ,function(bool)
     Settings.CircleVisibility = bool
 end)
 
+CircleVis:Set(Settings.CircleVisibility)
 
-Aim:Slider("FOV",{
-    min = 5; -- min value of the slider
-    max = 250; -- max value of the slider
-    precise = false; -- max 2 decimals
-},function(value)
+local FOV = Aim:Slider("FOV", Settings.FOV, 250, 5, 1, "FOV", function(value)
    Settings.FOV = value
 end)
 
-Aim:Bind("Toggle",Enum.KeyCode.Y,function() --Default bind
+FOV:Set(Settings.FOV)
+
+Aim:Bind("Aimbot", Enum.KeyCode.Y, false, "Aimbot", function() --Default bind
     Settings.AimLock = not Settings.AimLock
 end)
 
-Aim:Label("Select Type",{
-    TextSize = 16; -- Self Explaining
-    TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
-    BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
-})
-
-Aim:Slider("Hit Chance",{
-    min = 1; -- min value of the slider
-    max = 100; -- max value of the slider
-    precise = false; -- max 2 decimals
-},function(value)
+local HitChance = Aim:Slider("Hit Chance", 1, 100, 100, 1, "HitChance",function(value)
     Settings.HitChance = value
 end)
 
-SafeEsp:Toggle("Toggle", function(bool)
+HitChance:Set(Settings.HitChance)
+
+local SEsp = SafeEsp:Toggle("Safe", false, "Safe", function(bool)
     Settings.SafeEsp = bool
     
     if Settings.SafeEsp then
@@ -181,7 +167,9 @@ SafeEsp:Toggle("Toggle", function(bool)
     end
 end)
 
-ScrapEsp:Toggle("Toggle", function(bool)
+SEsp:Set(Settings.SafeEsp)
+
+local ScEsp = ScrapEsp:Toggle("Scraps", false, "Scraps", function(bool)
     Settings.ScrapEsp = bool
 
     if Settings.ScrapEsp then
@@ -189,32 +177,31 @@ ScrapEsp:Toggle("Toggle", function(bool)
     end
 end)
 
-DealerEsp:Toggle("Toggle", function(bool)
+ScEsp:Set(Settings.ScrapEsp)
+
+local DEsp = DealerEsp:Toggle("Dealer", false, "Dealer", function(bool)
     Settings.DealerEsp = bool
 end)
 
-DealerEsp:Dropdown("None", ItemList, true, function(Item) --true/false, replaces the current title "Dropdown" with the option that t
+DEsp:Set(Settings.DealerEsp)
+
+DealerEsp:Dropdown("Item Check", ItemList, "", "ItemCheck",function(Item) --true/false, replaces the current title "Dropdown" with the option that t
     Settings.SelectedItem = Item
 end)
 
-MiscOptions:Label("Auto", {
-    TextSize = 16; -- Self Explaining
-    TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
-    BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
-})
+MiscOptions:Label("Auto")
 
-MiscOptions:Toggle("Auto Lockpick", function(bool)
+local AutoLockPick = MiscOptions:Toggle("Auto Lockpick", false, "LockPick", function(bool)
     Settings.AutoLockPick = bool
 end)
 
-MiscOptions:Label("Other",{
-    TextSize = 16; -- Self Explaining
-    TextColor = Color3.fromRGB(0, 0, 0); -- Self Explaining
-    BgColor = Color3.new(0.733333, 0.356862, 0.050980); -- Self Explaining 
-})
+AutoLockPick:Set(Settings.AutoLockPick)
+
+MiscOptions:Label("Other")
 
 MiscOptions:Button("Save Settings", function()
     writefile(UIName, HTTP:JSONEncode(Settings))
+    SolarisLib:Notification("Saved", "Your data has been saved")
 end)
 
 function CheckAvalibility(Dealer)
