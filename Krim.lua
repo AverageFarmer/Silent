@@ -45,7 +45,6 @@ getgenv().Settings = {
     CircleVisibility = true,
     HitChance = 100,
 }
-local Settings = getgenv().Settings
 
 if isfile(UIName) then
     local data = readfile(UIName)
@@ -53,6 +52,7 @@ if isfile(UIName) then
     SolarisLib:Notification("Loaded", "Data loaded")
 end
 
+local Settings = getgenv().Settings
 local rigTypeR6 = {
     "Head",
 	"Torso",
@@ -135,7 +135,6 @@ end)
 
 AimType:Set(Settings.Type)
 
-Aim:Label("Silent Aim")
 
 local CircleVis = Aim:Toggle("Visible", true, "Visible" ,function(bool)
     Settings.CircleVisibility = bool
