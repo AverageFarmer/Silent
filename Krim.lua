@@ -155,7 +155,7 @@ Aim:Toggle("Blacklist Friends", Settings.Blacklist, "Blacklist" ,function(bool)
     Settings.Blacklist = bool
 end)
 
-local SEsp = SafeEsp:Toggle("Safe", Settings.SafeEsp, "SafeE", function(bool)
+local SEsp = SafeEsp:Toggle("Safe", false, "SafeE", function(bool)
     Settings.SafeEsp = bool
     
     if Settings.SafeEsp then
@@ -163,7 +163,7 @@ local SEsp = SafeEsp:Toggle("Safe", Settings.SafeEsp, "SafeE", function(bool)
     end
 end)
 
-local ScEsp = ScrapEsp:Toggle("Scraps", Settings.ScrapEsp, "ScrapsE", function(bool)
+local ScEsp = ScrapEsp:Toggle("Scraps", false, "ScrapsE", function(bool)
     Settings.ScrapEsp = bool
 
     if Settings.ScrapEsp then
@@ -171,7 +171,7 @@ local ScEsp = ScrapEsp:Toggle("Scraps", Settings.ScrapEsp, "ScrapsE", function(b
     end
 end)
 
-local DEsp = DealerEsp:Toggle("Dealer", Settings.DealerEsp, "DealerE", function(bool)
+local DEsp = DealerEsp:Toggle("Dealer", false, "DealerE", function(bool)
     Settings.DealerEsp = bool
 end)
 
