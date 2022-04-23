@@ -45,8 +45,12 @@ getgenv().Settings = {
     FOV = 100,
     CircleVisibility = true,
     HitChance = 100,
-    Blacklist = false -- Friends aren't targeted by silent aim
+    Blacklist = false, -- Friends aren't targeted by silent aim
+
+    KillSwitch = false
 }
+
+local PrevSettings = {}
 
 if isfile(UIName) then
     local data = readfile(UIName)
@@ -139,7 +143,7 @@ local CircleVis = Aim:Toggle("Visible", Settings.CircleVisibility, "Visible" ,fu
     Settings.CircleVisibility = bool
 end)
 
-local FOV = Aim:Slider("FOV", 0, 250, 0, 5, "FOVa", function(value)
+local FOV = Aim:Slider("FOV", 20, 250, Settings.FOV, 5, "FOVa", function(value)
    Settings.FOV = value
 end)
 
@@ -149,7 +153,7 @@ Aim:Bind("Aimbot", Enum.KeyCode.Y, false, "Aimbot", function() --Default bind
     Settings.AimLock = not Settings.AimLock
 end)
 
-local HitChance = Aim:Slider("Hit Chance", 0, 100, 10, 5, "HitChance",function(value)
+local HitChance = Aim:Slider("Hit Chance", 10, 100, Settings.HitChance, 5, "HitChance",function(value)
     Settings.HitChance = value
 end)
 
@@ -190,6 +194,26 @@ local AutoLockPick = MiscOptions:Toggle("Auto Lockpick", Settings.AutoLockPick, 
 end)
 
 MiscOptions:Label("Other")
+
+MiscOptions:Bind("KillSwitch", Enum.KeyCode.G, false, "KillSwitch", function() --Default bind
+    Settings.KillSwitch = not Settings.KillSwitch
+    
+    if Settings.KillSwitch then
+        PrevSettings = Settings
+        for i, v in pairs(getgenv().Settings) do
+            if typeof(v) == "boolean" then
+                getgenv().Settings[i] = false
+            end
+        end
+    else
+        for i, v in pairs(getgenv().Settings) do
+            if typeof(v) == "boolean" then
+                getgenv().Settings[i] = PrevSettings[i]
+            end
+        end
+    end
+end)
+
 
 MiscOptions:Button("Save Settings", function()
     writefile(UIName, HTTP:JSONEncode(Settings))
