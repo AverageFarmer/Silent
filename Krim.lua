@@ -149,9 +149,11 @@ Aim:Bind("Aimbot", Enum.KeyCode.Y, false, "Aimbot", function() --Default bind
     Settings.AimLock = not Settings.AimLock
 end)
 
-local HitChance = Aim:Slider("Hit Chance", Settings.HitChance, 100, 10, 5, "HitChance",function(value)
+local HitChance = Aim:Slider("Hit Chance", 80, 100, 10, 5, "HitChance",function(value)
     Settings.HitChance = value
 end)
+
+HitChance:Set(Settings.HitChance)
 
 Aim:Toggle("Blacklist Friends", Settings.Blacklist, "Blacklist" ,function(bool)
     Settings.Blacklist = bool
