@@ -139,7 +139,7 @@ local CircleVis = Aim:Toggle("Visible", Settings.CircleVisibility, "Visible" ,fu
     Settings.CircleVisibility = bool
 end)
 
-local FOV = Aim:Slider("FOV", 50, 250, 5, 5, "FOVa", function(value)
+local FOV = Aim:Slider("FOV", 0, 250, 0, 5, "FOVa", function(value)
    Settings.FOV = value
 end)
 
@@ -149,7 +149,7 @@ Aim:Bind("Aimbot", Enum.KeyCode.Y, false, "Aimbot", function() --Default bind
     Settings.AimLock = not Settings.AimLock
 end)
 
-local HitChance = Aim:Slider("Hit Chance", 80, 100, 10, 5, "HitChance",function(value)
+local HitChance = Aim:Slider("Hit Chance", 0, 100, 10, 5, "HitChance",function(value)
     Settings.HitChance = value
 end)
 
