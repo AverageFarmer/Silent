@@ -89,6 +89,7 @@ local rigTypeR6 = {
 
 local SafeOnColor = Color3.fromRGB(34, 226, 16)
 local SafeOffColor = Color3.fromRGB(93, 93, 93)
+local CircleColor = Color3.fromRGB(255, 255, 255)
     
 local AimBot = loadstring(game:HttpGet("https://raw.githubusercontent.com/JuiceWarfare/Silent/master/Aimlock.lua"))()
 
@@ -98,7 +99,7 @@ FovCircle.Filled = false
 FovCircle.Radius = Settings.FOV
 FovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
 FovCircle.Thickness = .1
-FovCircle.Color = Color3.new(1, 1, 1)
+FovCircle.Color = CircleColor
 
 _G.MainColor = Color3.new()
 _G.SecondaryColor = Color3.new(0.866666, 0.447058, 0.058823)
@@ -174,6 +175,10 @@ HitChance:Set(Settings.HitChance)
 
 Aim:Toggle("Blacklist Friends", Settings.Blacklist, "Blacklist" ,function(bool)
     Settings.Blacklist = bool
+end)
+
+Aim:Colorpicker("CircleColor", CircleColor, "CC", function(Color)
+    CircleColor = Color
 end)
 
 local SEsp = SafeEsp:Toggle("Safe", false, "SafeE", function(bool)
@@ -406,6 +411,7 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
     
     FovCircle.Radius = Settings.FOV
     FovCircle.Position = Vector2.new(Mouse.X , Mouse.Y + 37)
+    FovCircle.Color = CircleColor
 
     if not Settings.SafeEsp then
         for i,v in pairs(SafeHolder) do
