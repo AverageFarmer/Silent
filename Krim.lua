@@ -165,8 +165,6 @@ local FOV = Aim:Slider("FOV", 20, 250, Settings.FOV, 5, "FOVa", function(value)
    Settings.FOV = value
 end)
 
-FOV:Set(Settings.FOV)
-
 Aim:Bind("Aimbot", Enum.KeyCode.Y, false, "Aimbot", function() --Default bind
     Settings.AimLock = not Settings.AimLock
 end)
