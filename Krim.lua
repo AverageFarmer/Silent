@@ -214,7 +214,6 @@ MiscOptions:Bind("KillSwitch", Enum.KeyCode.N, false, "KillSwitch", function() -
     end
 end)
 
-
 MiscOptions:Button("Save Settings", function()
     writefile(UIName, HTTP:JSONEncode(Settings))
     SolarisLib:Notification("Saved", "Your data has been saved")
