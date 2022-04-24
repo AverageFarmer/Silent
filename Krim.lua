@@ -50,7 +50,25 @@ getgenv().Settings = {
     KillSwitch = false
 }
 
-local PrevSettings = {}
+local PrevSettings = {
+    SafeEsp = false,
+    ScrapEsp = false,
+    DealerEsp = false,
+
+    AutoLockPick = false,
+
+    Type = "Mouse",
+    SelectedPart = "Head",
+    SelectedItem = "None",
+    RandomSelect = false,
+    AimLock = false,
+    FOV = 100,
+    CircleVisibility = true,
+    HitChance = 100,
+    Blacklist = false,
+
+    KillSwitch = false
+}
 
 if isfile(UIName) then
     local data = readfile(UIName)
