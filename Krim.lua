@@ -2,7 +2,6 @@ local SolarisLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/bl
 --sad
 local UIName = "Creaminality.txt"
 local Players = game:GetService("Players")
-local UserInput = game:GetService("UserInputService")
 local HTTP = game:GetService("HttpService")
 local RunServ = game:GetService("RunService")
 
@@ -10,8 +9,6 @@ local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local Mouse = LocalPlayer:GetMouse()
-local PickUpRemote = game:GetService("ReplicatedStorage")["Events"]["PIC_PU"]
-local PickUpCash = game:GetService("ReplicatedStorage")["Events"]["CZDPZUS"]
 
 local ScarpSpawn = game:GetService("Workspace").Filter.SpawnedPiles
 local Dealers = game:GetService("Workspace")["Map"]["Shopz"]
