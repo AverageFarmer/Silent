@@ -195,13 +195,13 @@ end)
 
 MiscOptions:Label("Other")
 
-MiscOptions:Bind("KillSwitch", Enum.KeyCode.G, false, "KillSwitch", function() --Default bind
+MiscOptions:Bind("KillSwitch", Enum.KeyCode.N, false, "KillSwitch", function() --Default bind
     Settings.KillSwitch = not Settings.KillSwitch
     
     if Settings.KillSwitch then
-        PrevSettings = Settings
         for i, v in pairs(getgenv().Settings) do
             if typeof(v) == "boolean" then
+                PrevSettings[i] = v
                 getgenv().Settings[i] = false
             end
         end
