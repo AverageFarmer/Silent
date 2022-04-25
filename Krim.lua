@@ -248,6 +248,7 @@ end
 
 
 function AutoFinishLockPicks(Gui)
+    task.wait(.5)
     local MF = Gui.MF
     local LPFrame = MF.LP_Frame.Frames
     local Frames = {}
@@ -261,13 +262,14 @@ function AutoFinishLockPicks(Gui)
         if not v:IsA("Frame") then continue end
         if v.Visible then
             Frames[v.Name] = v
+            print(v.Name)
         end
     end
 
     for i, name in pairs(FrameNames) do
         local StartTime = os.time()
         local Frame = Frames[name]
-        print(name, Frame.Name)
+
         if Frame then
             repeat
                 if os.time() - StartTime >= 3 then return end
