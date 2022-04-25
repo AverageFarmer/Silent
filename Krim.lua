@@ -267,7 +267,7 @@ function AutoFinishLockPicks(Gui)
     for i, name in pairs(FrameNames) do
         local StartTime = os.time()
         local Frame = Frames[name]
-
+        print(name, Frame.Name)
         if Frame then
             repeat
                 if os.time() - StartTime >= 3 then return end
