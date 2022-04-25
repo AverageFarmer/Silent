@@ -248,7 +248,6 @@ end
 
 
 function AutoFinishLockPicks(Gui)
-    task.wait(1)
     local MF = Gui.MF
     local LPFrame = MF.LP_Frame.Frames
     local Frames = {}
@@ -277,8 +276,6 @@ function AutoFinishLockPicks(Gui)
         
             mouse1click()
             task.wait(.2)
-        else
-            continue
         end
     end
 end
