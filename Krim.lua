@@ -23,6 +23,7 @@ local ItemList = {}
 local SafeHolder = {}
 local DealerHolder = {}
 local ScrapHolder = {}
+local PlayerHolder = {}
 local Friends = {}
 
 RunServ:UnbindFromRenderStep("Hova Upid")
@@ -31,6 +32,8 @@ getgenv().Settings = {
     SafeEsp = false,
     ScrapEsp = false,
     DealerEsp = false,
+    C4Esp = false,
+    GunEsp = false,
     
     AutoLockPick = false,
     
@@ -51,6 +54,7 @@ local PrevSettings = {
     SafeEsp = false,
     ScrapEsp = false,
     DealerEsp = false,
+    C4Esp = false,
 
     AutoLockPick = false,
 
@@ -119,6 +123,7 @@ local Aim = SilentAim:Section("AimLock") -- Creates the folder(U will put here y
 local SafeEsp = Esps:Section("SafeEsp")
 local DealerEsp = Esps:Section("DealerEsp")
 local ScrapEsp = Esps:Section("ScrapEsp")
+local ItemEsp = Esps:Section("ItemEsp")
 
 local MiscOptions = Misc:Section("Options")
 
@@ -204,6 +209,21 @@ end)
 DealerEsp:Dropdown("Item Check", ItemList, "", "ItemCheck",function(Item) --true/false, replaces the current title "Dropdown" with the option that t
     Settings.SelectedItem = Item
 end)
+
+ItemEsp:Toggle("C4", false, "C4", function(bool)
+    Settings.C4Esp = bool
+end)
+
+ItemEsp:Toggle("GunEsp", false, "GunEsp", function(bool)
+    Settings.GunEsp = bool
+
+    if not bool then
+        for i,v in pairs(PlayerHolder) do
+            PlayerHolder[i].Visible = false
+        end
+    end
+end)
+
 
 MiscOptions:Label("Auto")
 
@@ -294,7 +314,7 @@ local MakeEsp = function(Ador, Shape, Properties)
 
 	local Size
 
-	if Shape == "Rectangle" or Shape == "Square" then
+	if Shape == "Rectangle" or Shape == "Square" or Shape == "Text" then
 		Size = Rec.Size
 	else
 		Size = Rec.Radius
@@ -396,11 +416,74 @@ function MakeScrapDots()
 	end
 end
 
+function GetPlayersTool(Player)
+    local Character = workspace.Characters:FindFirstChild(Player.Name)
+
+    if Character then
+        local Humanoid = Character.Humanoid
+
+        if Humanoid.Health > 0 then
+            local Tool = Character:FindFirstChildOfClass("Tool")
+
+            if Tool then
+                return Tool
+            end
+        end
+    end
+end
+
+function AddTextToPlayer(Player)
+    local textDrawing = Drawing.new("Text")
+    textDrawing.Size = 2
+    textDrawing.Text = ("[%s]"):format("None")
+    textDrawing.Center = true
+    textDrawing.Color = Color3.new(1, 1, 1)
+    PlayerHolder[Player.Name] = textDrawing
+end
+
+game.Players.PlayerAdded:Connect(function(player)
+    AddTextToPlayer(player)
+end)
+
+for i,v in pairs(game.Players:GetPlayers()) do
+    AddTextToPlayer(v)
+end
+
 MakeDealerDots()
 MakeSafeDots()
 --MakeScrapDots()
 
 RunServ:BindToRenderStep("Hova upid", 1, function()
+
+    if Settings.GunEsp then
+        for i, player in pairs(game.Players:GetPlayers()) do
+            if workspace.Characters:FindFirstChild(player.Name) then
+                local Character = workspace.Characters:FindFirstChild(player.Name)
+                local Root = Character.PrimaryPart
+                local vector, OnScreen = Camera:WorldToScreenPoint(Root.Position)
+                local GetTool = GetPlayersTool(player)
+                local Size = 15
+                local textDrawing = PlayerHolder[player.Name]
+                textDrawing.Size = Size
+                textDrawing.Visible = OnScreen
+                textDrawing.Position = Vector2.new(vector.X - Size/2, (vector.Y - Size/2) - 10)
+    
+                if GetTool then
+                    if GetTool:FindFirstChild("Ammo", true) then
+                        local Ammo = GetTool:FindFirstChild("Ammo", true)
+                        local StoredAmmo = GetTool:FindFirstChild("StoredAmmo", true)
+                        textDrawing.Text = ("[ %s ] %d/%d"):format(GetTool.Name, Ammo.Value, StoredAmmo.Value)
+                    else
+                        textDrawing.Text = ("[ %s ]"):format(GetTool.Name)
+                    end
+                else
+                    textDrawing.Text = "[ None ]"
+                end
+            else
+                PlayerHolder[player.Name].Visible = false
+            end
+        end
+    end
 
     if not Settings.AimLock then
         FovCircle.Visible = false
