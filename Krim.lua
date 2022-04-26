@@ -450,6 +450,7 @@ for i,v in pairs(game.Players:GetPlayers()) do
 end
 
 game.Players.PlayerRemoving:Connect(function(player)
+    PlayerHolder[player.Name]:Remove()
     PlayerHolder[player.Name] = nil
 end)
 
