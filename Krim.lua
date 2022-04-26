@@ -464,6 +464,7 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
             if workspace.Characters:FindFirstChild(player.Name) then
                 local Character = workspace.Characters:FindFirstChild(player.Name)
                 local Root = Character.PrimaryPart
+                if not Root then continue end
                 local vector, OnScreen = Camera:WorldToScreenPoint(Root.Position + Vector3.new(0, -6, 0))
                 local GetTool = GetPlayersTool(player)
                 local Size = 15
