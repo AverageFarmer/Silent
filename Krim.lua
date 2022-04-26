@@ -481,7 +481,7 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
                         local Ammo = GetTool:FindFirstChild("SERVER_Ammo", true)
                         local StoredAmmo = GetTool:FindFirstChild("SERVER_StoredAmmo", true)
                         textDrawing.Text = ("[ %s ] %d/%d"):format(GetTool.Name, Ammo.Value, StoredAmmo.Value)
-                        textDrawing.Color = Color3.new(0.074509, 0, 0.639215)
+                        textDrawing.Color = Color3.new(0, 1, 0.917647)
                     else
                         textDrawing.Text = ("[ %s ]"):format(GetTool.Name)
                         if GetTool.Name == "SlayerSword" then
@@ -490,6 +490,8 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
                             textDrawing.Color = Color3.new(1, 1, 1)
                         end
                     end
+                else
+                    PlayerHolder[player.Name].Visible = false
                 end
             else
                 PlayerHolder[player.Name].Visible = false
