@@ -460,18 +460,18 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
             if workspace.Characters:FindFirstChild(player.Name) then
                 local Character = workspace.Characters:FindFirstChild(player.Name)
                 local Root = Character.PrimaryPart
-                local vector, OnScreen = Camera:WorldToScreenPoint(Root.Position)
+                local vector, OnScreen = Camera:WorldToScreenPoint(Root.Position + Vector3.new(0, -6, 0))
                 local GetTool = GetPlayersTool(player)
                 local Size = 15
                 local textDrawing = PlayerHolder[player.Name]
                 textDrawing.Size = Size
                 textDrawing.Visible = OnScreen
-                textDrawing.Position = Vector2.new(vector.X - Size/2, (vector.Y - Size/2) - 20)
+                textDrawing.Position = Vector2.new(vector.X - Size/2, (vector.Y - Size/2))
     
                 if GetTool then
                     if GetTool:FindFirstChild("Ammo", true) then
-                        local Ammo = GetTool:FindFirstChild("Ammo", true)
-                        local StoredAmmo = GetTool:FindFirstChild("StoredAmmo", true)
+                        local Ammo = GetTool:FindFirstChild("SERVER_Ammo", true)
+                        local StoredAmmo = GetTool:FindFirstChild("SERVER_StoredAmmo", true)
                         textDrawing.Text = ("[ %s ] %d/%d"):format(GetTool.Name, Ammo.Value, StoredAmmo.Value)
                     else
                         textDrawing.Text = ("[ %s ]"):format(GetTool.Name)
