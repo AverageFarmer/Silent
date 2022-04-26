@@ -466,7 +466,7 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
                 local textDrawing = PlayerHolder[player.Name]
                 textDrawing.Size = Size
                 textDrawing.Visible = OnScreen
-                textDrawing.Position = Vector2.new(vector.X - Size/2, (vector.Y - Size/2) - 10)
+                textDrawing.Position = Vector2.new(vector.X - Size/2, (vector.Y - Size/2) - 20)
     
                 if GetTool then
                     if GetTool:FindFirstChild("Ammo", true) then
