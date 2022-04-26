@@ -449,6 +449,10 @@ for i,v in pairs(game.Players:GetPlayers()) do
     AddTextToPlayer(v)
 end
 
+game.Players.PlayerRemoving:Connect(function(player)
+    PlayerHolder[player.Name] = nil
+end)
+
 MakeDealerDots()
 MakeSafeDots()
 --MakeScrapDots()
@@ -466,7 +470,7 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
                 local textDrawing = PlayerHolder[player.Name]
                 textDrawing.Size = Size
                 textDrawing.Visible = OnScreen
-                textDrawing.Position = Vector2.new(vector.X - Size/2, (vector.Y - Size/2))
+                textDrawing.Position = Vector2.new(vector.X, vector.Y)
     
                 if GetTool then
                     if GetTool:FindFirstChild("Ammo", true) then
