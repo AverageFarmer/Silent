@@ -1,5 +1,5 @@
-local SolarisLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/sol"))()
---sad
+local SolarisLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/JuiceWarfare/Silent/master/library.lua"))()
+
 local UIName = "Creaminality.txt"
 local Players = game:GetService("Players")
 local HTTP = game:GetService("HttpService")
