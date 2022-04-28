@@ -216,8 +216,8 @@ function Ripple(Object)
 	end)
 end
 
-function SolarisLib:Notification(title, desc)
-    Notify:New(title,desc)
+function SolarisLib:Notification(title, desc, duration)
+    Notify:New(title,desc, duration)
 end    
 
 function SolarisLib:New(Config)
