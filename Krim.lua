@@ -24,7 +24,7 @@ local SafeHolder = {}
 local DealerHolder = {}
 local ScrapHolder = {}
 local PlayerHolder = {}
-local Friends = {}
+local C4Holder = {}
 
 RunServ:UnbindFromRenderStep("Hova Upid")
 
@@ -176,8 +176,6 @@ local HitChance = Aim:Slider("Hit Chance", 10, 100, Settings.HitChance, 5, "HitC
     Settings.HitChance = value
 end)
 
-HitChance:Set(Settings.HitChance)
-
 Aim:Toggle("Blacklist Friends", Settings.Blacklist, "Blacklist" ,function(bool)
     Settings.Blacklist = bool
 end)
@@ -223,7 +221,6 @@ ItemEsp:Toggle("GunEsp", false, "GunEsp", function(bool)
         end
     end
 end)
-
 
 MiscOptions:Label("Auto")
 
@@ -432,6 +429,20 @@ function GetPlayersTool(Player)
     end
 end
 
+function MakeC4Esp(C4)
+    local textDrawing = Drawing.new("Text")
+    textDrawing.Size = 10
+    textDrawing.Text = ("**%s**"):format("C4")
+    textDrawing.Center = true
+    textDrawing.Color = Color3.new(0.8, 0.027450, 0.647058)
+    textDrawing.Outline = true
+    textDrawing.OutlineColor = Color3.new()
+    textDrawing.Font = 3
+
+    C4Holder[HTTP:GenerateGUID(false)] = {textDrawing, C4}
+end
+
+
 function AddTextToPlayer(Player)
     local textDrawing = Drawing.new("Text")
     textDrawing.Size = 2
@@ -454,6 +465,13 @@ end
 game.Players.PlayerRemoving:Connect(function(player)
     PlayerHolder[player.Name]:Remove()
     PlayerHolder[player.Name] = nil
+end)
+
+workspace.Terrain.ChildAdded:Connect(function(Child)
+    if Child:FindFirstChild("DetonateEvent") then
+        local C4 = Child
+        MakeC4Esp(C4)
+    end
 end)
 
 MakeDealerDots()
@@ -508,6 +526,18 @@ RunServ:BindToRenderStep("Hova upid", 1, function()
     FovCircle.Radius = Settings.FOV
     FovCircle.Position = Vector2.new(Mouse.X , Mouse.Y + 37)
     FovCircle.Color = CircleColor
+
+    for i,v in pairs(C4Holder) do
+        if v[2].Parent then
+            local vector, OnScreen = Camera:WorldToScreenPoint(v[2].Position)
+            local text = v[1]
+            text.Position = Vector2.new(vector.X, vector.Y)
+            text.Visible = OnScreen
+        else
+            C4Holder[i][1]:Remove()
+            C4Holder[i] = nil
+        end
+    end
 
     if not Settings.SafeEsp then
         for i,v in pairs(SafeHolder) do
