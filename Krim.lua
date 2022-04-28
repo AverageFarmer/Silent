@@ -78,7 +78,7 @@ if isfile(UIName) then
     for i,v in pairs(data) do
         getgenv().Settings[i] = v
     end
-    SolarisLib:Notification("Loaded", "Data loaded")
+    SolarisLib:Notification("Loaded", "Data loaded", 1)
 end
 
 local Settings = getgenv().Settings
@@ -170,6 +170,8 @@ end)
 
 Aim:Bind("Aimbot", Enum.KeyCode.Y, false, "Aimbot", function() --Default bind
     Settings.AimLock = not Settings.AimLock
+
+    SolarisLib:Notification("Info", "Aimbot is " .. tostring(Settings.AimLock), .5)
 end)
 
 local HitChance = Aim:Slider("Hit Chance", 10, 100, Settings.HitChance, 5, "HitChance",function(value)
@@ -251,7 +253,7 @@ end)
 
 MiscOptions:Button("Save Settings", function()
     writefile(UIName, HTTP:JSONEncode(Settings))
-    SolarisLib:Notification("Saved", "Your data has been saved")
+    SolarisLib:Notification("Saved", "Your data has been saved", 1)
 end)
 
 function CheckAvalibility(Dealer)
