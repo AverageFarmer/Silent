@@ -78,7 +78,7 @@ if isfile(UIName) then
     for i,v in pairs(data) do
         getgenv().Settings[i] = v
     end
-    SolarisLib:Notification("Loaded", "Data loaded", 1)
+    SolarisLib:Notification("Loaded", "Data loaded", 2)
 end
 
 local Settings = getgenv().Settings
@@ -171,7 +171,7 @@ end)
 Aim:Bind("Aimbot", Enum.KeyCode.Y, false, "Aimbot", function() --Default bind
     Settings.AimLock = not Settings.AimLock
 
-    SolarisLib:Notification("Info", "Aimbot is " .. tostring(Settings.AimLock), .5)
+    SolarisLib:Notification("Info", "Aimbot is " .. tostring(Settings.AimLock), 1.5)
 end)
 
 local HitChance = Aim:Slider("Hit Chance", 10, 100, Settings.HitChance, 5, "HitChance",function(value)
