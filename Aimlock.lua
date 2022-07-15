@@ -88,11 +88,13 @@ local OldNamecall; OldNamecall = hookmetamethod(game, "__namecall", function(sel
 
     if (method == "Raycast") and (Settings.AimLock) then
         if math.random(1,100) <= Settings.HitChance then
+            local Character = LocalPlayer.Character
+            local Root = Character.HumanoidRootPart
             if table.find(args[3].FilterDescendantsInstances, LocalPlayer.Character) ~= 1 and table.find(args[3].FilterDescendantsInstances, Camera) ~= 2 and table.find(args[3].FilterDescendantsInstances, LocalPlayer.Character) ~= nil then
                 if #ValidTargets ~= 0 then
                     local Target = ValidTargets[1]
                     local Hitbox = Target[2]
-                    args[2] = (Hitbox.Position - Camera.CFrame.Position).Unit * (Hitbox.Position - Camera.CFrame.Position).Magnitude
+                    args[2] = (Hitbox.Position - (Root.CFrame * CFrame.new(0, Root.Size.Y/2, -1.3)).Position ).Unit * (Hitbox.Position - Camera.CFrame.Position).Magnitude
                 end
             end
         end
