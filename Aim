@@ -449,7 +449,7 @@ local function updateEsp()
 end
 updateEsp()
 
-spawn(function()
+task.spawn(function()
     local Circle = Drawing.new('Circle')
     Circle.Transparency = 1
     Circle.Thickness = 1.5
