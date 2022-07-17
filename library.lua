@@ -1182,7 +1182,7 @@ function SolarisLib:New(Config)
 
                 return Label
             end
-            function ItemHold:Textbox(text,disappear,callback)
+            function ItemHold:Textbox(text,disappear, default, callback)
                 local Textbox, TextboxFrame = {}, game:GetObjects("rbxassetid://7147292392")[1]
                 TextboxFrame.Parent = Section
                 TextboxFrame.Title.Text = text
@@ -1192,6 +1192,7 @@ function SolarisLib:New(Config)
                     TextboxFrame.Box.Size = UDim2.new(0,TextboxFrame.Box.TextBounds.X + 16,0,22)
                 end)
                 TextboxFrame.Box.PlaceholderText = "                  "
+                TextboxFrame.Box.Text = default or ""
 
                 TextboxFrame.InputBegan:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -1213,6 +1214,10 @@ function SolarisLib:New(Config)
 						TextboxFrame.Box:ReleaseFocus()
 					end
 				end)
+
+                function Textbox:Set(tochange)
+                    TextboxFrame.Box.Text = tochange
+                end    
                 
                 task.spawn(function()
                     while task.wait() do
