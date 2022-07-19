@@ -921,8 +921,6 @@ function SolarisLib:New(Config)
                     DropMain.Holder.Visible = Dropdown.Toggled
                 end
 
-
-
                 local function AddOptions(opts)
                     for _,option in pairs(opts) do
                         local Option = OptionPreset:Clone()
@@ -934,6 +932,7 @@ function SolarisLib:New(Config)
                             Dropdown.Value = option
                             DropMain.Btn.Title.Text = text .. " - " .. option
                             Ripple(Option)
+                            ToggleDrop()
                             return callback(Dropdown.Value)
                         end)
 
@@ -946,10 +945,6 @@ function SolarisLib:New(Config)
                         end)
                     end   
                 end    
-
-                function Dropdown:new(text)
-                    
-                end
 
                 function Dropdown:Refresh(opts,del)
                     if del then
