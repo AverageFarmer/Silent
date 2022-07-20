@@ -1156,14 +1156,16 @@ function SolarisLib:New(Config)
 
                 return ColorPicker
             end
-            function ItemHold:Label(text)
+            function ItemHold:Label(text, textcolor)
                 local Label, LabelFrame = {}, game:GetObjects("rbxassetid://7032552322")[1]
                 LabelFrame.Parent = Section
                 LabelFrame.Title.Text = text
+                LabelFrame.Title.TextColor3 = textcolor or Color3.new(1,1,1)
                 LabelFrame.Name = text .. "element"
 
-                function Label:Set(tochange)
+                function Label:Set(tochange, colorchange)
                     LabelFrame.Title.Text = tochange
+                    LabelFrame.Title.TextColor3 = colorchange or Color3.new(1,1,1)
                     LabelFrame.Name = text .. "element"
                 end    
 
