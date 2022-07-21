@@ -1015,6 +1015,7 @@ function SolarisLib:New(Config)
 								DropMain.Btn.Title.Text = text .. " - " .. table.concat(Dropdown.Value, ", ")
 								callback(Dropdown.Value)
 							end
+                            ToggleDrop()
                             Ripple(Option)
                         end)
 
@@ -1048,7 +1049,6 @@ function SolarisLib:New(Config)
                 function Dropdown:Set(val)
 					Dropdown.Value = val
                     DropMain.Btn.Title.Text = text .. " - " .. table.concat(Dropdown.Value, ", ")
-                    ToggleDrop()
 					return callback(Dropdown.Value)
 				end
 
