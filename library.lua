@@ -1040,7 +1040,6 @@ function SolarisLib:New(Config)
                     end    
                     AddOptions(opts)
                 end    
-             
 
                 DropMain.Btn.MouseButton1Click:Connect(function()
                     ToggleDrop()
