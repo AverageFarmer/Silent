@@ -537,7 +537,6 @@ function Luxt1.CreateWindow(libName, logoId)
                             checkBtn.ImageRectOffset = Vector2.new(940, 784)
                             checkBtn.ImageRectSize = Vector2.new(48,48)
                         end
-                        wait(.5)
                     end
                     
                     ToggleFrame.Name = "ToggleFrame"
