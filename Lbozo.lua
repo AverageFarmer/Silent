@@ -1162,6 +1162,7 @@ elseif game.PlaceId == 8349889591 then
     ------------------------------------------------------------------------------------------------------------------------------------
         local BossesKilled = 0
         local Break = false
+        local StartTime = os.time()
     
         request = http_request or request or HttpPost or syn.request
     
@@ -1383,7 +1384,7 @@ elseif game.PlaceId == 8349889591 then
     
         function SendWebhook()
             task.wait(.5)
-
+            local Seconds = os.time() - StartTime
             local holder = {
                 ["TotalGems"] = {
                     ["name"] = "Total Gems:",
@@ -1412,7 +1413,7 @@ elseif game.PlaceId == 8349889591 then
             local field = {
                 {
                     ["name"] = "Gems recived:",
-                    ["value"] = string.match(PlayerGui.ResultsUI.Holder.GoldGemXP.GemReward.Main.Amount.Text, "%d+") .. Emojis.Diamond,
+                    ["value"] = string.match(PlayerGui.Waves.HealthBar.GemRewardTotal.Main.Amount.Text, "%d+") .. Emojis.Diamond,
                     ["inline"] = true
                 },
     
@@ -1424,7 +1425,7 @@ elseif game.PlaceId == 8349889591 then
 
                 {
                     ["name"] = "Time Finished:",
-                    ["value"] = (string.match(PlayerGui.ResultsUI.Holder.Middle.Timer.Text, "%d+%p%d+")) .. Emojis.Time,
+                    ["value"] = (string.match("%s:%s", math.floor(Seconds/60%60), Seconds%60)) .. Emojis.Time,
                     ["inline"] = true
                 },
             }
@@ -1443,7 +1444,7 @@ elseif game.PlaceId == 8349889591 then
 
                 table.insert(field, {
                     ["name"] = "Reward Type",
-                    ["value"] = Loader.LevelData._reward .. "💰"
+                    ["value"] = Loader.LevelData._reward .. Emojis.Bag
                 })
             end
 
@@ -1634,6 +1635,9 @@ elseif game.PlaceId == 8349889591 then
             game:GetService("Workspace")["_wave_num"].Changed:Connect(function()
                 if game:GetService("Workspace")["_wave_num"].Value >= Settings.Maps[Settings.Map].SellAt and not Loader.LevelData._challenge then
                     if MapInfo["LeaveAtWave"] then
+                        SendWebhook()
+
+                        task.wait()
                         TeleportService:Teleport(8304191830)
                     else
                         SellAll()
