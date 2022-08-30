@@ -1425,7 +1425,7 @@ elseif game.PlaceId == 8349889591 then
 
                 {
                     ["name"] = "Time Finished:",
-                    ["value"] = (string.match("%s:%s", math.floor(Seconds/60%60), Seconds%60)) .. Emojis.Time,
+                    ["value"] = (string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60)) .. Emojis.Time,
                     ["inline"] = true
                 },
             }
