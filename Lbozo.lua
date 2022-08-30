@@ -88,7 +88,7 @@ if (isfile(FileNameOld .. ".lua")) then
 end
 
 -- AutoLaunch
-syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/animeAdv/main/Autofarm2.lua"))
+syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/dev/Lbozo.lua"))
 
 --// Vars
 local Lobby = "_lobbytemplategreen1"
