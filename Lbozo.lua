@@ -1190,18 +1190,22 @@ elseif game.PlaceId == 8349889591 then
         end)
 
         Units.ChildAdded:Connect(function(Unit)
-            task.wait(.5)
+            task.wait(1)
             if Unit:FindFirstChild("_stats") then
                 local _stats = Unit:FindFirstChild("_stats")
                 local _threat = _stats:FindFirstChild("threat")
-
+                
                 if (_threat and _threat.Value >= 3) then
                     repeat
                         task.wait(1)
                     until not Unit.Parent
-
+                    
                     BossesKilled = BossesKilled + 1
                 end
+            end
+
+            if Unit:FindFirstChild("_hitbox") then
+                Unit:FindFirstChild("_hitbox"):Destroy()
             end
         end)
 
@@ -1362,6 +1366,11 @@ elseif game.PlaceId == 8349889591 then
         repeat
             task.wait()
         until Loader.LevelData
+
+        for i, Info in pairs(UnitsInfo) do
+            Info.hill_unit = false
+            Info.hybrid_placement = true
+        end
 
         task.wait(.5)
     
