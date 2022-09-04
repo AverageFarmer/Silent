@@ -64,6 +64,12 @@ local EvoItems = {
     "ulquiorra_spear",
     "kisuke_stitches",
     "aizen_cube",
+    "killua_yoyo",
+    "gungi_set",
+    "gon_contract",
+    "netero_rose",
+    "kite_dice",
+    "pitou_puppet",
 }
 local OtherItems = {
     "summon_ticket",
@@ -153,6 +159,13 @@ local Settings = {
             SpawnCaps = {},
             Enabled = false,
         },
+
+        hxhant = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            Enabled = false,
+        },
     },
     
     AutoBuy = {
@@ -206,6 +219,13 @@ local Settings = {
         },
 
         hueco = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            SellAt = 23,
+        },
+
+        hxhant = {
             Units = {},
             Upgrades = {},
             SpawnCaps = {},
@@ -404,7 +424,8 @@ if game.PlaceId == 8304191830 then
         "naruto",
         "marineford",
         "tokyoghoul",
-        "hueco"
+        "hueco",
+        "hxhant"
     }
 
     local Numbers = {
@@ -680,7 +701,7 @@ if game.PlaceId == 8304191830 then
 --- Fully loaded
     
 
-    ClientToServer.accept_npc_quest:InvokeServer("bleach_daily")
+    ClientToServer.accept_npc_quest:InvokeServer("hxhant_daily")
 
     function SetupUnits()
         Pets = {}
@@ -703,7 +724,18 @@ if game.PlaceId == 8304191830 then
         Map = Map:lower()
         local MapInfo = Settings.Challenges[Map]
         local MapSlot = ChallengeTab:Section(Map)
-        MapSlot:Toggle("Enable", Settings.Challenges[Map].Enabled, function(val)
+
+        if not MapInfo then
+            Settings.Challenges[Map] = {
+                Units = {},
+                Upgrades = {},
+                SpawnCaps = {},
+                Enabled = false,
+            }
+            MapInfo = Settings.Challenges[Map]
+        end
+        
+        MapSlot:Toggle("Enable", Settings.Challenges[Map].Enabled or false, function(val)
             Settings.Challenges[Map].Enabled = val
             Save()
         end)
@@ -1355,6 +1387,26 @@ elseif game.PlaceId == 8349889591 then
                     CFrame.new(-198.855, 133.956, -765.302),
                     CFrame.new(-193.55, 133.944, -764.9),
                     CFrame.new(-188.986, 133.955, -769.329),
+                }
+            },
+
+            ["hxhant"] = {
+                Ground = {
+                    CFrame.new(-157.723, 24.2926, 2960.16),
+                    CFrame.new(-156.487, 24.2926, 2957.92),
+                    CFrame.new(-156.889, 24.2927, 2962.11),
+                    CFrame.new(-155.119, 24.2927, 2959.85),
+                    CFrame.new(-155.794, 24.2927, 2963.72),
+                    CFrame.new(-153.843, 24.2927, 2961.81),
+                    CFrame.new(-157.961, 24.3589, 2963.87),
+                    CFrame.new(-152.263, 24.3589, 2959.89),
+                    CFrame.new(-154.507, 24.2926, 2965.8),
+                    CFrame.new(-157.196, 24.2927, 2965.74),
+                    CFrame.new(-152.952, 24.2826, 2963.48),
+                    CFrame.new(-151.622, 24.2927, 2961.92),
+                    CFrame.new(-151.643, 24.2926, 2965.4),
+                    CFrame.new(-153.588, 24.2926, 2967.45),
+                    CFrame.new(-152.461, 24.2926, 2968.99),
                 }
             }
         }
