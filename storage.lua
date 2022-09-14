@@ -2,6 +2,8 @@
 local UserInputService = game:GetService("UserInputService")
 _G.Off = true
 _G.Max = 25
+_G.Loops = 3
+_G.WaitTime = 1.5
 
 UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
     if input.KeyCode == Enum.KeyCode.H then
@@ -10,7 +12,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
     end
 end)
 
-while task.wait(0.6) do --// don't change it's the best
+while task.wait(_G.WaitTime) do --// don't change it's the best
     if _G.Off then continue end
 
     game:GetService("NetworkClient"):SetOutgoingKBPSLimit(math.huge)
@@ -51,7 +53,7 @@ while task.wait(0.6) do --// don't change it's the best
         end
     end
 
-    bomb(_G.Max, 2) --// change values if client crashes
+    bomb(_G.Max, _G.Loops) --// change values if client crashes
 end
 
 local ignore = game:GetService("Workspace").ignore
