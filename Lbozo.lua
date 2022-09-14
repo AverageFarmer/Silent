@@ -105,7 +105,7 @@ local ctrl = false
 local SavedSettings = (isfile(FileName .. ".lua") and readfile(FileName .. ".lua")) or {}
 local PlayerHolder = {}
 local DoingChallenge = false
-local RaidData = game:GetService("Workspace")["_RAID"]["_DATA"]
+
 local RaidMaps = {"aot"}
 local Settings = {
     Map = "namek",
@@ -445,7 +445,8 @@ if game.PlaceId == 8304191830 then
     end)
     --// Local Const
     local Lobbies = game:GetService("Workspace")["_LOBBIES"].Story
-
+    local RaidData = game:GetService("Workspace")["_RAID"]["_DATA"]
+    
     local Maps = {
         "namek",
         "aot",
