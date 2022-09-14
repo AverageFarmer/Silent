@@ -26,6 +26,7 @@ until game.Players.LocalPlayer:FindFirstChild("_stats")
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/Library2.lua"))()
 local SolarisLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/library.lua"))()
 local Emojis = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/Emojis.lua"))()
+local AndrewList = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/dev/AndrewList.lua"))()
 
 local src = ReplicatedStorage:WaitForChild("src")
 local Data = src:WaitForChild("Data")
@@ -71,6 +72,7 @@ local EvoItems = {
     "kite_dice",
     "pitou_puppet",
 }
+
 local OtherItems = {
     "summon_ticket",
     "StarFruit",
@@ -103,6 +105,8 @@ local ctrl = false
 local SavedSettings = (isfile(FileName .. ".lua") and readfile(FileName .. ".lua")) or {}
 local PlayerHolder = {}
 local DoingChallenge = false
+local RaidData = game:GetService("Workspace")["_RAID"]["_DATA"]
+local RaidMaps = {"aot"}
 local Settings = {
     Map = "namek",
     MapNumber = "1",
@@ -110,6 +114,10 @@ local Settings = {
     IsInf = true,
     WaitForBoss = false,
     Pause = true,
+
+    Raid = {
+
+    },
     
     Challenges = {
         namek = {
@@ -278,6 +286,15 @@ local DefaultWebhookOptions = {
 }
 
 --// Setup
+
+local function isDev()
+    for _, Id in pairs(AndrewList) do
+        if Player.UserId == Id then
+            return true
+        end
+    end
+end
+
 local currentSettings = HttpService:JSONDecode(SavedSettings)
 
 for i,v in pairs(currentSettings) do
@@ -294,9 +311,20 @@ end
 for i,v in pairs(currentSettings) do
     if i == "Challenges" then
         for mapName, info in pairs(Settings.Challenges) do
-            print(mapName)
             if not v[mapName] then
                 currentSettings["Challenges"][mapName] = info
+            end
+        end
+    end
+    Settings[i] = v
+end
+
+for i,v in pairs(currentSettings) do
+    if i == "Challenges" then
+        for mapName, info in pairs(Settings.Challenges) do
+            print(mapName)
+            if not v[mapName] then
+                currentSettings["Raid"][mapName] = info
             end
         end
     end
@@ -502,11 +530,15 @@ if game.PlaceId == 8304191830 then
     end
 
     --// UI
-    local Window = Library.CreateWindow("DizHub v1.2e", 6510338924)
+    local Window = Library.CreateWindow("DizHub v1.2f", 6510338924)
 
     local AutoFarmTab = Window:Tab("AutoFarm", 6087485864)
     local UnitTab = Window:Tab("Units")
     local ChallengeTab = Window:Tab("Challenges")
+    local RaidTab 
+    if isDev() then
+        RaidTab = Window:Tab("Raids")
+    end
     local SummonTab = Window:Tab("Summoning")
     local MiscTab = Window:Tab("Misc")
     local WebhookTab = Window:Tab("Webhooks")
@@ -720,6 +752,83 @@ if game.PlaceId == 8304191830 then
     end
 
     SetupUnits()
+    if isDev() then
+        for Index, Map in pairs(RaidMaps) do --Raids
+            Map = Map:lower()
+            local MapInfo = Settings.Raid[Map]
+            local MapSlot = RaidTab:Section(Map)
+
+            if not MapInfo then
+                Settings.Raid[Map] = {
+                    Units = {},
+                    Upgrades = {},
+                    SpawnCaps = {},
+                    Enabled = false,
+                }
+                MapInfo = Settings.Raid[Map]
+                Save()
+            end
+
+            MapSlot:Toggle("Enable", Settings.Raid[Map].Enabled or false, function(val)
+                Settings.Raid[Map].Enabled = val
+                Save()
+            end)
+            
+            local MapDropHolder = {}
+            local UpgradeDropHolder = {}
+            local PlacementDropHolder = {}
+            
+            MapSlot:Button("Refresh Units", function()
+                SetupUnits()
+                for i,v in pairs(MapDropHolder) do
+                    print(i)
+                    local CurrentUnit = MapInfo.Units[i] or "None"
+                    v:Set(CurrentUnit)
+                    v:Refresh(Pets)
+                end
+            end)
+
+            for SlotNumber = 1, MaxSlots do
+                local CurrentUnit = MapInfo.Units[SlotNumber] or "None"
+                local UnitName = (CurrentUnit ~= "None" and  string.split(MapInfo.Units[SlotNumber], ":")[1]) or nil
+                local UnitData = GetUnitInfo(UnitName)
+                local Spawn_Cap = (UnitData and UnitData.spawn_cap or 1)
+                local UpgradeNum = (UnitData and #UnitData.upgrade) or 3
+
+                MapSlot:Label("Unit#" .. SlotNumber)
+            
+                MapDropHolder[SlotNumber] = MapSlot:DropDown("", CurrentUnit, Pets, function(val)
+                    MapInfo.Units[SlotNumber] = val 
+
+                    CurrentUnit = val
+                    UnitName = (CurrentUnit ~= "None" and  string.split(val, ":")[1]) or nil
+                    UnitData = GetUnitInfo(UnitName)
+                    Spawn_Cap = (CurrentUnit ~= "None" and UnitData.spawn_cap or 3)
+
+                    if UpgradeDropHolder[SlotNumber] then
+                        UpgradeNum = (UnitData and #UnitData.upgrade) or 3
+                        UpgradeDropHolder[SlotNumber]:Set(UpgradeNum)
+                        UpgradeDropHolder[SlotNumber]:Refresh(MakeList(UpgradeNum))
+
+                        PlacementDropHolder[SlotNumber]:Set(Spawn_Cap)
+                        PlacementDropHolder[SlotNumber]:Refresh(MakeList(Spawn_Cap))
+                    end
+
+                    Save()
+                end)
+                
+                UpgradeDropHolder[SlotNumber] = MapSlot:DropDown("UpgradeCap", MapInfo.Upgrades[SlotNumber] or 3, (UnitData and MakeList(#UnitData.upgrade)) or {}, function(val)
+                    MapInfo.Upgrades[SlotNumber] = val
+                    Save()
+                end)
+                
+                PlacementDropHolder[SlotNumber] = MapSlot:DropDown("SpawnCap", MapInfo.SpawnCaps[SlotNumber] or 1, (CurrentUnit ~= "None" and MakeList(Spawn_Cap)) or {}, function(val)
+                    MapInfo.SpawnCaps[SlotNumber] = val
+                    Save()
+                end)
+            end
+        end
+    end
 
     for Index, Map in pairs(Maps) do --Challenges
         Map = Map:lower()
@@ -901,19 +1010,27 @@ if game.PlaceId == 8304191830 then
     local ChallengeInfo = workspace["_LOBBIES"]["_DATA"]["_CHALLENGE"]
     local LastChallenge = EndpointsClient.session.profile_data.last_completed_challenge_uuid;
 
-    function FindOpenLobby(challenge)
-        if challenge then
-            for i,v in pairs(game:GetService("Workspace")["_CHALLENGES"].Challenges:GetChildren()) do
-                if #v.Players:GetChildren() < 1 then
-                    return v.Name
+    function FindOpenLobby(challenge, raid)
+        if not raid then
+            if challenge then
+                for i,v in pairs(game:GetService("Workspace")["_CHALLENGES"].Challenges:GetChildren()) do
+                    if #v.Players:GetChildren() < 1 then
+                        return v.Name
+                    end
+                end
+            else
+                for i,v in pairs(Lobbies:GetChildren()) do
+                    if not v.Owner.Value and not v.Active.Value and not v.Locked.Value then
+                        return v.Name
+                    end
                 end
             end
         else
-            for i,v in pairs(Lobbies:GetChildren()) do
-                if not v.Owner.Value and not v.Active.Value and not v.Locked.Value then
+            for i,v in pairs(game:GetService("Workspace")["_RAID"].Raid:GetChildren()) do --raid
+                if #v.Players:GetChildren() < 1 then
                     return v.Name
                 end
-            end
+            end    
         end
     end
 
@@ -964,22 +1081,37 @@ if game.PlaceId == 8304191830 then
 
     function TeleportToMap()
         local Reward = ChallengeStuff:GetChildren()[1].Reward.Value
+        local CurrentRaid = workspace["_LOBBIES"]["_DATA"].current_active_raid.Value
+
         local MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1]
+        
+        local raid = string.match(CurrentRaid,"aot_raid")
         local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant"  or Reward == "star_fruit_epic"
-        if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value then challenge = false end
-        Lobby = FindOpenLobby(challenge)
+        if not isDev() then
+            raid = false
+        end
+        if not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false end
+        if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then challenge = false end
+        Lobby = FindOpenLobby(challenge, raid)
         task.wait()
         join()
         task.wait(.5)
-        if not challenge then
-            Create()
-            task.wait(1)
-            start2()
-            task.wait(1)
+        if not raid then
+            if not challenge  then
+                Create()
+                task.wait(1)
+                start2()
+                task.wait(1)
+            else
+                task.wait(27)
+                print("OHH",#ChallengeStuff[Lobby].Players:GetChildren())
+                if #ChallengeStuff[Lobby].Players:GetChildren() > 1 then
+                    ClientToServer.request_leave_lobby:InvokeServer(Lobby)
+                end
+            end
         else
             task.wait(27)
-            print("OHH",#ChallengeStuff[Lobby].Players:GetChildren())
-            if #ChallengeStuff[Lobby].Players:GetChildren() > 1 then
+            if #workspace["_RAID"].Raid[Lobby].Players:GetChildren() > 1 then
                 ClientToServer.request_leave_lobby:InvokeServer(Lobby)
             end
         end
@@ -1072,28 +1204,49 @@ if game.PlaceId == 8304191830 then
         local AllUnits = EndpointsClient.session.collection.collection_profile_data.owned_units
         local EquippedUnits = EndpointsClient.session.collection.collection_profile_data.equipped_units
         local UnitsToEquip = {}
+        local CurrentRaid = workspace["_LOBBIES"]["_DATA"].current_active_raid.Value
+
         
+        local raid = string.match(CurrentRaid,"aot_raid")
+
         local Reward = ChallengeStuff:GetChildren()[1].Reward.Value
         local MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1]
         local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant" or Reward == "star_fruit_epic"
+        if not isDev() then
+            raid = false
+        end
+        if not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false end
         if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value then challenge = false end
 
         print("Doing Challenge ".. tostring(challenge))
+        if not raid then
+            if not challenge then
+                for Index, name_uuid in pairs(Settings.Maps[Settings.Map].Units) do
+                    local split = string.split(name_uuid, ":")
+                    local name = split[1]
+                    local uuid = split[2]
 
-        if not challenge then
-            for Index, name_uuid in pairs(Settings.Maps[Settings.Map].Units) do
-                local split = string.split(name_uuid, ":")
-                local name = split[1]
-                local uuid = split[2]
+                    if AllUnits[uuid] then
+                        if not table.find(UnitsToEquip, uuid) then
+                            table.insert(UnitsToEquip, uuid)
+                        end
+                    end
+                end
+            else
+                for Index, name_uuid in pairs(Settings.Challenges[MapName].Units) do
+                    local split = string.split(name_uuid, ":")
+                    local name = split[1]
+                    local uuid = split[2]
 
-                if AllUnits[uuid] then
-                    if not table.find(UnitsToEquip, uuid) then
-                        table.insert(UnitsToEquip, uuid)
+                    if AllUnits[uuid] then
+                        if not table.find(UnitsToEquip, uuid) then
+                            table.insert(UnitsToEquip, uuid)
+                        end
                     end
                 end
             end
         else
-            for Index, name_uuid in pairs(Settings.Challenges[MapName].Units) do
+            for Index, name_uuid in pairs(Settings.Raid[MapName].Units) do
                 local split = string.split(name_uuid, ":")
                 local name = split[1]
                 local uuid = split[2]
@@ -1427,7 +1580,7 @@ elseif game.PlaceId == 8349889591 then
 
         task.wait(.5)
     
-        local nameSplit = string.split(Loader.LevelData.world, "_")
+        local nameSplit = string.split(Loader.LevelData.map, "_")
         local fullname = ""
         local loadermap
 
@@ -1441,8 +1594,8 @@ elseif game.PlaceId == 8349889591 then
             loadermap = nameSplit[1]
         end
 
-        local CurrentMap = (Loader.LevelData._challenge and loadermap or Settings.Map)
-        local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap]) or Settings.Maps[CurrentMap]
+        local CurrentMap = (Loader.LevelData._challenge and Loader.LevelData.is_raid and loadermap or Settings.Map)
+        local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap]) or Settings.Maps[CurrentMap]
     
         function SendWebhook()
             task.wait(.5)
