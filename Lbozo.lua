@@ -1026,6 +1026,7 @@ if game.PlaceId == 8304191830 then
                 end
             end
         else
+            game:GetService("ReplicatedStorage").endpoints.client_to_server.buy_raid_ticket:InvokeServer()
             for i,v in pairs(game:GetService("Workspace")["_RAID"].Raid:GetChildren()) do --raid
                 if #v.Players:GetChildren() < 1 then
                     return v.Name
