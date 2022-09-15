@@ -1906,6 +1906,7 @@ elseif game.PlaceId == 8349889591 then
                 repeat
                     for i,v in pairs(Units_to_Upgrade) do
                         local Stats = v._stats
+                        if not Stats:FindFirstChild("active_attack_cooldown") then continue end
                         local activeAttack = Stats.active_attack.Value
                         local activeAttackCooldown = Stats.active_attack_cooldown.Value
                         local lastActiveCast = Stats.last_active_cast.Value
