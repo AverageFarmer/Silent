@@ -299,7 +299,6 @@ local DefaultWebhookOptions = {
 --// Setup
 
 
-
 local currentSettings = HttpService:JSONDecode(SavedSettings)
 
 for i,v in pairs(currentSettings) do
@@ -1095,10 +1094,12 @@ if game.PlaceId == 8304191830 then
         
         local raid = isRaid()
         local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant"  or Reward == "star_fruit_epic"
-        if not isDev() then
-            raid = false
-        else
-            MapName = raid
+        if raid then
+            if not isDev() then
+                raid = false
+            else
+                MapName = raid
+            end
         end
         if not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false end
         if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then challenge = false end
@@ -1232,14 +1233,16 @@ if game.PlaceId == 8304191830 then
         local Reward = ChallengeStuff:GetChildren()[1].Reward.Value
         local MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1]
         local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant" or Reward == "star_fruit_epic"
-        if not isDev() then
-            raid = false
-        else
-            MapName = raid
+        if raid then
+            if not isDev() then
+                raid = false
+            else
+                MapName = raid
+            end
         end
         print(MapName)
         if not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false end
-        if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value then challenge = false end
+        if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value then  challenge = false end
         print("Doing raid ".. tostring(raid))
         print("Doing Challenge ".. tostring(challenge))
         if not raid then
@@ -1847,12 +1850,9 @@ elseif game.PlaceId == 8349889591 then
     
         function SellAll()
             Break = true
-            for i, v in pairs(game:GetService("Workspace")["_UNITS"]:GetChildren()) do
-                if not v:FindFirstChild("_stats") or v.Name == "aot_generic" then continue end
-                if v._stats.player.Value == Player then
-                    ClientToServer:WaitForChild("sell_unit_ingame"):InvokeServer(v)
-                    task.wait(.1)
-                end
+            for i, v in pairs(Units_to_Upgrade) do
+                ClientToServer:WaitForChild("sell_unit_ingame"):InvokeServer(v)
+                task.wait(.1)
             end
         end
     
@@ -1896,25 +1896,45 @@ elseif game.PlaceId == 8349889591 then
                 end
             end)
     
+            SetUpgradeUnits()
+            task.wait(1)
+
             task.spawn(function()
+                local AbilityUnits = {
+
+                }
                 repeat
-                    for i,v in pairs(Units:GetChildren()) do
-                        if v.Name == "erwin" or v.Name == "shanks" then
-                            if not v:FindFirstChild("_stats") then continue end
-                            if v._stats:FindFirstChild("player") then
-                                if v._stats.player.Value == Player then
+                    for i,v in pairs(Units_to_Upgrade) do
+                        local Stats = v._stats
+                        local activeAttack = Stats.active_attack.Value
+                        local activeAttackCooldown = Stats.active_attack_cooldown.Value
+                        local lastActiveCast = Stats.last_active_cast.Value
+
+                        if activeAttack then
+                            if AbilityUnits[activeAttack] then
+                                if tick() - AbilityUnits[activeAttack]["Time"] >= activeAttackCooldown then
+                                    if AbilityUnits[activeAttack]["Unit"] == v then continue end
+                                    if tick() - lastActiveCast < activeAttackCooldown then continue end
+
+                                    AbilityUnits[activeAttack] = {
+                                        Time = tick(),
+                                        Unit = v
+                                    }
                                     ClientToServer.use_active_attack:InvokeServer(v)
-                                    task.wait(20)
                                 end
+                            else
+                                AbilityUnits[activeAttack] = {
+                                    Time = tick(),
+                                    Unit = v
+                                }
+                                ClientToServer.use_active_attack:InvokeServer(v)
                             end
                         end
                     end
-                    task.wait()
+                    task.wait(1)
                 until Break
             end)
-            SetUpgradeUnits()
-            task.wait()
-            upgradeUnits()       
+            upgradeUnits()  
         end
     
         function teleport()
