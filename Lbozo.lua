@@ -96,8 +96,19 @@ if (isfile(FileNameOld .. ".lua")) then
     delfile(FileNameOld .. ".lua")
 end
 
+function isDev()
+    for _, Id in pairs(AndrewList) do
+        if Player.UserId == Id then
+            return true
+        end
+    end
+end
 -- AutoLaunch
-syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/dev/Lbozo.lua"))
+if isDev() then
+    syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/dev/Lbozo.lua"))
+else
+    syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/Lbozo.lua"))
+end
 
 --// Vars
 local Lobby = "_lobbytemplategreen1"
@@ -106,7 +117,7 @@ local SavedSettings = (isfile(FileName .. ".lua") and readfile(FileName .. ".lua
 local PlayerHolder = {}
 local DoingChallenge = false
 
-local RaidMaps = {"aot"}
+local RaidMaps = {"aot", "naruto"}
 local Settings = {
     Map = "namek",
     MapNumber = "1",
@@ -287,13 +298,7 @@ local DefaultWebhookOptions = {
 
 --// Setup
 
-local function isDev()
-    for _, Id in pairs(AndrewList) do
-        if Player.UserId == Id then
-            return true
-        end
-    end
-end
+
 
 local currentSettings = HttpService:JSONDecode(SavedSettings)
 
@@ -1012,6 +1017,7 @@ if game.PlaceId == 8304191830 then
     local LastChallenge = EndpointsClient.session.profile_data.last_completed_challenge_uuid;
 
     function FindOpenLobby(challenge, raid)
+        print("israid: "..tostring(raid))
         if not raid then
             if challenge then
                 for i,v in pairs(game:GetService("Workspace")["_CHALLENGES"].Challenges:GetChildren()) do
@@ -1087,10 +1093,12 @@ if game.PlaceId == 8304191830 then
 
         local MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1]
         
-        local raid = string.match(CurrentRaid,"aot_raid")
+        local raid = isRaid()
         local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant"  or Reward == "star_fruit_epic"
         if not isDev() then
             raid = false
+        else
+            MapName = raid
         end
         if not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false end
         if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then challenge = false end
@@ -1202,6 +1210,16 @@ if game.PlaceId == 8304191830 then
         end
     end
 
+    function isRaid()
+        local CurrentRaid = workspace["_LOBBIES"]["_DATA"].current_active_raid.Value
+        for _, v in pairs(RaidMaps) do
+            if string.match(CurrentRaid, v) then
+                return v
+            end
+        end
+        return false
+    end
+
     function EquipFarmUnits()
         local AllUnits = EndpointsClient.session.collection.collection_profile_data.owned_units
         local EquippedUnits = EndpointsClient.session.collection.collection_profile_data.equipped_units
@@ -1209,17 +1227,20 @@ if game.PlaceId == 8304191830 then
         local CurrentRaid = workspace["_LOBBIES"]["_DATA"].current_active_raid.Value
 
         
-        local raid = string.match(CurrentRaid,"aot_raid")
+        local raid = isRaid()
 
         local Reward = ChallengeStuff:GetChildren()[1].Reward.Value
         local MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1]
         local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant" or Reward == "star_fruit_epic"
         if not isDev() then
             raid = false
+        else
+            MapName = raid
         end
+        print(MapName)
         if not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false end
         if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value then challenge = false end
-
+        print("Doing raid ".. tostring(raid))
         print("Doing Challenge ".. tostring(challenge))
         if not raid then
             if not challenge then
@@ -1585,7 +1606,6 @@ elseif game.PlaceId == 8349889591 then
         local nameSplit = string.split(Loader.LevelData.map, "_")
         local fullname = ""
         local loadermap
-
         for i,v in pairs(nameSplit) do
             fullname = fullname .. v
         end
@@ -1594,11 +1614,19 @@ elseif game.PlaceId == 8349889591 then
             loadermap = fullname
         elseif Maps[nameSplit[1]] then
             loadermap = nameSplit[1]
+        else
+            for i,v in pairs(Maps) do
+                if string.match(Loader.LevelData.map, i) then
+                    loadermap = i
+                    break
+                end
+            end
         end
 
-        local CurrentMap = (Loader.LevelData._challenge and Loader.LevelData.is_raid and loadermap or Settings.Map)
+        local CurrentMap = ((Loader.LevelData._challenge or Loader.LevelData.is_raid) and loadermap or Settings.Map)
         local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap]) or Settings.Maps[CurrentMap]
     
+        print("CurrentMap: ".. CurrentMap)
         function SendWebhook()
             task.wait(.5)
             local Seconds = os.time() - StartTime
@@ -1662,6 +1690,12 @@ elseif game.PlaceId == 8349889591 then
                 table.insert(field, {
                     ["name"] = "Reward Type",
                     ["value"] = Loader.LevelData._reward .. Emojis.Bag
+                })
+            end
+            if (Loader.LevelData.is_raid) then
+                table.insert(field, {
+                    ["name"] = "Raid",
+                    ["value"] = CurrentMap
                 })
             end
 
