@@ -1443,7 +1443,7 @@ elseif game.PlaceId == 8349889591 then
     
         local SpawnNum = 1
         local hillSpawnNum = 1
-    
+        local imlazy = CFrame.new(0,0,-6)
         local Maps = {
             ["namek"] = {
                 ["Ground"] = {
@@ -1607,21 +1607,21 @@ elseif game.PlaceId == 8349889591 then
             },
             ["magnolia"] = {
                 Ground = {
-                    CFrame.new(-622.15, 7.367, -841.767),
-                    CFrame.new(-622.15, 7.367, -839.535),
-                    CFrame.new(-622.15, 7.367, -837.695),
-                    CFrame.new(-617.997, 7.367, -837.695),
-                    CFrame.new(-617.997, 7.367, -839.53),
-                    CFrame.new(-617.997, 7.367, -841.668),
-                    CFrame.new(-626.013, 7.367, -841.668),
-                    CFrame.new(-626.013, 7.367, -839.429),
-                    CFrame.new(-626.013, 7.367, -837.264),
-                    CFrame.new(-622.061, 7.367, -835.3),
-                    CFrame.new(-630.358, 7.367, -835.3),
-                    CFrame.new(-614.314, 7.992, -839.32),
-                    CFrame.new(-622.436, 7.992, -843.522),
-                    CFrame.new(-626.822, 7.992, -834.121),
-                    CFrame.new(-621.938, 7.992, -844.056),
+                    CFrame.new(-622.15, 7.367, -841.767) * imlazy, --too lazy to change all cframes when im barely adjusting it
+                    CFrame.new(-622.15, 7.367, -839.535)* imlazy,
+                    CFrame.new(-622.15, 7.367, -837.695)* imlazy,
+                    CFrame.new(-617.997, 7.367, -837.695)* imlazy,
+                    CFrame.new(-617.997, 7.367, -839.53)* imlazy,
+                    CFrame.new(-617.997, 7.367, -841.668)* imlazy,
+                    CFrame.new(-626.013, 7.367, -841.668)* imlazy,
+                    CFrame.new(-626.013, 7.367, -839.429)* imlazy,
+                    CFrame.new(-626.013, 7.367, -837.264)* imlazy,
+                    CFrame.new(-622.061, 7.367, -835.3)* imlazy,
+                    CFrame.new(-630.358, 7.367, -835.3)* imlazy,
+                    CFrame.new(-614.314, 7.992, -839.32)* imlazy,
+                    CFrame.new(-622.436, 7.992, -843.522)* imlazy,
+                    CFrame.new(-626.822, 7.992, -834.121)* imlazy,
+                    CFrame.new(-621.938, 7.992, -844.056)* imlazy,
                 }
             }
         }
