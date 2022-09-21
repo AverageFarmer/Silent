@@ -2,7 +2,7 @@ local Units = workspace._UNITS
 local UnitStorage = {}
 
 for i,v in pairs(Units:GetChildren()) do
-    if v.Name == "erwin" then
+    if v.Name == "erwin" or v.Name == "erwin:shiny" then
         print(v.Name)
         table.insert(UnitStorage, v)
     end
