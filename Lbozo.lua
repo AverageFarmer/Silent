@@ -1890,7 +1890,7 @@ elseif game.PlaceId == 8349889591 then
             task.wait(.1)
             upgradeUnits()
         end
-    
+     
         function GetPlayersLevel()
             local exp = Player._stats.player_xp.Value
     
