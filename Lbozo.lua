@@ -1110,7 +1110,7 @@ if game.PlaceId == 8304191830 then
         
         local raid = isRaid()
         local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant"  or Reward == "star_fruit_epic"
-        if not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false end
+        
         if raid then
             if not isDev() then
                 raid = false
@@ -1118,6 +1118,7 @@ if game.PlaceId == 8304191830 then
                 MapName = raid
             end
         end
+        if not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
         if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then challenge = false end
         Lobby = FindOpenLobby(challenge, raid)
         task.wait()
@@ -1249,7 +1250,6 @@ if game.PlaceId == 8304191830 then
         local Reward = ChallengeStuff:GetChildren()[1].Reward.Value
         local MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1]
         local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant" or Reward == "star_fruit_epic"
-        if not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false end
         if raid then
             if not isDev() then
                 raid = false
@@ -1258,7 +1258,7 @@ if game.PlaceId == 8304191830 then
             end
         end
         print(MapName)
-        
+        if not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
         if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then  challenge = false end
         print("Doing raid ".. tostring(raid))
         print("Doing Challenge ".. tostring(challenge))
