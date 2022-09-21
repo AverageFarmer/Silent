@@ -82,7 +82,7 @@ local OtherItems = {
 }
 
 local capsules = {
-    "capsule_fairytail_infinite",
+    "capsule_magnolia_infinite",
     "capsule_hxhant",
     "capsule_bleach",
     "capsule_narutodesertraid",
@@ -188,7 +188,7 @@ local Settings = {
             Enabled = false,
         },
 
-        fairytail = {
+        magnolia = {
             Units = {},
             Upgrades = {},
             SpawnCaps = {},
@@ -260,7 +260,7 @@ local Settings = {
             SellAt = 23,
         },
 
-        fairytail = {
+        magnolia = {
             Units = {},
             Upgrades = {},
             SpawnCaps = {},
@@ -474,7 +474,8 @@ if game.PlaceId == 8304191830 then
         "marineford",
         "tokyoghoul",
         "hueco",
-        "hxhant"
+        "hxhant",
+        "magnolia"
     }
 
     local Numbers = {
@@ -1603,6 +1604,25 @@ elseif game.PlaceId == 8349889591 then
                     CFrame.new(-153.588, 24.2926, 2967.45),
                     CFrame.new(-152.461, 24.2926, 2968.99),
                 }
+            },
+            ["magnolia"] = {
+                Ground = {
+                    CFrame.new(-622.15, 7.367, -841.767),
+                    CFrame.new(-622.15, 7.367, -839.535),
+                    CFrame.new(-622.15, 7.367, -837.695),
+                    CFrame.new(-617.997, 7.367, -837.695),
+                    CFrame.new(-617.997, 7.367, -839.53),
+                    CFrame.new(-617.997, 7.367, -841.668),
+                    CFrame.new(-626.013, 7.367, -841.668),
+                    CFrame.new(-626.013, 7.367, -839.429),
+                    CFrame.new(-626.013, 7.367, -837.264),
+                    CFrame.new(-622.061, 7.367, -835.3),
+                    CFrame.new(-630.358, 7.367, -835.3),
+                    CFrame.new(-614.314, 7.992, -839.32),
+                    CFrame.new(-622.436, 7.992, -843.522),
+                    CFrame.new(-626.822, 7.992, -834.121),
+                    CFrame.new(-621.938, 7.992, -844.056),
+                }
             }
         }
     
@@ -1645,6 +1665,19 @@ elseif game.PlaceId == 8349889591 then
         local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap]) or Settings.Maps[CurrentMap]
     
         print("CurrentMap: ".. CurrentMap)
+        if CurrentMap == "magnolia" then
+            local ignore = workspace:WaitForChild("ignore")
+            for _, v in pairs(ignore:GetChildren()) do
+                if v and v:IsA("BasePart") and v.BrickColor == BrickColor.new("Really red") then
+                    v:Destroy()
+                end
+            end
+            ignore.ChildAdded:Connect(function(child)
+                if child:IsA("BasePart") and child.BrickColor == BrickColor.new("Really red") then
+                    child:Destroy()
+                end
+            end)
+        end
         function SendWebhook()
             task.wait(.5)
             local Seconds = os.time() - StartTime
