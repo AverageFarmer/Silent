@@ -82,6 +82,7 @@ local OtherItems = {
 }
 
 local capsules = {
+    "capsule_fairytail_infinite",
     "capsule_hxhant",
     "capsule_bleach",
     "capsule_narutodesertraid",
@@ -186,6 +187,13 @@ local Settings = {
             SpawnCaps = {},
             Enabled = false,
         },
+
+        fairytail = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            Enabled = false,
+        },
     },
     
     AutoBuy = {
@@ -246,6 +254,13 @@ local Settings = {
         },
 
         hxhant = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            SellAt = 23,
+        },
+
+        fairytail = {
             Units = {},
             Upgrades = {},
             SpawnCaps = {},
