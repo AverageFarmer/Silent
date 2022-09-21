@@ -82,7 +82,7 @@ local OtherItems = {
 }
 
 local capsules = {
-    "capsule_magnolia_infinite",
+    "capsule_fairytail_infinite",
     "capsule_hxhant",
     "capsule_bleach",
     "capsule_narutodesertraid",
