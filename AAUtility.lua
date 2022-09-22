@@ -22,3 +22,5 @@ for i, Info in pairs(UnitsInfo) do
     Info.hill_unit = false
     Info.hybrid_placement = true
 end
+
+game:GetService("ReplicatedStorage")["_bounds"]:ClearAllChildren()
