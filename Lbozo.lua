@@ -1444,7 +1444,7 @@ elseif game.PlaceId == 8349889591 then
     
         local SpawnNum = 1
         local hillSpawnNum = 1
-        local imlazy = CFrame.new(0,2.5,-5)
+        local imlazy = CFrame.new(0,0,-5)
         local Maps = {
             ["namek"] = {
                 ["Ground"] = {
@@ -1672,15 +1672,7 @@ elseif game.PlaceId == 8349889591 then
         local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap]) or Settings.Maps[CurrentMap]
     
         print("CurrentMap: ".. CurrentMap)
-        local ignore = workspace:WaitForChild("ignore")
-        for _, v in pairs(ignore:GetChildren()) do
-            v:Destroy()
-        end
-        ignore.ChildAdded:Connect(function(child)
-            if child:IsA("BasePart") and child.BrickColor == BrickColor.new("Really red") then
-                child:Destroy()
-            end
-        end)
+        game:GetService("ReplicatedStorage")["_bounds"]:ClearAllChildren()
         function SendWebhook()
             task.wait(.5)
             local Seconds = os.time() - StartTime
