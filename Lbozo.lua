@@ -1843,6 +1843,7 @@ elseif game.PlaceId == 8349889591 then
             local placed
             
             repeat
+                print(Maps[CurrentMap][Type][SpawnNum])
                 placed = ClientToServer:WaitForChild("spawn_unit"):InvokeServer(unpack(args))
                 task.wait(1)
             until placed
