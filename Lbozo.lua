@@ -1623,12 +1623,12 @@ elseif game.PlaceId == 8349889591 then
                     CFrame.new(-614.314, 7.992, -839.32)* imlazy,
                     CFrame.new(-622.436, 7.992, -843.522)* imlazy,
                     CFrame.new(-626.822, 7.992, -834.121)* imlazy,
-                    CFrame.new(-621.938, 7.992, -844.056)* imlazy,
                     CFrame.new(-615.916, 7.367, -839.53)* imlazy,
                     CFrame.new(-617.362, 7.367, -844.045)* imlazy,
                     CFrame.new(-619.704, 7.367, -844.045)* imlazy,
                     CFrame.new(-615.248, 7.367, -841.674)* imlazy,
                     CFrame.new(-625.599, 7.774, -843.246)* imlazy,
+                    CFrame.new(-611.732, 7.992, -832.83)* imlazy,
                 }
             }
         }
