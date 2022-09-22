@@ -1672,7 +1672,7 @@ elseif game.PlaceId == 8349889591 then
         local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap]) or Settings.Maps[CurrentMap]
     
         print("CurrentMap: ".. CurrentMap)
-        game:GetService("ReplicatedStorage")["_bounds"]:ClearAllChildren()
+        
         function SendWebhook()
             task.wait(.5)
             local Seconds = os.time() - StartTime
@@ -1906,8 +1906,9 @@ elseif game.PlaceId == 8349889591 then
             SolarisLib:Notification("Gems", string.format("You have %s GEMS", tostring(Player:WaitForChild("_stats"):WaitForChild("gem_amount").Value)), 60 * 50)
             local timelapse = SolarisLib:Notification("Timelapse", string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60), 60 * 60)
             task.spawn(function()
+                game:GetService("ReplicatedStorage")["_bounds"]:ClearAllChildren()
                 ClientToServer:WaitForChild("vote_start"):InvokeServer()
-
+                
                 repeat
                     timelapse.Text = string.format("%sm:%ss", math.floor(Seconds/60%60), Seconds%60)
                     task.wait(1)
