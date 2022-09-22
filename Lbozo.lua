@@ -1445,7 +1445,11 @@ elseif game.PlaceId == 8349889591 then
     
         local SpawnNum = 1
         local hillSpawnNum = 1
+<<<<<<< HEAD
         local imlazy = CFrame.new(0,0,-5)
+=======
+        local imlazy = CFrame.new(0,0,-4)
+>>>>>>> 276234ff86666d307f99be3c512cf7e3749bbd70
         local Maps = {
             ["namek"] = {
                 ["Ground"] = {
@@ -1624,12 +1628,12 @@ elseif game.PlaceId == 8349889591 then
                     CFrame.new(-614.314, 7.992, -839.32)* imlazy,
                     CFrame.new(-622.436, 7.992, -843.522)* imlazy,
                     CFrame.new(-626.822, 7.992, -834.121)* imlazy,
-                    CFrame.new(-621.938, 7.992, -844.056)* imlazy,
                     CFrame.new(-615.916, 7.367, -839.53)* imlazy,
                     CFrame.new(-617.362, 7.367, -844.045)* imlazy,
                     CFrame.new(-619.704, 7.367, -844.045)* imlazy,
                     CFrame.new(-615.248, 7.367, -841.674)* imlazy,
                     CFrame.new(-625.599, 7.774, -843.246)* imlazy,
+                    CFrame.new(-611.732, 7.992, -832.83)* imlazy,
                 }
             }
         }
@@ -1915,6 +1919,12 @@ elseif game.PlaceId == 8349889591 then
             SolarisLib:Notification("Gems", string.format("You have %s GEMS", tostring(Player:WaitForChild("_stats"):WaitForChild("gem_amount").Value)), 60 * 50)
             local timelapse = SolarisLib:Notification("Timelapse", string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60), 60 * 60)
             task.spawn(function()
+<<<<<<< HEAD
+=======
+                game:GetService("ReplicatedStorage")["_bounds"]:ClearAllChildren()
+                game:GetService("Workspace")["_terrain"].terrain:ClearAllChildren()
+                game:GetService("Workspace")["_map"]:ClearAllChildren()
+>>>>>>> 276234ff86666d307f99be3c512cf7e3749bbd70
                 ClientToServer:WaitForChild("vote_start"):InvokeServer()
 
                 repeat
