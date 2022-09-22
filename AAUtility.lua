@@ -24,3 +24,5 @@ for i, Info in pairs(UnitsInfo) do
 end
 
 game:GetService("ReplicatedStorage")["_bounds"]:ClearAllChildren()
+game:GetService("Workspace")["_terrain"].terrain:ClearAllChildren()
+game:GetService("Workspace")["_map"]:ClearAllChildren()
