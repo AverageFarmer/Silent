@@ -1606,7 +1606,7 @@ elseif game.PlaceId == 8349889591 then
                     CFrame.new(-152.461, 24.2926, 2968.99),
                 }
             },
-             
+              
             ["magnolia"] = {
                 Ground = {
                     CFrame.new(-622.15, 7.367, -841.767) * imlazy, --too lazy to change all cframes when im barely adjusting it
