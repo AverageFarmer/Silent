@@ -1444,7 +1444,7 @@ elseif game.PlaceId == 8349889591 then
     
         local SpawnNum = 1
         local hillSpawnNum = 1
-        local imlazy = CFrame.new(0,0,-5)
+        local imlazy = CFrame.new(0,2,-5)
         local Maps = {
             ["namek"] = {
                 ["Ground"] = {
@@ -1907,6 +1907,7 @@ elseif game.PlaceId == 8349889591 then
             local timelapse = SolarisLib:Notification("Timelapse", string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60), 60 * 60)
             task.spawn(function()
                 game:GetService("ReplicatedStorage")["_bounds"]:ClearAllChildren()
+                game:GetService("Workspace")["_map"]:ClearAllChildren()
                 ClientToServer:WaitForChild("vote_start"):InvokeServer()
                 
                 repeat
