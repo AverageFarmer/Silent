@@ -1444,7 +1444,7 @@ elseif game.PlaceId == 8349889591 then
     
         local SpawnNum = 1
         local hillSpawnNum = 1
-        local imlazy = CFrame.new(0,0,-5)
+        local imlazy = CFrame.new(0,2.5,-5)
         local Maps = {
             ["namek"] = {
                 ["Ground"] = {
@@ -1843,7 +1843,6 @@ elseif game.PlaceId == 8349889591 then
             local placed
             
             repeat
-                print(Maps[CurrentMap][Type][SpawnNum])
                 placed = ClientToServer:WaitForChild("spawn_unit"):InvokeServer(unpack(args))
                 task.wait(1)
             until placed
