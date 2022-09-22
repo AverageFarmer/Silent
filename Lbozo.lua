@@ -1835,7 +1835,6 @@ elseif game.PlaceId == 8349889591 then
             local placed
             
             repeat
-                print(args[2])
                 placed = ClientToServer:WaitForChild("spawn_unit"):InvokeServer(unpack(args))
                 task.wait(1)
             until placed
@@ -1908,6 +1907,7 @@ elseif game.PlaceId == 8349889591 then
             local timelapse = SolarisLib:Notification("Timelapse", string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60), 60 * 60)
             task.spawn(function()
                 game:GetService("ReplicatedStorage")["_bounds"]:ClearAllChildren()
+                game:GetService("Workspace")["_terrain"].terrain:ClearAllChildren()
                 game:GetService("Workspace")["_map"]:ClearAllChildren()
                 ClientToServer:WaitForChild("vote_start"):InvokeServer()
                 
