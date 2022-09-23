@@ -104,7 +104,9 @@ function isDev()
     end
 end
 -- AutoLaunch
-if isDev() then
+if Player.UserId == 68728334 then
+    syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/Andrew/Lbozo.lua"))
+elseif isDev() then
     syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/dev/Lbozo.lua"))
 else
     syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/animeAdv/main/Autofarm2.lua"))
@@ -1445,11 +1447,8 @@ elseif game.PlaceId == 8349889591 then
     
         local SpawnNum = 1
         local hillSpawnNum = 1
-<<<<<<< HEAD
         local imlazy = CFrame.new(0,0,-5)
-=======
         local imlazy = CFrame.new(0,0,-4)
->>>>>>> 276234ff86666d307f99be3c512cf7e3749bbd70
         local Maps = {
             ["namek"] = {
                 ["Ground"] = {
@@ -1919,12 +1918,9 @@ elseif game.PlaceId == 8349889591 then
             SolarisLib:Notification("Gems", string.format("You have %s GEMS", tostring(Player:WaitForChild("_stats"):WaitForChild("gem_amount").Value)), 60 * 50)
             local timelapse = SolarisLib:Notification("Timelapse", string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60), 60 * 60)
             task.spawn(function()
-<<<<<<< HEAD
-=======
                 game:GetService("ReplicatedStorage")["_bounds"]:ClearAllChildren()
                 game:GetService("Workspace")["_terrain"].terrain:ClearAllChildren()
                 game:GetService("Workspace")["_map"]:ClearAllChildren()
->>>>>>> 276234ff86666d307f99be3c512cf7e3749bbd70
                 ClientToServer:WaitForChild("vote_start"):InvokeServer()
 
                 repeat
