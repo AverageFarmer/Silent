@@ -104,7 +104,7 @@ function isDev()
     end
 end
 -- AutoLaunch
-if Player.UserId == 68728334 or Player.UserId == 42350716 or Player.UserId == 183101433 then
+if Player.UserId == 68728334 then
     syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/Andrew/Lbozo.lua"))
 elseif isDev() then
     syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/dev/Lbozo.lua"))
@@ -1447,7 +1447,6 @@ elseif game.PlaceId == 8349889591 then
     
         local SpawnNum = 1
         local hillSpawnNum = 1
-        local imlazy = CFrame.new(0,0,-5)
         local imlazy = CFrame.new(0,0,-4)
         local Maps = {
             ["namek"] = {
@@ -1676,15 +1675,7 @@ elseif game.PlaceId == 8349889591 then
         local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap]) or Settings.Maps[CurrentMap]
     
         print("CurrentMap: ".. CurrentMap)
-        local ignore = workspace:WaitForChild("ignore")
-        for _, v in pairs(ignore:GetChildren()) do
-            v:Destroy()
-        end
-        ignore.ChildAdded:Connect(function(child)
-            if child:IsA("BasePart") and child.BrickColor == BrickColor.new("Really red") then
-                child:Destroy()
-            end
-        end)
+        
         function SendWebhook()
             task.wait(.5)
             local Seconds = os.time() - StartTime
