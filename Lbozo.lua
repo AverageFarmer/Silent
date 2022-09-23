@@ -104,7 +104,7 @@ function isDev()
     end
 end
 -- AutoLaunch
-if Player.UserId == 68728334 or Player.UserId == 42350716 then
+if Player.UserId == 68728334 or Player.UserId == 42350716 or Player.UserId == 183101433 then
     syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/Andrew/Lbozo.lua"))
 elseif isDev() then
     syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/dev/Lbozo.lua"))
