@@ -565,7 +565,7 @@ if game.PlaceId == 8304191830 then
         for QuestUUID, QuestInfo in pairs(EndpointsClient.session.profile_data.quest_handler.quests) do
             if QuestInfo.quest_info.id then
                 if QuestInfo.quest_info.quest_class.unit_id then
-                    return false
+                    return true
                 end
                 if QuestInfo.quest_info.id == questID then
                     return true
@@ -637,12 +637,15 @@ if game.PlaceId == 8304191830 then
 
     OtherFarms:Toggle("Challenges", Settings.DoChallenges, function(val)
         Settings.DoChallenges = val
+        Save()
     end)
     OtherFarms:Toggle("Raids", Settings.DoRaid, function(val)
         Settings.DoRaid = val
+        Save()
     end)
     OtherFarms:Toggle("Missions", Settings.DoMissions, function(val)
         Settings.DoMissions = val
+        Save()
     end)
     
     AutoSummonSection:Toggle("Enabled", Settings.AutoSummon.Enabled, function(val)
@@ -743,7 +746,7 @@ if game.PlaceId == 8304191830 then
                 end
             end
         end
-    end)
+    end) 
 
     WebhookLabel = WebHookSection:Label(Settings.Webhooks)
     WebHookSection:TextBox("Your Webhook", Settings.Webhooks, function(val)
@@ -774,6 +777,7 @@ if game.PlaceId == 8304191830 then
 
         MissionSection:Toggle(v, Settings["Missions"][v], function(val)
             Settings["Missions"][v] = val
+            Save()
         end)
     end
 
@@ -1341,7 +1345,11 @@ if game.PlaceId == 8304191830 then
         
         if hasmissions then
             for i, questID in pairs(GetCurrentMissions()) do
-                currentmissionid = questID
+                if HasQuest(questID) then
+                    currentmissionid = questID
+                else
+                    continue
+                end
                 break
             end
         end
@@ -1352,7 +1360,7 @@ if game.PlaceId == 8304191830 then
         
         print(MapName)
         if not (Settings.Raid or Settings.Raid[MapName] or Settings.Raid[MapName].Enabled) then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
-        if not Settings.DoChallenges or not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then  challenge = false end
+        if not Settings.DoChallenges or  Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then  challenge = false end
 
         print("Doing raid ".. tostring(raid))
         print("Doing Challenge ".. tostring(challenge))
