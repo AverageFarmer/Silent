@@ -561,6 +561,9 @@ if game.PlaceId == 8304191830 then
     local function HasQuest(questID)
         for QuestUUID, QuestInfo in pairs(EndpointsClient.session.profile_data.quest_handler.quests) do
             if QuestInfo.quest_info.id then
+                if QuestInfo.quest_info.quest_class.unit_id then
+                    return false
+                end
                 if QuestInfo.quest_info.id == questID then
                     return true
                 end
