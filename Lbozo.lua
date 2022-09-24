@@ -127,6 +127,9 @@ local Settings = {
     IsInf = true,
     WaitForBoss = false,
     Pause = true,
+    DoChallenges = false,
+    DoRaid = false,
+    DoMissions = false,
 
     Raid = {
 
@@ -510,7 +513,6 @@ if game.PlaceId == 8304191830 then
         return false
     end
 
-
     function AutoDelete()
         if Settings.AutoDelete.Enabled then
             local UnitsToDelete = {}
@@ -551,12 +553,36 @@ if game.PlaceId == 8304191830 then
         return Items
     end
 
+    local function GetCurrentMissions()
+        local a = ClientToServer.request_current_missions:InvokeServer()
+        return a
+    end
+
+    local function HasQuest(questID)
+        for QuestUUID, QuestInfo in pairs(EndpointsClient.session.profile_data.quest_handler.quests) do
+            if QuestInfo.quest_info.id then
+                if QuestInfo.quest_info.id == questID then
+                    return true
+                end
+            end
+        end
+    end
+
+    function GetQuestInfo(questID)
+        for QuestUUID, QuestInfo in pairs(EndpointsClient.session.profile_data.quest_handler.quests) do
+            if QuestInfo.quest_info.id then
+                return QuestInfo.quest_info -- quest_class > 
+            end
+        end
+    end
+
     --// UI
-    local Window = Library.CreateWindow("DizHub v1.2f", 6510338924)
+    local Window = Library.CreateWindow("DizHub v1.2h", 6510338924)
 
     local AutoFarmTab = Window:Tab("AutoFarm", 6087485864)
     local UnitTab = Window:Tab("Units")
     local ChallengeTab = Window:Tab("Challenges")
+    local MissionTab = Window:Tab("Missions")
     local RaidTab 
     if isDev() then
         RaidTab = Window:Tab("Raids")
@@ -567,6 +593,7 @@ if game.PlaceId == 8304191830 then
 
     local MapSettings = AutoFarmTab:Section("Map Settings")
     local TeleportSettings = AutoFarmTab:Section("Teleport Settings")
+    local OtherFarms = AutoFarmTab:Section("Other Farms")
 
     local AutoSummonSection = SummonTab:Section("AutoSummon")
     local AutoDeleteSection = SummonTab:Section("AutoDelete")
@@ -577,6 +604,8 @@ if game.PlaceId == 8304191830 then
     local PlayerSection = MiscTab:Section("Players")
 
     local WebHookSection = WebhookTab:Section("Webhook Settings")
+
+    local MissionSection = MissionTab:Section("Maps")
 
     local Map = MapSettings:DropDown("Map", Settings.Map, Maps, function(val)
         Settings.Map = val
@@ -603,6 +632,16 @@ if game.PlaceId == 8304191830 then
         Save()
     end)
 
+    OtherFarms:Toggle("Challenges", Settings.DoChallenges, function(val)
+        Settings.DoChallenges = val
+    end)
+    OtherFarms:Toggle("Raids", Settings.DoRaid, function(val)
+        Settings.DoRaid = val
+    end)
+    OtherFarms:Toggle("Missions", Settings.DoMissions, function(val)
+        Settings.DoMissions = val
+    end)
+    
     AutoSummonSection:Toggle("Enabled", Settings.AutoSummon.Enabled, function(val)
         Settings.AutoSummon.Enabled = val
         Save()
@@ -719,6 +758,20 @@ if game.PlaceId == 8304191830 then
             Settings.WebhookOptions[index] = val
             Save()
         end) 
+    end
+
+    if not Settings["Missions"] then
+        Settings["Missions"] = {}
+    end
+
+    for i,v in pairs(Maps) do
+        if not Settings["Missions"][v] then
+            Settings["Missions"][v] = false
+        end
+
+        MissionSection:Toggle(v, Settings["Missions"][v], function(val)
+            Settings["Missions"][v] = val
+        end)
     end
 
     for i,v in pairs(game.Players:GetPlayers()) do
@@ -1032,6 +1085,16 @@ if game.PlaceId == 8304191830 then
     local ChallengeInfo = workspace["_LOBBIES"]["_DATA"]["_CHALLENGE"]
     local LastChallenge = EndpointsClient.session.profile_data.last_completed_challenge_uuid;
 
+    function hasAMission()
+        for QuestID, QuestInfo in pairs(EndpointsClient.session.profile_data.quest_handler.quests) do
+            if QuestInfo.quest_info._override_style then
+                if QuestInfo.quest_info._override_style == "mission" then
+                    return true
+                end
+            end
+        end
+    end
+
     function FindOpenLobby(challenge, raid)
         print("israid: "..tostring(raid))
         if not raid then
@@ -1071,8 +1134,8 @@ if game.PlaceId == 8304191830 then
         until InLobby
     end
         
-    function Create() -- Creates the map
-        local map = (Settings.IsInf and string.format("%s_infinite", Settings.Map)) or string.format("%s_level_%s", Settings.Map, tostring(Settings.MapNumber))
+    function Create(map) -- Creates the map
+        local map = map or (Settings.IsInf and string.format("%s_infinite", Settings.Map)) or string.format("%s_level_%s", Settings.Map, tostring(Settings.MapNumber))
         local args = {
             [1] = Lobby,
             [2] = map, 
@@ -1111,6 +1174,8 @@ if game.PlaceId == 8304191830 then
         
         local raid = isRaid()
         local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant"  or Reward == "star_fruit_epic"
+        local hasmissions = hasAMission()
+        local currentmissionid
         
         if raid then
             if not isDev() then
@@ -1119,24 +1184,38 @@ if game.PlaceId == 8304191830 then
                 MapName = raid
             end
         end
+
+
+        if hasmissions then
+            for i, questID in pairs(GetCurrentMissions()) do
+                currentmissionid = questID
+                break
+            end
+        end
+
         if not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
         if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then challenge = false end
+
         Lobby = FindOpenLobby(challenge, raid)
         task.wait()
         join()
         task.wait(.5)
+
         if not raid then
-            if not challenge  then
+            if hasAMission() and Settings.DoMissions then
+                local MissionInfo = GetQuestInfo(currentmissionid)
+                MapName = MissionInfo.quest_class.level_id
+                Create(MapName)
+            elseif challenge then
+                task.wait(27)
+                if #ChallengeStuff[Lobby].Players:GetChildren() > 1 then
+                    ClientToServer.request_leave_lobby:InvokeServer(Lobby)
+                end
+            else
                 Create()
                 task.wait(1)
                 start2()
                 task.wait(1)
-            else
-                task.wait(27)
-                print("OHH",#ChallengeStuff[Lobby].Players:GetChildren())
-                if #ChallengeStuff[Lobby].Players:GetChildren() > 1 then
-                    ClientToServer.request_leave_lobby:InvokeServer(Lobby)
-                end
             end
         else
             task.wait(27)
@@ -1230,6 +1309,7 @@ if game.PlaceId == 8304191830 then
     end
 
     function isRaid()
+        if not Settings.DoRaid then return false end
         local CurrentRaid = workspace["_LOBBIES"]["_DATA"].current_active_raid.Value
         for _, v in pairs(RaidMaps) do
             if string.match(CurrentRaid, v) then
@@ -1245,12 +1325,21 @@ if game.PlaceId == 8304191830 then
         local UnitsToEquip = {}
         local CurrentRaid = workspace["_LOBBIES"]["_DATA"].current_active_raid.Value
 
-        
         local raid = isRaid()
 
         local Reward = ChallengeStuff:GetChildren()[1].Reward.Value
         local MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1]
         local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant" or Reward == "star_fruit_epic"
+        local hasmissions = hasAMission()
+        local currentmissionid
+        
+        if hasmissions then
+            for i, questID in pairs(GetCurrentMissions()) do
+                currentmissionid = questID
+                break
+            end
+        end
+
         if raid then
             if not isDev() then
                 raid = false
@@ -1258,14 +1347,20 @@ if game.PlaceId == 8304191830 then
                 MapName = raid
             end
         end
+        
         print(MapName)
-        if not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
-        if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then  challenge = false end
+        if not (Settings.Raid or Settings.Raid[MapName] or Settings.Raid[MapName].Enabled) then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
+        if not Settings.DoChallenges or not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then  challenge = false end
+
         print("Doing raid ".. tostring(raid))
         print("Doing Challenge ".. tostring(challenge))
+
         if not raid then
-            if not challenge then
-                for Index, name_uuid in pairs(Settings.Maps[Settings.Map].Units) do
+            if hasmissions and Settings.DoMissions then
+                local Mission = GetQuestInfo(currentmissionid)
+                local Map = string.split(Mission.quest_class.level_id, "_")[1]
+
+                for Index, name_uuid in pairs(Settings.Maps[Map].Units) do
                     local split = string.split(name_uuid, ":")
                     local name = split[1]
                     local uuid = split[2]
@@ -1276,7 +1371,7 @@ if game.PlaceId == 8304191830 then
                         end
                     end
                 end
-            else
+            elseif challenge then
                 for Index, name_uuid in pairs(Settings.Challenges[MapName].Units) do
                     local split = string.split(name_uuid, ":")
                     local name = split[1]
@@ -1288,6 +1383,18 @@ if game.PlaceId == 8304191830 then
                         end
                     end
                 end
+            else
+                for Index, name_uuid in pairs(Settings.Maps[Settings.Map].Units) do
+                    local split = string.split(name_uuid, ":")
+                    local name = split[1]
+                    local uuid = split[2]
+
+                    if AllUnits[uuid] then
+                        if not table.find(UnitsToEquip, uuid) then
+                            table.insert(UnitsToEquip, uuid)
+                        end
+                    end
+                end                                
             end
         else
             for Index, name_uuid in pairs(Settings.Raid[MapName].Units) do
@@ -1381,6 +1488,17 @@ if game.PlaceId == 8304191830 then
         end)
     end)
 
+    if Settings.DoMissions then
+        for _, QuestID in pairs(GetCurrentMissions()) do
+            if HasQuest(QuestID) then
+                continue
+            end
+    
+            ClientToServer.request_claim_mission:InvokeServer(QuestID)
+        end
+
+    end
+
     teleport()
 elseif game.PlaceId == 8349889591 then
     
@@ -1390,629 +1508,638 @@ elseif game.PlaceId == 8349889591 then
     ------------------------------------------------------------------------------------------------------------------------------------
     ------------------------------------------------------------------------------------------------------------------------------------
     ------------------------------------------------------------------------------------------------------------------------------------
-        local Units = game:GetService("Workspace")["_UNITS"]
+    local Units = game:GetService("Workspace")["_UNITS"]
 
-        local BossesKilled = 0
-        local Break = false
-        local StartTime = os.time()
-    
-        request = http_request or request or HttpPost or syn.request
-    
-        local headers = {
-            ["content-type"] = "application/json"
-        }
-    
-        if Settings.Pause then
-            return
-        end
-    
-        task.spawn(function()
-            repeat
-                task.wait()
-                if game:GetService("Workspace"):WaitForChild("_DATA"):WaitForChild("GameFinished").Value then --Checks if reward is ready to claim and claims it
-                    task.wait(5)
-                    task.spawn(function()
-                        SendWebhook()
-                    end)
-                    task.wait(.5)
-                    teleport()
-                    break
-                end
-            until false
-        end)
+    local BossesKilled = 0
+    local Break = false
+    local StartTime = os.time()
 
-        Units.ChildAdded:Connect(function(Unit)
-            task.wait(1)
-            if Unit:FindFirstChild("_stats") then
-                local _stats = Unit:FindFirstChild("_stats")
-                local _threat = _stats:FindFirstChild("threat")
-                
-                if (_threat and _threat.Value >= 3) then
-                    repeat
-                        task.wait(1)
-                    until not Unit.Parent
-                    
-                    BossesKilled = BossesKilled + 1
-                end
-            end
+    request = http_request or request or HttpPost or syn.request
 
-            if Unit:FindFirstChild("_hitbox") then
-                Unit:FindFirstChild("_hitbox"):Destroy()
-            end
-        end)
+    local headers = {
+        ["content-type"] = "application/json"
+    }
 
-        local FarmUnits = {
-            
-        }
-    
-        local SpawnNum = 1
-        local hillSpawnNum = 1
-        local imlazy = CFrame.new(0,0,-4)
-        local Maps = {
-            ["namek"] = {
-                ["Ground"] = {
-                    CFrame.new(-2948.09, 93.0863, -710.218),
-                    CFrame.new(-2938.52, 93.0863, -700.306),
-                    CFrame.new(-2947.92, 93.0863, -699.637),
-                    CFrame.new(-2948.45, 93.0863, -705.009),
-                    CFrame.new(-2944.91, 93.7245, -702.243),
-                    CFrame.new(-2945.11, 93.0863, -707.568),
-                    CFrame.new(-2943.05, 93.7245, -699.922),
-                    CFrame.new(-2943.33, 93.7245, -704.45),
-                    CFrame.new(-2943.34, 93.7245, -709.403),
-                    CFrame.new(-2938.24, 93.0863, -704.334),
-                    CFrame.new(-2938.08, 93.0863, -708.257),
-                    CFrame.new(-2938.08, 93.0863, -714.257),
-                    CFrame.new(-2953.14, 93.0863, -699.354),
-                    CFrame.new(-2953.25, 93.0863, -703.934),
-                    CFrame.new(-2953.28, 93.08, -708.07)
-                },
-    
-                ["Hill"] = {
-                    CFrame.new(-2948.11, 95.6987, -715.501),
-                    CFrame.new(-2950.38, 95.6987, -715.032),
-                    CFrame.new(-2949.47, 95.6987, -717.193),
-                    CFrame.new(-2951.92, 95.6987, -716.304)
-                }
-            },
-            ["aot"] = {
-                ["Ground"] = {
-                    CFrame.new(-3011.31, 35.0219, -684.4),
-                    CFrame.new(-3010.96, 35.0219, -680.458),
-                    CFrame.new(-3014.6, 35.0219, -683.096),
-                    CFrame.new(-3014.27, 35.0219, -680.199),
-                    CFrame.new(-3016.96, 35.6601, -680.319),
-                    CFrame.new(-3017.01, 35.0219, -683.823),
-                    CFrame.new(-3019.64, 35.6601, -683.609),
-                    CFrame.new(-3020.02, 35.6601, -680.326),
-                    CFrame.new(-3022.27, 35.0219, -683.67),
-                    CFrame.new(-3022.59, 35.6601, -681.008),
-                    CFrame.new(-3026.02, 35.0219, -681.037),
-                    CFrame.new(-3026.02, 35.0219, -681.037),
-                    CFrame.new(-3026.5, 35.0219, -684.633)
-                }
-            },
-            ["demonslayer"] = {
-                ["Ground"] = {
-                    CFrame.new(-2878.75, 35.6271, -139.569),
-                    CFrame.new(-2881.89, 35.627, -136.31),
-                    CFrame.new(-2884.45, 35.627, -137.759),
-                    CFrame.new(-2882.07, 35.627, -141.082),
-                    CFrame.new(-2886.88, 35.627, -139.512),
-                    CFrame.new(-2884.38, 35.627, -143.621),
-                    CFrame.new(-2887.79, 35.627, -141.814),
-                    CFrame.new(-2885.67, 35.627, -145.877),
-                    CFrame.new(-2888.99, 35.627, -144.031),
-                    CFrame.new(-2885.83, 35.627, -148.492),
-                    CFrame.new(-2889.22, 35.627, -146.582),
-                    CFrame.new(-2889.56, 36.2445, -148.451),
-                    CFrame.new(-2886.08, 35.627, -151.399),
-                }   
-            },
-            ["naruto"] = {
-                ["Ground"] = {
-                    CFrame.new(-888.807, 26.561, 312.594),
-                    CFrame.new(-889.98, 26.5611, 314.154),
-                    CFrame.new(-885.885, 26.561, 314.127),
-                    CFrame.new(-888.897, 26.5611, 315.918),
-                    CFrame.new(-885.745, 26.5611, 317.343),
-                    CFrame.new(-888.793, 26.5611, 318.663),
-                    CFrame.new(-885.501, 26.5611, 320.051),
-                    CFrame.new(-888.615, 26.5611, 322.144),
-                    CFrame.new(-885.18, 26.5611, 322.829),
-                    CFrame.new(-888.801, 26.5611, 325.19),
-                    CFrame.new(-885.182, 26.5611, 325.459),
-                    CFrame.new(-888.816, 26.5611, 328.518),
-                    CFrame.new(-885.268, 26.561, 328.166),
-                }
-            },
-            ["marineford"] = {
-                ["Ground"] = {
-                    CFrame.new(-2555.5, 26.5069, -34.7715),
-                    CFrame.new(-2554.21, 26.4909, -38.005),
-                    CFrame.new(-2557.89, 26.4909, -40.7217),
-                    CFrame.new(-2559.47, 26.5069, -36.8724),
-                    CFrame.new(-2560.72, 26.7268, -45.002),
-                    CFrame.new(-2562.53, 26.7268, -40.3499),
-                    CFrame.new(-2564.53, 26.4909, -45.5189),
-                    CFrame.new(-2554.32, 26.4909, -42.6333),
-                    CFrame.new(-2562.45, 27.1292, -36.9791),
-                    CFrame.new(-2557.22, 27.1292, -46.057),
-                    CFrame.new(-2566.13, 26.5069, -42.2897),
-                    CFrame.new(-2560.84, 26.4909, -49.0243),
-                    CFrame.new(-2555.5, 29.5069, -34.7715),
-                    CFrame.new(-2554.21, 29.4909, -38.005),
-                    CFrame.new(-2557.89, 29.4909, -40.7217),
-                    CFrame.new(-2559.47, 29.5069, -36.8724),
-                },
-    
-                ["Hill"] = {
-                    CFrame.new(-2573.74, 30.781, -51.5541),
-                    CFrame.new(-2576.48, 30.781, -53.3122),
-                    CFrame.new(-2578.58, 29.6381, -56.3211),
-                    CFrame.new(-2576.05, 29.638, -57.737),
-                }
-            },
-            ["tokyoghoul"] = {
-                Ground = {
-                    CFrame.new(-2997.21, 60.5035, -47.1209),
-                    CFrame.new(-3000.55, 59.9314, -46.6402),
-                    CFrame.new(-2999.92, 59.8652, -50.5599),
-                    CFrame.new(-3003.55, 60.5035, -41.9474),
-                    CFrame.new(-3005.39, 60.5035, -43.884),
-                    CFrame.new(-3005.97, 60.5035, -47.6503),
-                    CFrame.new(-3008.6, 60.5035, -50.928),
-                    CFrame.new(-3004.11, 60.5035, -51.7732),
-                    CFrame.new(-3006.1, 60.5035, -55.2905),
-                    CFrame.new(-2996.56, 59.9314, -43.364),
-                    CFrame.new(-3010.4, 59.8652, -53.6865),
-                    CFrame.new(-3011.62, 59.8652, -56.6442),
-                    CFrame.new(-3006.53, 59.8652, -59.0677),
-                }
-            },
+    if Settings.Pause then
+        return
+    end
 
-            ["hueco"] = {
-                Ground = {
-                    CFrame.new(-196.752, 133.956, -779.957),
-                    CFrame.new(-191.422, 133.956, -780.237),
-                    CFrame.new(-191.443, 133.956, -777.782),
-                    CFrame.new(-196.495, 133.956, -777.436),
-                    CFrame.new(-191.311, 133.956, -775.101),
-                    CFrame.new(-196.513, 133.956, -774.458),
-                    CFrame.new(-192.452, 133.956, -772.384),
-                    CFrame.new(-193.005, 133.956, -769.891),
-                    CFrame.new(-197.025, 133.956, -771.517),
-                    CFrame.new(-197.615, 133.956, -768.226),
-                    CFrame.new(-181.761, 127.851, -778.069),
-                    CFrame.new(-198.855, 133.956, -765.302),
-                    CFrame.new(-193.55, 133.944, -764.9),
-                    CFrame.new(-188.986, 133.955, -769.329),
-                }
-            },
-
-            ["hxhant"] = {
-                Ground = {
-                    CFrame.new(-157.723, 24.2926, 2960.16),
-                    CFrame.new(-156.487, 24.2926, 2957.92),
-                    CFrame.new(-156.889, 24.2927, 2962.11),
-                    CFrame.new(-155.119, 24.2927, 2959.85),
-                    CFrame.new(-155.794, 24.2927, 2963.72),
-                    CFrame.new(-153.843, 24.2927, 2961.81),
-                    CFrame.new(-157.961, 24.3589, 2963.87),
-                    CFrame.new(-152.263, 24.3589, 2959.89),
-                    CFrame.new(-154.507, 24.2926, 2965.8),
-                    CFrame.new(-157.196, 24.2927, 2965.74),
-                    CFrame.new(-152.952, 24.2826, 2963.48),
-                    CFrame.new(-151.622, 24.2927, 2961.92),
-                    CFrame.new(-151.643, 24.2926, 2965.4),
-                    CFrame.new(-153.588, 24.2926, 2967.45),
-                    CFrame.new(-152.461, 24.2926, 2968.99),
-                }
-            },
-              
-            ["magnolia"] = {
-                Ground = {
-                    CFrame.new(-622.15, 7.367, -841.767) * imlazy, --too lazy to change all cframes when im barely adjusting it
-                    CFrame.new(-622.15, 7.367, -839.535)* imlazy,
-                    CFrame.new(-622.15, 7.367, -837.695)* imlazy,
-                    CFrame.new(-617.997, 7.367, -837.695)* imlazy,
-                    CFrame.new(-617.997, 7.367, -839.53)* imlazy,
-                    CFrame.new(-617.997, 7.367, -841.668)* imlazy,
-                    CFrame.new(-626.013, 7.367, -841.668)* imlazy,
-                    CFrame.new(-626.013, 7.367, -839.429)* imlazy,
-                    CFrame.new(-626.013, 7.367, -837.264)* imlazy,
-                    CFrame.new(-622.061, 7.367, -835.3)* imlazy,
-                    CFrame.new(-630.358, 7.367, -835.3)* imlazy,
-                    CFrame.new(-614.314, 7.992, -839.32)* imlazy,
-                    CFrame.new(-622.436, 7.992, -843.522)* imlazy,
-                    CFrame.new(-626.822, 7.992, -834.121)* imlazy,
-                    CFrame.new(-615.916, 7.367, -839.53)* imlazy,
-                    CFrame.new(-617.362, 7.367, -844.045)* imlazy,
-                    CFrame.new(-619.704, 7.367, -844.045)* imlazy,
-                    CFrame.new(-615.248, 7.367, -841.674)* imlazy,
-                    CFrame.new(-625.599, 7.774, -843.246)* imlazy,
-                    CFrame.new(-611.732, 7.992, -832.83)* imlazy,
-                }
-            }
-        }
-    
-        local Log = {
-    
-        }
-
+    task.spawn(function()
         repeat
             task.wait()
-        until Loader.LevelData
-
-        for i, Info in pairs(UnitsInfo) do
-            Info.hill_unit = false
-            Info.hybrid_placement = true
-        end
-
-        task.wait(.5)
-    
-        local nameSplit = string.split(Loader.LevelData.map, "_")
-        local fullname = ""
-        local loadermap
-        for i,v in pairs(nameSplit) do
-            fullname = fullname .. v
-        end
-
-        if Maps[fullname] then
-            loadermap = fullname
-        elseif Maps[nameSplit[1]] then
-            loadermap = nameSplit[1]
-        else
-            for i,v in pairs(Maps) do
-                if string.match(Loader.LevelData.map, i) then
-                    loadermap = i
-                    break
-                end
-            end
-        end
-
-        local CurrentMap = ((Loader.LevelData._challenge or Loader.LevelData.is_raid) and loadermap or Settings.Map)
-        local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap]) or Settings.Maps[CurrentMap]
-    
-        print("CurrentMap: ".. CurrentMap)
-        
-        function SendWebhook()
-            task.wait(.5)
-            local Seconds = os.time() - StartTime
-            local holder = {
-                ["TotalGems"] = {
-                    ["name"] = "Total Gems:",
-                    ["value"] = (tostring(Player._stats.gem_amount.Value)) .. Emojis.Diamond,
-                    ["inline"] = true
-                },
-
-                ["TimeCompletedAt"] = {
-                    ["name"] = "Completed At Time:",
-                    ["value"] = string.format("<t:%s:t>", os.time()) .. Emojis.Time,
-                    ["inline"] = true
-                },
-
-                ["Map"] = {
-                    ["name"] = "Map:",
-                    ["value"] = CurrentMap .. Emojis.Map,
-                    ["inline"] = true
-                },
-
-                ["BossesKilled"] = {
-                    ["name"] = "Bosses Killed:",
-                    ["value"] = tostring(BossesKilled) .. Emojis.Skull,
-                }
-            }
-
-            local field = {
-                {
-                    ["name"] = "Gems recived:",
-                    ["value"] = string.match(PlayerGui.Waves.HealthBar.GemRewardTotal.Main.Amount.Text, "%d+") .. Emojis.Diamond,
-                    ["inline"] = true
-                },
-    
-                {
-                    ["name"] = "Wave ended:",
-                    ["value"] = tostring(game:GetService("Workspace")["_wave_num"].Value) .. Emojis.Wave,
-                    ["inline"] = true
-                },
-
-                {
-                    ["name"] = "Time Finished:",
-                    ["value"] = (string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60)) .. Emojis.Time,
-                    ["inline"] = true
-                },
-            }
-
-            for i, v in pairs(Settings.WebhookOptions) do
-                if v then
-                    table.insert(field, holder[i])
-                end
-            end
-
-            if (Loader.LevelData._challenge)then
-                table.insert(field, {
-                    ["name"] = "Challenge",
-                    ["value"] = Loader.LevelData._challenge .. Emojis.Swords
-                })
-
-                table.insert(field, {
-                    ["name"] = "Reward Type",
-                    ["value"] = Loader.LevelData._reward .. Emojis.Bag
-                })
-            end
-            if (Loader.LevelData.is_raid) then
-                table.insert(field, {
-                    ["name"] = "Raid",
-                    ["value"] = CurrentMap
-                })
-            end
-
-            local data = {
-                ["embeds"] = {
-                    {
-                        ["author"] = {
-                            ["name"] = string.format("%s: Lv %s", Player.DisplayName, tostring(GetPlayersLevel())),
-                        },
-                
-                        ["description"] = "Match finished",
-                        ["color"] = tostring(0xFF2449),
-                        ["thumbnail"] = {
-                            url = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. Player.UserId .. "&width=420&height=420&format=png"
-                        },
-                    }
-                }
-            }
-
-            data.embeds[1]["fields"] = field
-            local newdata = game:GetService("HttpService"):JSONEncode(data)
-            
-            local abcdef = {Url = Settings.Webhooks, Body = newdata, Method = "POST", Headers = headers}
-            if Settings.Webhooks ~= "" then
-                request(abcdef)
-            end
-        end
-    
-        function addUnits()
-            for i,v in pairs(MapInfo.Units) do
-                if i == 7 then return end
-                if v == "None" then continue end
-                local split = string.split(v, ":") -- uuid:name
-                local UnitName = split[1]
-                local uuid = split[2]
-    
-                FarmUnits[i] = {
-                    ["Name"] = UnitName, 
-                    ["uuid"] = uuid,
-                };
-            end
-        end
-    
-        function GetUpgrades(UnitName)
-            for Index, uuid_name in pairs(MapInfo.Units) do
-                if uuid_name == "None" then continue end
-                local split = string.split(uuid_name, ":")
-                local name = split[1]
-                local uuid = split[2]
-    
-                if name == UnitName then
-                    return MapInfo.Upgrades[Index]
-                end
-            end
-        end
-    
-        function GetSpawnCap(UnitName)
-            for Index, uuid_name in pairs(MapInfo.Units) do
-                local split = string.split(uuid_name, ":") -- name:uuid
-                local unitname = split[1]
-                local uuid = split[2]
-    
-                if unitname == UnitName then
-                    return MapInfo.SpawnCaps[Index]
-                end
-            end
-        end
-    
-        function spawnUnit(Index)
-            local UnitName = FarmUnits[Index]["Name"]
-            local Cap = GetSpawnCap(UnitName)
-            local Type = "Ground"
-            if Log[Index] and Log[Index] == Cap then return end
-            if not Maps[CurrentMap][Type][SpawnNum] then return end
-
-            if Player.UserId == 68728334 then --sexy perhapz
-                Maps["namek"]["Ground"][1] = Maps["namek"]["Ground"][2]
-                Maps["namek"]["Ground"][2] = CFrame.new(-2945.90723, 92.3062057, -693.054199, 1, 0, 0, 0, 1, 0, 0, 0, 0.999999821) 
-            elseif Player.UserId == 94158016 then
-                local old2 = Maps["namek"]["Ground"][2]
-
-                Maps["namek"]["Ground"][1] = old2
-                Maps["namek"]["Ground"][2] = CFrame.new(-2948.09, 93.0863, -710.218)
-            end
-
-            local args = {
-                [1] = FarmUnits[Index]["uuid"],
-                [2] = Maps[CurrentMap][Type][SpawnNum]
-            }
-            
-            local placed
-            
-            repeat
-                placed = ClientToServer:WaitForChild("spawn_unit"):InvokeServer(unpack(args))
-                task.wait(1)
-            until placed
-    
-            if placed then
-                if not Log[Index] then
-                    Log[Index] = 1
-                else
-                    Log[Index] = Log[Index] + 1
-                end
-    
-                SpawnNum = SpawnNum + 1
-            end
-        end
-    
-        local Units_to_Upgrade = {}
-
-        function SetUpgradeUnits()
-            for i, v in pairs(Units:GetChildren()) do
+            if game:GetService("Workspace"):WaitForChild("_DATA"):WaitForChild("GameFinished").Value then --Checks if reward is ready to claim and claims it
+                task.wait(5)
                 task.spawn(function()
-                    if v:FindFirstChild("_stats") then
-                        if v._stats:FindFirstChild("player") and  v._stats:FindFirstChild("player").Value == Player then
-                            if v._stats:FindFirstChild("parent_unit") and v._stats:FindFirstChild("parent_unit").Value then return end
-                            table.insert(Units_to_Upgrade, v)
-                        end
-                    end
+                    SendWebhook()
                 end)
+                task.wait(.5)
+                teleport()
+                break
             end
-        end
+        until false
+    end)
 
-        function upgradeUnits()
-            for i, v in pairs(Units_to_Upgrade) do               
-                local MaxUpgrade = GetUpgrades(v._stats.id.Value) or 5
-                print(MaxUpgrade, v.Name)
-                if v._stats.upgrade.Value ~= MaxUpgrade then 
-
-                    local Upgraded 
-
-                    repeat
-                        task.wait(2)
-                        Upgraded = ClientToServer:WaitForChild("upgrade_unit_ingame"):InvokeServer(v)
-                    until Upgraded or Break
-
-                    if Break then return end
-                end
-            end
-            task.wait(.1)
-            upgradeUnits()
-        end
-     
-        function GetPlayersLevel()
-            local exp = Player._stats.player_xp.Value
-    
-            return math.floor(0.07142857142857142 * (-179 + math.sqrt(56 * exp + 37249)));
-        end
-    
-        function SellAll()
-            Break = true
-            for i, v in pairs(Units_to_Upgrade) do
-                ClientToServer:WaitForChild("sell_unit_ingame"):InvokeServer(v)
-                task.wait(.1)
-            end
-        end
-    
-        function start()
-            addUnits()
-            task.wait(2)
-            local Seconds = 0
-            SolarisLib:Notification("Gems", string.format("You have %s GEMS", tostring(Player:WaitForChild("_stats"):WaitForChild("gem_amount").Value)), 60 * 50)
-            local timelapse = SolarisLib:Notification("Timelapse", string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60), 60 * 60)
-            task.spawn(function()
-                game:GetService("ReplicatedStorage")["_bounds"]:ClearAllChildren()
-                game:GetService("Workspace")["_terrain"].terrain:ClearAllChildren()
-                game:GetService("Workspace")["_map"]:ClearAllChildren()
-                ClientToServer:WaitForChild("vote_start"):InvokeServer()
-
+    Units.ChildAdded:Connect(function(Unit)
+        task.wait(1)
+        if Unit:FindFirstChild("_stats") then
+            local _stats = Unit:FindFirstChild("_stats")
+            local _threat = _stats:FindFirstChild("threat")
+            
+            if (_threat and _threat.Value >= 3) then
                 repeat
-                    timelapse.Text = string.format("%sm:%ss", math.floor(Seconds/60%60), Seconds%60)
                     task.wait(1)
-                    Seconds = Seconds + 1
-                until nil
-            end)
-    
-            for Index, Info in pairs(FarmUnits) do
-                local Name = Info["Name"]
-                print(Name)
-                local Cap = GetSpawnCap(Name) -- Spawn Cap
-                print(Cap)
-                for i = 1, Cap do
-                    task.wait(1)
-                    spawnUnit(Index)
-                end
+                until not Unit.Parent
+                
+                BossesKilled = BossesKilled + 1
             end
-    
-            game:GetService("Workspace")["_wave_num"].Changed:Connect(function()
-                if game:GetService("Workspace")["_wave_num"].Value >= Settings.Maps[Settings.Map].SellAt and not Loader.LevelData._challenge then
-                    if MapInfo["LeaveAtWave"] then
-                        SendWebhook()
+        end
 
-                        task.wait()
-                        TeleportService:Teleport(8304191830)
-                    else
-                        SellAll()
+        if Unit:FindFirstChild("_hitbox") then
+            Unit:FindFirstChild("_hitbox"):Destroy()
+        end
+    end)
+
+    local FarmUnits = {
+        
+    }
+
+    local SpawnNum = 1
+    local hillSpawnNum = 1
+    local imlazy = CFrame.new(0,0,-5)
+    local imlazy = CFrame.new(0,0,-4)
+    local Maps = {
+        ["namek"] = {
+            ["Ground"] = {
+                CFrame.new(-2948.09, 93.0863, -710.218),
+                CFrame.new(-2938.52, 93.0863, -700.306),
+                CFrame.new(-2947.92, 93.0863, -699.637),
+                CFrame.new(-2948.45, 93.0863, -705.009),
+                CFrame.new(-2944.91, 93.7245, -702.243),
+                CFrame.new(-2945.11, 93.0863, -707.568),
+                CFrame.new(-2943.05, 93.7245, -699.922),
+                CFrame.new(-2943.33, 93.7245, -704.45),
+                CFrame.new(-2943.34, 93.7245, -709.403),
+                CFrame.new(-2938.24, 93.0863, -704.334),
+                CFrame.new(-2938.08, 93.0863, -708.257),
+                CFrame.new(-2938.08, 93.0863, -714.257),
+                CFrame.new(-2953.14, 93.0863, -699.354),
+                CFrame.new(-2953.25, 93.0863, -703.934),
+                CFrame.new(-2953.28, 93.08, -708.07)
+            },
+
+            ["Hill"] = {
+                CFrame.new(-2948.11, 95.6987, -715.501),
+                CFrame.new(-2950.38, 95.6987, -715.032),
+                CFrame.new(-2949.47, 95.6987, -717.193),
+                CFrame.new(-2951.92, 95.6987, -716.304)
+            }
+        },
+        ["aot"] = {
+            ["Ground"] = {
+                CFrame.new(-3011.31, 35.0219, -684.4),
+                CFrame.new(-3010.96, 35.0219, -680.458),
+                CFrame.new(-3014.6, 35.0219, -683.096),
+                CFrame.new(-3014.27, 35.0219, -680.199),
+                CFrame.new(-3016.96, 35.6601, -680.319),
+                CFrame.new(-3017.01, 35.0219, -683.823),
+                CFrame.new(-3019.64, 35.6601, -683.609),
+                CFrame.new(-3020.02, 35.6601, -680.326),
+                CFrame.new(-3022.27, 35.0219, -683.67),
+                CFrame.new(-3022.59, 35.6601, -681.008),
+                CFrame.new(-3026.02, 35.0219, -681.037),
+                CFrame.new(-3026.02, 35.0219, -681.037),
+                CFrame.new(-3026.5, 35.0219, -684.633)
+            }
+        },
+        ["demonslayer"] = {
+            ["Ground"] = {
+                CFrame.new(-2878.75, 35.6271, -139.569),
+                CFrame.new(-2881.89, 35.627, -136.31),
+                CFrame.new(-2884.45, 35.627, -137.759),
+                CFrame.new(-2882.07, 35.627, -141.082),
+                CFrame.new(-2886.88, 35.627, -139.512),
+                CFrame.new(-2884.38, 35.627, -143.621),
+                CFrame.new(-2887.79, 35.627, -141.814),
+                CFrame.new(-2885.67, 35.627, -145.877),
+                CFrame.new(-2888.99, 35.627, -144.031),
+                CFrame.new(-2885.83, 35.627, -148.492),
+                CFrame.new(-2889.22, 35.627, -146.582),
+                CFrame.new(-2889.56, 36.2445, -148.451),
+                CFrame.new(-2886.08, 35.627, -151.399),
+            }   
+        },
+        ["naruto"] = {
+            ["Ground"] = {
+                CFrame.new(-888.807, 26.561, 312.594),
+                CFrame.new(-889.98, 26.5611, 314.154),
+                CFrame.new(-885.885, 26.561, 314.127),
+                CFrame.new(-888.897, 26.5611, 315.918),
+                CFrame.new(-885.745, 26.5611, 317.343),
+                CFrame.new(-888.793, 26.5611, 318.663),
+                CFrame.new(-885.501, 26.5611, 320.051),
+                CFrame.new(-888.615, 26.5611, 322.144),
+                CFrame.new(-885.18, 26.5611, 322.829),
+                CFrame.new(-888.801, 26.5611, 325.19),
+                CFrame.new(-885.182, 26.5611, 325.459),
+                CFrame.new(-888.816, 26.5611, 328.518),
+                CFrame.new(-885.268, 26.561, 328.166),
+            }
+        },
+        ["marineford"] = {
+            ["Ground"] = {
+                CFrame.new(-2555.5, 26.5069, -34.7715),
+                CFrame.new(-2554.21, 26.4909, -38.005),
+                CFrame.new(-2557.89, 26.4909, -40.7217),
+                CFrame.new(-2559.47, 26.5069, -36.8724),
+                CFrame.new(-2560.72, 26.7268, -45.002),
+                CFrame.new(-2562.53, 26.7268, -40.3499),
+                CFrame.new(-2564.53, 26.4909, -45.5189),
+                CFrame.new(-2554.32, 26.4909, -42.6333),
+                CFrame.new(-2562.45, 27.1292, -36.9791),
+                CFrame.new(-2557.22, 27.1292, -46.057),
+                CFrame.new(-2566.13, 26.5069, -42.2897),
+                CFrame.new(-2560.84, 26.4909, -49.0243),
+                CFrame.new(-2555.5, 29.5069, -34.7715),
+                CFrame.new(-2554.21, 29.4909, -38.005),
+                CFrame.new(-2557.89, 29.4909, -40.7217),
+                CFrame.new(-2559.47, 29.5069, -36.8724),
+            },
+
+            ["Hill"] = {
+                CFrame.new(-2573.74, 30.781, -51.5541),
+                CFrame.new(-2576.48, 30.781, -53.3122),
+                CFrame.new(-2578.58, 29.6381, -56.3211),
+                CFrame.new(-2576.05, 29.638, -57.737),
+            }
+        },
+        ["tokyoghoul"] = {
+            Ground = {
+                CFrame.new(-2997.21, 60.5035, -47.1209),
+                CFrame.new(-3000.55, 59.9314, -46.6402),
+                CFrame.new(-2999.92, 59.8652, -50.5599),
+                CFrame.new(-3003.55, 60.5035, -41.9474),
+                CFrame.new(-3005.39, 60.5035, -43.884),
+                CFrame.new(-3005.97, 60.5035, -47.6503),
+                CFrame.new(-3008.6, 60.5035, -50.928),
+                CFrame.new(-3004.11, 60.5035, -51.7732),
+                CFrame.new(-3006.1, 60.5035, -55.2905),
+                CFrame.new(-2996.56, 59.9314, -43.364),
+                CFrame.new(-3010.4, 59.8652, -53.6865),
+                CFrame.new(-3011.62, 59.8652, -56.6442),
+                CFrame.new(-3006.53, 59.8652, -59.0677),
+            }
+        },
+
+        ["hueco"] = {
+            Ground = {
+                CFrame.new(-196.752, 133.956, -779.957),
+                CFrame.new(-191.422, 133.956, -780.237),
+                CFrame.new(-191.443, 133.956, -777.782),
+                CFrame.new(-196.495, 133.956, -777.436),
+                CFrame.new(-191.311, 133.956, -775.101),
+                CFrame.new(-196.513, 133.956, -774.458),
+                CFrame.new(-192.452, 133.956, -772.384),
+                CFrame.new(-193.005, 133.956, -769.891),
+                CFrame.new(-197.025, 133.956, -771.517),
+                CFrame.new(-197.615, 133.956, -768.226),
+                CFrame.new(-181.761, 127.851, -778.069),
+                CFrame.new(-198.855, 133.956, -765.302),
+                CFrame.new(-193.55, 133.944, -764.9),
+                CFrame.new(-188.986, 133.955, -769.329),
+            }
+        },
+
+        ["hxhant"] = {
+            Ground = {
+                CFrame.new(-157.723, 24.2926, 2960.16),
+                CFrame.new(-156.487, 24.2926, 2957.92),
+                CFrame.new(-156.889, 24.2927, 2962.11),
+                CFrame.new(-155.119, 24.2927, 2959.85),
+                CFrame.new(-155.794, 24.2927, 2963.72),
+                CFrame.new(-153.843, 24.2927, 2961.81),
+                CFrame.new(-157.961, 24.3589, 2963.87),
+                CFrame.new(-152.263, 24.3589, 2959.89),
+                CFrame.new(-154.507, 24.2926, 2965.8),
+                CFrame.new(-157.196, 24.2927, 2965.74),
+                CFrame.new(-152.952, 24.2826, 2963.48),
+                CFrame.new(-151.622, 24.2927, 2961.92),
+                CFrame.new(-151.643, 24.2926, 2965.4),
+                CFrame.new(-153.588, 24.2926, 2967.45),
+                CFrame.new(-152.461, 24.2926, 2968.99),
+            }
+        },
+            
+        ["magnolia"] = {
+            Ground = {
+                CFrame.new(-622.15, 7.367, -841.767) * imlazy, --too lazy to change all cframes when im barely adjusting it
+                CFrame.new(-622.15, 7.367, -839.535)* imlazy,
+                CFrame.new(-622.15, 7.367, -837.695)* imlazy,
+                CFrame.new(-617.997, 7.367, -837.695)* imlazy,
+                CFrame.new(-617.997, 7.367, -839.53)* imlazy,
+                CFrame.new(-617.997, 7.367, -841.668)* imlazy,
+                CFrame.new(-626.013, 7.367, -841.668)* imlazy,
+                CFrame.new(-626.013, 7.367, -839.429)* imlazy,
+                CFrame.new(-626.013, 7.367, -837.264)* imlazy,
+                CFrame.new(-622.061, 7.367, -835.3)* imlazy,
+                CFrame.new(-630.358, 7.367, -835.3)* imlazy,
+                CFrame.new(-614.314, 7.992, -839.32)* imlazy,
+                CFrame.new(-622.436, 7.992, -843.522)* imlazy,
+                CFrame.new(-626.822, 7.992, -834.121)* imlazy,
+                CFrame.new(-615.916, 7.367, -839.53)* imlazy,
+                CFrame.new(-617.362, 7.367, -844.045)* imlazy,
+                CFrame.new(-619.704, 7.367, -844.045)* imlazy,
+                CFrame.new(-615.248, 7.367, -841.674)* imlazy,
+                CFrame.new(-625.599, 7.774, -843.246)* imlazy,
+                CFrame.new(-611.732, 7.992, -832.83)* imlazy,
+            }
+        }
+    }
+
+    local Log = {
+
+    }
+
+    repeat
+        task.wait()
+    until Loader.LevelData
+
+    for i, Info in pairs(UnitsInfo) do
+        Info.hill_unit = false
+        Info.hybrid_placement = true
+    end
+
+    task.wait(.5)
+
+    local nameSplit = string.split(Loader.LevelData.map, "_")
+    local fullname = ""
+    local loadermap
+    for i,v in pairs(nameSplit) do
+        fullname = fullname .. v
+    end
+
+    if Maps[fullname] then
+        loadermap = fullname
+    elseif Maps[nameSplit[1]] then
+        loadermap = nameSplit[1]
+    else
+        for i,v in pairs(Maps) do
+            if string.match(Loader.LevelData.map, i) then
+                loadermap = i
+                break
+            end
+        end
+    end
+
+    local CurrentMap = ((Loader.LevelData._challenge or Loader.LevelData.is_raid) and loadermap or Settings.Map)
+    local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap]) or Settings.Maps[CurrentMap]
+
+    print("CurrentMap: ".. CurrentMap)
+    local ignore = workspace:WaitForChild("ignore")
+    for _, v in pairs(ignore:GetChildren()) do
+        v:Destroy()
+    end
+    ignore.ChildAdded:Connect(function(child)
+        if child:IsA("BasePart") and child.BrickColor == BrickColor.new("Really red") then
+            child:Destroy()
+        end
+    end)
+    function SendWebhook()
+        task.wait(.5)
+        local Seconds = os.time() - StartTime
+        local holder = {
+            ["TotalGems"] = {
+                ["name"] = "Total Gems:",
+                ["value"] = (tostring(Player._stats.gem_amount.Value)) .. Emojis.Diamond,
+                ["inline"] = true
+            },
+
+            ["TimeCompletedAt"] = {
+                ["name"] = "Completed At Time:",
+                ["value"] = string.format("<t:%s:t>", os.time()) .. Emojis.Time,
+                ["inline"] = true
+            },
+
+            ["Map"] = {
+                ["name"] = "Map:",
+                ["value"] = CurrentMap .. Emojis.Map,
+                ["inline"] = true
+            },
+
+            ["BossesKilled"] = {
+                ["name"] = "Bosses Killed:",
+                ["value"] = tostring(BossesKilled) .. Emojis.Skull,
+            }
+        }
+
+        local field = {
+            {
+                ["name"] = "Gems recived:",
+                ["value"] = string.match(PlayerGui.Waves.HealthBar.GemRewardTotal.Main.Amount.Text, "%d+") .. Emojis.Diamond,
+                ["inline"] = true
+            },
+
+            {
+                ["name"] = "Wave ended:",
+                ["value"] = tostring(game:GetService("Workspace")["_wave_num"].Value) .. Emojis.Wave,
+                ["inline"] = true
+            },
+
+            {
+                ["name"] = "Time Finished:",
+                ["value"] = (string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60)) .. Emojis.Time,
+                ["inline"] = true
+            },
+        }
+
+        for i, v in pairs(Settings.WebhookOptions) do
+            if v then
+                table.insert(field, holder[i])
+            end
+        end
+
+        if (Loader.LevelData._challenge)then
+            table.insert(field, {
+                ["name"] = "Challenge",
+                ["value"] = Loader.LevelData._challenge .. Emojis.Swords
+            })
+
+            table.insert(field, {
+                ["name"] = "Reward Type",
+                ["value"] = Loader.LevelData._reward .. Emojis.Bag
+            })
+        end
+        if (Loader.LevelData.is_raid) then
+            table.insert(field, {
+                ["name"] = "Raid",
+                ["value"] = CurrentMap
+            })
+        end
+
+        local data = {
+            ["embeds"] = {
+                {
+                    ["author"] = {
+                        ["name"] = string.format("%s: Lv %s", Player.DisplayName, tostring(GetPlayersLevel())),
+                    },
+            
+                    ["description"] = "Match finished",
+                    ["color"] = tostring(0xFF2449),
+                    ["thumbnail"] = {
+                        url = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. Player.UserId .. "&width=420&height=420&format=png"
+                    },
+                }
+            }
+        }
+
+        data.embeds[1]["fields"] = field
+        local newdata = game:GetService("HttpService"):JSONEncode(data)
+        
+        local abcdef = {Url = Settings.Webhooks, Body = newdata, Method = "POST", Headers = headers}
+        if Settings.Webhooks ~= "" then
+            request(abcdef)
+        end
+    end
+
+    function addUnits()
+        for i,v in pairs(MapInfo.Units) do
+            if i == 7 then return end
+            if v == "None" then continue end
+            local split = string.split(v, ":") -- uuid:name
+            local UnitName = split[1]
+            local uuid = split[2]
+
+            FarmUnits[i] = {
+                ["Name"] = UnitName, 
+                ["uuid"] = uuid,
+            };
+        end
+    end
+
+    function GetUpgrades(UnitName)
+        for Index, uuid_name in pairs(MapInfo.Units) do
+            if uuid_name == "None" then continue end
+            local split = string.split(uuid_name, ":")
+            local name = split[1]
+            local uuid = split[2]
+
+            if name == UnitName then
+                return MapInfo.Upgrades[Index]
+            end
+        end
+    end
+
+    function GetSpawnCap(UnitName)
+        for Index, uuid_name in pairs(MapInfo.Units) do
+            local split = string.split(uuid_name, ":") -- name:uuid
+            local unitname = split[1]
+            local uuid = split[2]
+
+            if unitname == UnitName then
+                return MapInfo.SpawnCaps[Index]
+            end
+        end
+    end
+
+    function spawnUnit(Index)
+        local UnitName = FarmUnits[Index]["Name"]
+        local Cap = GetSpawnCap(UnitName)
+        local Type = "Ground"
+        if Log[Index] and Log[Index] == Cap then return end
+        if not Maps[CurrentMap][Type][SpawnNum] then return end
+
+        if Player.UserId == 68728334 then --sexy perhapz
+            Maps["namek"]["Ground"][1] = Maps["namek"]["Ground"][2]
+            Maps["namek"]["Ground"][2] = CFrame.new(-2945.90723, 92.3062057, -693.054199, 1, 0, 0, 0, 1, 0, 0, 0, 0.999999821) 
+        elseif Player.UserId == 94158016 then
+            local old2 = Maps["namek"]["Ground"][2]
+
+            Maps["namek"]["Ground"][1] = old2
+            Maps["namek"]["Ground"][2] = CFrame.new(-2948.09, 93.0863, -710.218)
+        end
+
+        local args = {
+            [1] = FarmUnits[Index]["uuid"],
+            [2] = Maps[CurrentMap][Type][SpawnNum]
+        }
+        
+        local placed
+        
+        repeat
+            placed = ClientToServer:WaitForChild("spawn_unit"):InvokeServer(unpack(args))
+            task.wait(1)
+        until placed
+
+        if placed then
+            if not Log[Index] then
+                Log[Index] = 1
+            else
+                Log[Index] = Log[Index] + 1
+            end
+
+            SpawnNum = SpawnNum + 1
+        end
+    end
+
+    local Units_to_Upgrade = {}
+
+    function SetUpgradeUnits()
+        for i, v in pairs(Units:GetChildren()) do
+            task.spawn(function()
+                if v:FindFirstChild("_stats") then
+                    if v._stats:FindFirstChild("player") and  v._stats:FindFirstChild("player").Value == Player then
+                        if v._stats:FindFirstChild("parent_unit") and v._stats:FindFirstChild("parent_unit").Value then return end
+                        table.insert(Units_to_Upgrade, v)
                     end
                 end
             end)
-    
-            SetUpgradeUnits()
-            task.wait(1)
+        end
+    end
 
-            task.spawn(function()
-                local AbilityUnits = {
+    function upgradeUnits()
+        for i, v in pairs(Units_to_Upgrade) do               
+            local MaxUpgrade = GetUpgrades(v._stats.id.Value) or 5
+            print(MaxUpgrade, v.Name)
+            if v._stats.upgrade.Value ~= MaxUpgrade then 
 
-                }
+                local Upgraded 
+
                 repeat
-                    for i,v in pairs(Units_to_Upgrade) do
-                        local Stats = v._stats
-                        if not Stats:FindFirstChild("active_attack_cooldown") then continue end
-                        local activeAttack = Stats.active_attack.Value
-                        local activeAttackCooldown = Stats.active_attack_cooldown.Value
-                        local lastActiveCast = Stats.last_active_cast.Value
+                    task.wait(2)
+                    Upgraded = ClientToServer:WaitForChild("upgrade_unit_ingame"):InvokeServer(v)
+                until Upgraded or Break
 
-                        if activeAttack then
-                            if AbilityUnits[activeAttack] then
-                                if tick() - AbilityUnits[activeAttack]["Time"] >= activeAttackCooldown then
-                                    if AbilityUnits[activeAttack]["Unit"] == v then continue end
-                                    if tick() - lastActiveCast < activeAttackCooldown then continue end
+                if Break then return end
+            end
+        end
+        task.wait(.1)
+        upgradeUnits()
+    end
+    
+    function GetPlayersLevel()
+        local exp = Player._stats.player_xp.Value
 
-                                    AbilityUnits[activeAttack] = {
-                                        Time = tick(),
-                                        Unit = v
-                                    }
-                                    ClientToServer.use_active_attack:InvokeServer(v)
-                                end
-                            else
+        return math.floor(0.07142857142857142 * (-179 + math.sqrt(56 * exp + 37249)));
+    end
+
+    function SellAll()
+        Break = true
+        for i, v in pairs(Units_to_Upgrade) do
+            ClientToServer:WaitForChild("sell_unit_ingame"):InvokeServer(v)
+            task.wait(.1)
+        end
+    end
+
+    function start()
+        addUnits()
+        task.wait(2)
+        local Seconds = 0
+        SolarisLib:Notification("Gems", string.format("You have %s GEMS", tostring(Player:WaitForChild("_stats"):WaitForChild("gem_amount").Value)), 60 * 50)
+        local timelapse = SolarisLib:Notification("Timelapse", string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60), 60 * 60)
+        task.spawn(function()
+            game:GetService("ReplicatedStorage")["_bounds"]:ClearAllChildren()
+            game:GetService("Workspace")["_terrain"].terrain:ClearAllChildren()
+            game:GetService("Workspace")["_map"]:ClearAllChildren()
+            ClientToServer:WaitForChild("vote_start"):InvokeServer()
+
+            repeat
+                timelapse.Text = string.format("%sm:%ss", math.floor(Seconds/60%60), Seconds%60)
+                task.wait(1)
+                Seconds = Seconds + 1
+            until nil
+        end)
+
+        for Index, Info in pairs(FarmUnits) do
+            local Name = Info["Name"]
+            print(Name)
+            local Cap = GetSpawnCap(Name) -- Spawn Cap
+            print(Cap)
+            for i = 1, Cap do
+                task.wait(1)
+                spawnUnit(Index)
+            end
+        end
+
+        game:GetService("Workspace")["_wave_num"].Changed:Connect(function()
+            if game:GetService("Workspace")["_wave_num"].Value >= Settings.Maps[Settings.Map].SellAt and not Loader.LevelData._challenge then
+                if MapInfo["LeaveAtWave"] then
+                    SendWebhook()
+
+                    task.wait()
+                    TeleportService:Teleport(8304191830)
+                else
+                    SellAll()
+                end
+            end
+        end)
+
+        SetUpgradeUnits()
+        task.wait(1)
+
+        task.spawn(function()
+            local AbilityUnits = {
+
+            }
+            repeat
+                for i,v in pairs(Units_to_Upgrade) do
+                    local Stats = v._stats
+                    if not Stats:FindFirstChild("active_attack_cooldown") then continue end
+                    local activeAttack = Stats.active_attack.Value
+                    local activeAttackCooldown = Stats.active_attack_cooldown.Value
+                    local lastActiveCast = Stats.last_active_cast.Value
+
+                    if activeAttack then
+                        if AbilityUnits[activeAttack] then
+                            if tick() - AbilityUnits[activeAttack]["Time"] >= activeAttackCooldown then
+                                if AbilityUnits[activeAttack]["Unit"] == v then continue end
+                                if tick() - lastActiveCast < activeAttackCooldown then continue end
+
                                 AbilityUnits[activeAttack] = {
                                     Time = tick(),
                                     Unit = v
                                 }
                                 ClientToServer.use_active_attack:InvokeServer(v)
                             end
+                        else
+                            AbilityUnits[activeAttack] = {
+                                Time = tick(),
+                                Unit = v
+                            }
+                            ClientToServer.use_active_attack:InvokeServer(v)
                         end
                     end
-                    task.wait(1)
-                until Break
-            end)
-            upgradeUnits()  
-        end
-    
-        function teleport()
-            ClientToServer.teleport_back_to_lobby:InvokeServer()
-            task.wait(10)
-            TeleportService:Teleport(8304191830)
-        end
-    
-        local function localTeleportWithRetry(placeid, retryTime)
-            local connection
-            connection = TeleportService.TeleportInitFailed:Connect(function(player, teleportResult, errorMessage)
-                if player == Player then
-                    print("Teleport failed, TeleportResult: "..teleportResult.Name)
-                    -- check the teleportResult to ensure it is appropriate to retry
-                    if teleportResult == Enum.TeleportResult.GameEnded or teleportResult == Enum.TeleportResult.Flooded or teleportResult == Enum.TeleportResult.Failure then
-                        game:GetService("ReplicatedStorage").endpoints.client_to_server.request_leave_lobby:InvokeServer(Lobby)
-                        print("Teleportfailed L")
-                        task.delay(retryTime, function()
-                            print("Reattempting teleport")
-                            TeleportService:Teleport(placeid)
-                        end)
-                    end
                 end
-            end)
-        end
-    
-        localTeleportWithRetry(8304191830, 5)
-    
-        task.wait(8)
-        start()
+                task.wait(1)
+            until Break
+        end)
+        upgradeUnits()  
     end
+
+    function teleport()
+        ClientToServer.teleport_back_to_lobby:InvokeServer()
+        task.wait(10)
+        TeleportService:Teleport(8304191830)
+    end
+
+    local function localTeleportWithRetry(placeid, retryTime)
+        local connection
+        connection = TeleportService.TeleportInitFailed:Connect(function(player, teleportResult, errorMessage)
+            if player == Player then
+                print("Teleport failed, TeleportResult: "..teleportResult.Name)
+                -- check the teleportResult to ensure it is appropriate to retry
+                if teleportResult == Enum.TeleportResult.GameEnded or teleportResult == Enum.TeleportResult.Flooded or teleportResult == Enum.TeleportResult.Failure then
+                    game:GetService("ReplicatedStorage").endpoints.client_to_server.request_leave_lobby:InvokeServer(Lobby)
+                    print("Teleportfailed L")
+                    task.delay(retryTime, function()
+                        print("Reattempting teleport")
+                        TeleportService:Teleport(placeid)
+                    end)
+                end
+            end
+        end)
+    end
+
+    localTeleportWithRetry(8304191830, 5)
+
+    task.wait(8)
+    start()
+end
