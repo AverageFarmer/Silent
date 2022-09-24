@@ -637,12 +637,15 @@ if game.PlaceId == 8304191830 then
 
     OtherFarms:Toggle("Challenges", Settings.DoChallenges, function(val)
         Settings.DoChallenges = val
+        Save()
     end)
     OtherFarms:Toggle("Raids", Settings.DoRaid, function(val)
         Settings.DoRaid = val
+        Save()
     end)
     OtherFarms:Toggle("Missions", Settings.DoMissions, function(val)
         Settings.DoMissions = val
+        Save()
     end)
     
     AutoSummonSection:Toggle("Enabled", Settings.AutoSummon.Enabled, function(val)
