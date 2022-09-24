@@ -131,6 +131,8 @@ local Settings = {
     DoRaid = false,
     DoMissions = false,
 
+    DoingMission = false;
+
     Raid = {
 
     },
@@ -355,11 +357,12 @@ for i,v in pairs(currentSettings) do
 end
 
 Settings.AutoDelete.Enabled = false
-Settings.AutoBuy.Enabled = true
+Settings.DoingMission = false
 
 if Settings.AntiAFKv2 then
     Settings.AntiAFKv2 = nil
 end
+
 if Settings.Maps["bleach"] then
     Settings.Maps["bleach"] = nil
 end
@@ -586,10 +589,7 @@ if game.PlaceId == 8304191830 then
     local UnitTab = Window:Tab("Units")
     local ChallengeTab = Window:Tab("Challenges")
     local MissionTab = Window:Tab("Missions")
-    local RaidTab 
-    if isDev() then
-        RaidTab = Window:Tab("Raids")
-    end
+    local RaidTab = Window:Tab("Raids")
     local SummonTab = Window:Tab("Summoning")
     local MiscTab = Window:Tab("Misc")
     local WebhookTab = Window:Tab("Webhooks")
@@ -830,81 +830,79 @@ if game.PlaceId == 8304191830 then
     end
 
     SetupUnits()
-    if isDev() then
-        for Index, Map in pairs(RaidMaps) do --Raids
-            Map = Map:lower()
-            local MapInfo = Settings.Raid[Map]
-            local MapSlot = RaidTab:Section(Map)
+    for Index, Map in pairs(RaidMaps) do --Raids
+        Map = Map:lower()
+        local MapInfo = Settings.Raid[Map]
+        local MapSlot = RaidTab:Section(Map)
 
-            if not MapInfo then
-                Settings.Raid[Map] = {
-                    Units = {},
-                    Upgrades = {},
-                    SpawnCaps = {},
-                    Enabled = false,
-                }
-                MapInfo = Settings.Raid[Map]
-                Save()
+        if not MapInfo then
+            Settings.Raid[Map] = {
+                Units = {},
+                Upgrades = {},
+                SpawnCaps = {},
+                Enabled = false,
+            }
+            MapInfo = Settings.Raid[Map]
+            Save()
+        end
+
+        MapSlot:Toggle("Enable", Settings.Raid[Map].Enabled or false, function(val)
+            Settings.Raid[Map].Enabled = val
+            Save()
+        end)
+        
+        local MapDropHolder = {}
+        local UpgradeDropHolder = {}
+        local PlacementDropHolder = {}
+        
+        MapSlot:Button("Refresh Units", function()
+            SetupUnits()
+            for i,v in pairs(MapDropHolder) do
+                print(i)
+                local CurrentUnit = MapInfo.Units[i] or "None"
+                v:Set(CurrentUnit)
+                v:Refresh(Pets)
             end
+        end)
 
-            MapSlot:Toggle("Enable", Settings.Raid[Map].Enabled or false, function(val)
-                Settings.Raid[Map].Enabled = val
-                Save()
-            end)
-            
-            local MapDropHolder = {}
-            local UpgradeDropHolder = {}
-            local PlacementDropHolder = {}
-            
-            MapSlot:Button("Refresh Units", function()
-                SetupUnits()
-                for i,v in pairs(MapDropHolder) do
-                    print(i)
-                    local CurrentUnit = MapInfo.Units[i] or "None"
-                    v:Set(CurrentUnit)
-                    v:Refresh(Pets)
+        for SlotNumber = 1, MaxSlots do
+            local CurrentUnit = MapInfo.Units[SlotNumber] or "None"
+            local UnitName = (CurrentUnit ~= "None" and  string.split(MapInfo.Units[SlotNumber], ":")[1]) or nil
+            local UnitData = GetUnitInfo(UnitName)
+            local Spawn_Cap = (UnitData and UnitData.spawn_cap or 1)
+            local UpgradeNum = (UnitData and #UnitData.upgrade) or 3
+
+            MapSlot:Label("Unit#" .. SlotNumber)
+        
+            MapDropHolder[SlotNumber] = MapSlot:DropDown("", CurrentUnit, Pets, function(val)
+                MapInfo.Units[SlotNumber] = val 
+
+                CurrentUnit = val
+                UnitName = (CurrentUnit ~= "None" and  string.split(val, ":")[1]) or nil
+                UnitData = GetUnitInfo(UnitName)
+                Spawn_Cap = (CurrentUnit ~= "None" and UnitData.spawn_cap or 3)
+
+                if UpgradeDropHolder[SlotNumber] then
+                    UpgradeNum = (UnitData and #UnitData.upgrade) or 3
+                    UpgradeDropHolder[SlotNumber]:Set(UpgradeNum)
+                    UpgradeDropHolder[SlotNumber]:Refresh(MakeList(UpgradeNum))
+
+                    PlacementDropHolder[SlotNumber]:Set(Spawn_Cap)
+                    PlacementDropHolder[SlotNumber]:Refresh(MakeList(Spawn_Cap))
                 end
+
+                Save()
             end)
-
-            for SlotNumber = 1, MaxSlots do
-                local CurrentUnit = MapInfo.Units[SlotNumber] or "None"
-                local UnitName = (CurrentUnit ~= "None" and  string.split(MapInfo.Units[SlotNumber], ":")[1]) or nil
-                local UnitData = GetUnitInfo(UnitName)
-                local Spawn_Cap = (UnitData and UnitData.spawn_cap or 1)
-                local UpgradeNum = (UnitData and #UnitData.upgrade) or 3
-
-                MapSlot:Label("Unit#" .. SlotNumber)
             
-                MapDropHolder[SlotNumber] = MapSlot:DropDown("", CurrentUnit, Pets, function(val)
-                    MapInfo.Units[SlotNumber] = val 
-
-                    CurrentUnit = val
-                    UnitName = (CurrentUnit ~= "None" and  string.split(val, ":")[1]) or nil
-                    UnitData = GetUnitInfo(UnitName)
-                    Spawn_Cap = (CurrentUnit ~= "None" and UnitData.spawn_cap or 3)
-
-                    if UpgradeDropHolder[SlotNumber] then
-                        UpgradeNum = (UnitData and #UnitData.upgrade) or 3
-                        UpgradeDropHolder[SlotNumber]:Set(UpgradeNum)
-                        UpgradeDropHolder[SlotNumber]:Refresh(MakeList(UpgradeNum))
-
-                        PlacementDropHolder[SlotNumber]:Set(Spawn_Cap)
-                        PlacementDropHolder[SlotNumber]:Refresh(MakeList(Spawn_Cap))
-                    end
-
-                    Save()
-                end)
-                
-                UpgradeDropHolder[SlotNumber] = MapSlot:DropDown("UpgradeCap", MapInfo.Upgrades[SlotNumber] or 3, (UnitData and MakeList(#UnitData.upgrade)) or {}, function(val)
-                    MapInfo.Upgrades[SlotNumber] = val
-                    Save()
-                end)
-                
-                PlacementDropHolder[SlotNumber] = MapSlot:DropDown("SpawnCap", MapInfo.SpawnCaps[SlotNumber] or 1, (CurrentUnit ~= "None" and MakeList(Spawn_Cap)) or {}, function(val)
-                    MapInfo.SpawnCaps[SlotNumber] = val
-                    Save()
-                end)
-            end
+            UpgradeDropHolder[SlotNumber] = MapSlot:DropDown("UpgradeCap", MapInfo.Upgrades[SlotNumber] or 3, (UnitData and MakeList(#UnitData.upgrade)) or {}, function(val)
+                MapInfo.Upgrades[SlotNumber] = val
+                Save()
+            end)
+            
+            PlacementDropHolder[SlotNumber] = MapSlot:DropDown("SpawnCap", MapInfo.SpawnCaps[SlotNumber] or 1, (CurrentUnit ~= "None" and MakeList(Spawn_Cap)) or {}, function(val)
+                MapInfo.SpawnCaps[SlotNumber] = val
+                Save()
+            end)
         end
     end
 
@@ -1208,6 +1206,8 @@ if game.PlaceId == 8304191830 then
             if hasAMission() and Settings.DoMissions then
                 local MissionInfo = GetQuestInfo(currentmissionid)
                 MapName = MissionInfo.quest_class.level_id
+                Settings.DoingMission = true
+                Save()
                 Create(MapName)
                 task.wait(1)
                 start2()
@@ -1347,11 +1347,7 @@ if game.PlaceId == 8304191830 then
         end
 
         if raid then
-            if not isDev() then
-                raid = false
-            else
-                MapName = raid
-            end
+            MapName = raid
         end
         
         print(MapName)
@@ -2065,8 +2061,10 @@ elseif game.PlaceId == 8349889591 then
         end
 
         game:GetService("Workspace")["_wave_num"].Changed:Connect(function()
-            if game:GetService("Workspace")["_wave_num"].Value >= Settings.Maps[Settings.Map].SellAt and not Loader.LevelData._challenge then
-                if MapInfo["LeaveAtWave"] then
+            local SellAt = (Settings.DoingMission and 25) or Settings["Maps"][Settings.Map].SellAt
+            local Leave = (Settings.DoingMission and true) or MapInfo["LeaveAtWave"]
+            if game:GetService("Workspace")["_wave_num"].Value >= SellAt and not Loader.LevelData._challenge then
+                if Leave then
                     SendWebhook()
 
                     task.wait()
