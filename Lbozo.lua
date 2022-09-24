@@ -743,7 +743,7 @@ if game.PlaceId == 8304191830 then
                 end
             end
         end
-    end)
+    end) 
 
     WebhookLabel = WebHookSection:Label(Settings.Webhooks)
     WebHookSection:TextBox("Your Webhook", Settings.Webhooks, function(val)
@@ -774,6 +774,7 @@ if game.PlaceId == 8304191830 then
 
         MissionSection:Toggle(v, Settings["Missions"][v], function(val)
             Settings["Missions"][v] = val
+            Save()
         end)
     end
 
@@ -1341,7 +1342,11 @@ if game.PlaceId == 8304191830 then
         
         if hasmissions then
             for i, questID in pairs(GetCurrentMissions()) do
-                currentmissionid = questID
+                if HasQuest(questID) then
+                    currentmissionid = questID
+                else
+                    continue
+                end
                 break
             end
         end
@@ -1352,7 +1357,7 @@ if game.PlaceId == 8304191830 then
         
         print(MapName)
         if not (Settings.Raid or Settings.Raid[MapName] or Settings.Raid[MapName].Enabled) then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
-        if not Settings.DoChallenges or not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then  challenge = false end
+        if not Settings.DoChallenges or  Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then  challenge = false end
 
         print("Doing raid ".. tostring(raid))
         print("Doing Challenge ".. tostring(challenge))
