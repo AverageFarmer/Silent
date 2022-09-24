@@ -1206,6 +1206,9 @@ if game.PlaceId == 8304191830 then
                 local MissionInfo = GetQuestInfo(currentmissionid)
                 MapName = MissionInfo.quest_class.level_id
                 Create(MapName)
+                task.wait(1)
+                start2()
+                task.wait(1)
             elseif challenge then
                 task.wait(27)
                 if #ChallengeStuff[Lobby].Players:GetChildren() > 1 then
@@ -1496,7 +1499,6 @@ if game.PlaceId == 8304191830 then
     
             ClientToServer.request_claim_mission:InvokeServer(QuestID)
         end
-
     end
 
     teleport()
@@ -1790,7 +1792,7 @@ elseif game.PlaceId == 8349889591 then
         end
     end
 
-    local CurrentMap = ((Loader.LevelData._challenge or Loader.LevelData.is_raid) and loadermap or Settings.Map)
+    local CurrentMap = loadermap
     local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap]) or Settings.Maps[CurrentMap]
 
     print("CurrentMap: ".. CurrentMap)
