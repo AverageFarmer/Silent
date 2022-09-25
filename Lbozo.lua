@@ -582,7 +582,7 @@ if game.PlaceId == 8304191830 then
     function HasQuest2(questID)
         return Settings.CurrentMissions[questID]
     end
-
+    
     function GetQuestInfo(questID)
         print("Comparing")
         for QuestUUID, QuestInfo in pairs(EndpointsClient.session.profile_data.quest_handler.quests) do
@@ -1923,7 +1923,7 @@ elseif game.PlaceId == 8349889591 then
         if Settings.DoingMission then
             table.insert(field, {
                 ["name"] = "Mission",
-                ["value"] = Settings.CurrentMission .. Emojis.Swords
+                ["value"] = string.split(Settings.CurrentMission,"mission")[2] .. Emojis.Swords
             })
         end
 
