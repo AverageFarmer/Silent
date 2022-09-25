@@ -2107,6 +2107,7 @@ elseif game.PlaceId == 8349889591 then
             if game:GetService("Workspace")["_wave_num"].Value >= SellAt and not Loader.LevelData._challenge then
                 if Leave then
                     Settings.DoingMission = false
+                    print("Current MIssion: "..Settings.CurrentMission)
                     if Settings.CurrentMissions[Settings.CurrentMission] then
                         Settings.CurrentMissions[Settings.CurrentMission] = nil
                         Settings.CompletedMissions[Settings.CurrentMission] = true
