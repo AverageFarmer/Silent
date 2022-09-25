@@ -1584,6 +1584,7 @@ elseif game.PlaceId == 8349889591 then
                 if Settings.CurrentMissions[Settings.CurrentMission] then
                     Settings.CurrentMissions[Settings.CurrentMission] = nil
                     Settings.CompletedMissions[Settings.CurrentMission] = true
+                    Settings.CurrentMission = nil
                 end
                 Save()
                 task.wait(.5)
@@ -2124,6 +2125,7 @@ elseif game.PlaceId == 8349889591 then
                     if Settings.CurrentMissions[Settings.CurrentMission] then
                         Settings.CurrentMissions[Settings.CurrentMission] = nil
                         Settings.CompletedMissions[Settings.CurrentMission] = true
+                        Settings.CurrentMission = nil
                     end
                     Save()
                     task.wait()
