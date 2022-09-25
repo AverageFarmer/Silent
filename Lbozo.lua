@@ -1205,7 +1205,7 @@ if game.PlaceId == 8304191830 then
         local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant"  or Reward == "star_fruit_epic"
         local hasmissions = hasAMission()
         local currentmissionid
-        Settings.CurrentMission = nil
+        
         if raid then
             MapName = raid
         end
@@ -1224,7 +1224,7 @@ if game.PlaceId == 8304191830 then
         task.wait()
         join()
         task.wait(.5)
-        Save()
+        
         if not raid then
             if currentmissionid and Settings.DoMissions then
                 local MissionInfo = GetQuestInfo(currentmissionid)
@@ -1363,6 +1363,8 @@ if game.PlaceId == 8304191830 then
         local hasmissions = hasAMission()
         local currentmissionid
         local caughtquestid
+        Settings.CurrentMission = nil
+        Save()
         print("currentmission id before: "..tostring(currentmissionid))
         for id, v in pairs(Settings.CurrentMissions) do
             --print(id)
