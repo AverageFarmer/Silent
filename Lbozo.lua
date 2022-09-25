@@ -1370,6 +1370,7 @@ if game.PlaceId == 8304191830 then
         local caughtquestid
         print("currentmission id before: "..tostring(currentmissionid))
         for id, v in pairs(Settings.CurrentMissions) do
+            print(id)
             if IgnoreQuest(id) then caughtquestid = id continue end
             currentmissionid = id
         end
@@ -1392,7 +1393,7 @@ if game.PlaceId == 8304191830 then
                 local Mission = GetQuestInfo(currentmissionid)
                 print(Mission)
                 local Map = string.split(Mission.quest_class.level_id, "_")[1]
-
+                print("MISSION: "..Map)
                 for Index, name_uuid in pairs(Settings.Maps[Map].Units) do
                     local split = string.split(name_uuid, ":")
                     local name = split[1]
