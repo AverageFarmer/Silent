@@ -1539,7 +1539,7 @@ if game.PlaceId == 8304191830 then
                 print("HAS QUEST")
                 Settings.CurrentMissions = {}
                 Settings.CompletedMissions = {}
-                continue
+                break
             end
             if Settings.CompletedMissions[QuestID] then
                 continue
