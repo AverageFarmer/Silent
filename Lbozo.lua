@@ -586,8 +586,8 @@ if game.PlaceId == 8304191830 then
     function GetQuestInfo(questID)
         print("Comparing")
         for QuestUUID, QuestInfo in pairs(EndpointsClient.session.profile_data.quest_handler.quests) do
-            print(QuestInfo.quest_info.id, questID)
-            if QuestInfo.quest_info.id and QuestInfo.quest_info.id == questID then
+            print(QuestInfo.quest_info.id.."_quest", questID)
+            if QuestInfo.quest_info.id and QuestInfo.quest_info.id.."_quest" == questID then
                 return QuestInfo.quest_info -- quest_class > 
             end
         end
