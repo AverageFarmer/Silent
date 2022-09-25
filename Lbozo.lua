@@ -362,7 +362,6 @@ for i,v in pairs(currentSettings) do
     Settings[i] = v
 end
 
-Settings.CurrentMission = nil
 Settings.AutoDelete.Enabled = false
 
 if Settings.AntiAFKv2 then
@@ -1211,7 +1210,8 @@ if game.PlaceId == 8304191830 then
         local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant"  or Reward == "star_fruit_epic"
         local hasmissions = hasAMission()
         local currentmissionid
-        
+        Settings.CurrentMission = nil
+        Save()
         if raid then
             MapName = raid
         end
