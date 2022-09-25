@@ -1374,7 +1374,6 @@ if game.PlaceId == 8304191830 then
                     local split = string.split(name_uuid, ":")
                     local name = split[1]
                     local uuid = split[2]
-                    print(name)
                     if AllUnits[uuid] then
                         if not table.find(UnitsToEquip, uuid) then
                             table.insert(UnitsToEquip, uuid)
@@ -1421,7 +1420,6 @@ if game.PlaceId == 8304191830 then
         end
 
         task.wait(.5)
-
         local function MakeSpace()
             local Indexes = {}
             local unitsNotThere = UnitsToEquip
