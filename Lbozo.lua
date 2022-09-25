@@ -596,6 +596,7 @@ if game.PlaceId == 8304191830 then
     function IgnoreQuest(questID) 
         for _, v in pairs(QuestIgnore) do
             if string.find(questID,v) then
+                print("Ignored quest.")
                 return true
             end
         end
