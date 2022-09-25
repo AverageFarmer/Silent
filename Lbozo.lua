@@ -598,7 +598,7 @@ if game.PlaceId == 8304191830 then
             if QuestInfo.quest_info.id and QuestInfo.quest_info.id == questID.."__quest" then
                 for _, v in pairs(QuestIgnore) do
                     if QuestInfo.quest_info.quest_class.class and string.find(QuestInfo.quest_info.quest_class.class, v) then
-                        print(QuestInfo.quest_info.quest_class.class, v, string.find(QuestInfo.quest_info.quest_class.class, v))
+                   --     print(QuestInfo.quest_info.quest_class.class, v, string.find(QuestInfo.quest_info.quest_class.class, v))
                         return true
                     end
                 end
