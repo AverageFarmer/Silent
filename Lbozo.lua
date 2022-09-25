@@ -597,7 +597,7 @@ if game.PlaceId == 8304191830 then
         for QuestUUID, QuestInfo in pairs(EndpointsClient.session.profile_data.quest_handler.quests) do
             if QuestInfo.quest_info.id then
                 for _, v in pairs(QuestIgnore) do
-                    if QuestInfo.quest_info.quest_class == v then
+                    if QuestInfo.quest_info.quest_class.class and string.find(QuestInfo.quest_info.quest_class.class, v) then
                         return true
                     end
                 end
