@@ -1364,7 +1364,7 @@ if game.PlaceId == 8304191830 then
 
         print("Doing raid ".. tostring(raid))
         print("Doing Challenge ".. tostring(challenge))
-
+        print("Mission: "..tostring(hasmissions))
         if not raid then
             print("Mission: "..tostring(hasmissions))
             if hasmissions and Settings.DoMissions then
