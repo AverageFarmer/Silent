@@ -1370,12 +1370,11 @@ if game.PlaceId == 8304191830 then
             if hasmissions and Settings.DoMissions then
                 local Mission = GetQuestInfo(currentmissionid)
                 local Map = string.split(Mission.quest_class.level_id, "_")[1]
-                print(Map)
                 for Index, name_uuid in pairs(Settings.Maps[Map].Units) do
                     local split = string.split(name_uuid, ":")
                     local name = split[1]
                     local uuid = split[2]
-
+                    print(name)
                     if AllUnits[uuid] then
                         if not table.find(UnitsToEquip, uuid) then
                             table.insert(UnitsToEquip, uuid)
