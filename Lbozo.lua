@@ -1524,6 +1524,11 @@ if game.PlaceId == 8304191830 then
 
     if Settings.DoMissions then
         local newquests = false
+        for _, id in pairs(GetCurrentMissions()) do
+            if not HasQuest2(id) then
+                Settings.CurrentMissions = {}
+            end
+        end
         for _, QuestID in pairs(GetCurrentMissions()) do
             if HasQuest2(QuestID) then
                 print("HAS QUEST")
