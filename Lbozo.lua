@@ -1360,7 +1360,7 @@ if game.PlaceId == 8304191830 then
         
         print(MapName)
         if not (Settings.Raid or Settings.Raid[MapName] or Settings.Raid[MapName].Enabled) then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
-        if not Settings.DoChallenges or  Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then  challenge = false end
+        if not Settings.DoChallenges or  not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then  challenge = false end
 
         print("Doing raid ".. tostring(raid))
         print("Doing Challenge ".. tostring(challenge))
