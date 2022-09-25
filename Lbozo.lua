@@ -1182,11 +1182,7 @@ if game.PlaceId == 8304191830 then
         local currentmissionid
         
         if raid then
-            if not isDev() then
-                raid = false
-            else
-                MapName = raid
-            end
+            MapName = raid
         end
 
 
