@@ -1525,7 +1525,7 @@ if game.PlaceId == 8304191830 then
     if Settings.DoMissions then
         local newquests = false
         for _, id in pairs(GetCurrentMissions()) do
-            if not HasQuest2(id) then
+            if not HasQuest2(id) and not Settings.CompletedMissions[id] then
                 Settings.CurrentMissions = {}
             end
         end
