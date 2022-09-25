@@ -1577,9 +1577,9 @@ elseif game.PlaceId == 8349889591 then
             task.wait()
             if game:GetService("Workspace"):WaitForChild("_DATA"):WaitForChild("GameFinished").Value then --Checks if reward is ready to claim and claims it
                 task.wait(5)
-                task.spawn(function()
-                    SendWebhook()
-                end)
+              
+                SendWebhook()
+                
                 Settings.DoingMission = false
                 print("Current MIssion: "..Settings.CurrentMission)
                 if Settings.CurrentMissions[Settings.CurrentMission] then
@@ -1918,7 +1918,13 @@ elseif game.PlaceId == 8349889591 then
         if (Loader.LevelData.is_raid) then
             table.insert(field, {
                 ["name"] = "Raid",
-                ["value"] = CurrentMap
+                ["value"] = CurrentMap .. Emojis.Map
+            })
+        end
+        if Settings.DoingMission then
+            table.insert(field, {
+                ["name"] = "Mission",
+                ["value"] = Settings.CurrentMission .. Emojis.Swords
             })
         end
 
@@ -2112,6 +2118,8 @@ elseif game.PlaceId == 8349889591 then
             local Leave = Settings.DoingMission and true or MapInfo["LeaveAtWave"]
             if game:GetService("Workspace")["_wave_num"].Value >= SellAt and not Loader.LevelData._challenge then
                 if Leave then
+                    
+                    SendWebhook()
                     Settings.DoingMission = false
                     print("Current MIssion: "..Settings.CurrentMission)
                     if Settings.CurrentMissions[Settings.CurrentMission] then
@@ -2119,8 +2127,6 @@ elseif game.PlaceId == 8349889591 then
                         Settings.CompletedMissions[Settings.CurrentMission] = true
                     end
                     Save()
-                    SendWebhook()
-
                     task.wait()
                     TeleportService:Teleport(8304191830)
                 else
