@@ -1218,7 +1218,7 @@ if game.PlaceId == 8304191830 then
 
 
         for id, v in pairs(Settings.CurrentMissions) do
-            if IgnoreQuest(id) then caughtquestid = id continue end
+            if IgnoreQuest(id) then continue end
             currentmissionid = id
         end
 
