@@ -1366,6 +1366,7 @@ if game.PlaceId == 8304191830 then
         print("Doing Challenge ".. tostring(challenge))
 
         if not raid then
+            print("Mission: "..tostring(hasmissions))
             if hasmissions and Settings.DoMissions then
                 local Mission = GetQuestInfo(currentmissionid)
                 local Map = string.split(Mission.quest_class.level_id, "_")[1]
