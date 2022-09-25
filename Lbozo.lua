@@ -88,9 +88,6 @@ local capsules = {
     "capsule_aotraid",
     "capsule_demonslayerraid",
 }
-local QuestIgnore = {
-    "kill_unit",
-}
 
 local FileNameOld = "AAFarm "..tostring(Player.UserId)
 local FileName = "AAFarm2 "..tostring(Player.UserId)
@@ -135,9 +132,6 @@ local Settings = {
     DoMissions = false,
 
     DoingMission = false;
-    CurrentMission = nil,
-    CurrentMissions = {},
-    CompletedMissions = {},
 
     Raid = {
 
@@ -579,33 +573,12 @@ if game.PlaceId == 8304191830 then
         end
     end
 
-    function HasQuest2(questID)
-        return Settings.CurrentMissions[questID]
-    end
-
     function GetQuestInfo(questID)
         for QuestUUID, QuestInfo in pairs(EndpointsClient.session.profile_data.quest_handler.quests) do
-            if QuestInfo.quest_info.id and QuestUUID == questID then
+            if QuestInfo.quest_info.id and QuestInfo.quest_info.id == questID then
                 return QuestInfo.quest_info -- quest_class > 
             end
         end
-    end
-
-    function CheckQuestAvailability(questID)
-
-    end
-
-    function IgnoreQuest(questID) 
-        for QuestUUID, QuestInfo in pairs(EndpointsClient.session.profile_data.quest_handler.quests) do
-            if QuestInfo.quest_info.id then
-                for _, v in pairs(QuestIgnore) do
-                    if QuestInfo.quest_info.quest_class == v then
-                        return true
-                    end
-                end
-            end
-        end
-        return false
     end
 
     --// UI
@@ -1196,10 +1169,7 @@ if game.PlaceId == 8304191830 then
 
         return true
     end
-    --script always checks games quests and not your quests so completed quests will be repeated. fix 
-    --make it log your quests
-    --dont forget to add save for settings.doingmission when wave reaches 25
-    --also include ur changes that fixed units not equipping with challenges and missions
+
     function TeleportToMap()
         local Reward = ChallengeStuff:GetChildren()[1].Reward.Value
         local CurrentRaid = workspace["_LOBBIES"]["_DATA"].current_active_raid.Value
@@ -1210,31 +1180,36 @@ if game.PlaceId == 8304191830 then
         local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant"  or Reward == "star_fruit_epic"
         local hasmissions = hasAMission()
         local currentmissionid
-        Settings.CurrentMission = nil
+        
         if raid then
             MapName = raid
         end
 
 
-        for id, v in pairs(Settings.CurrentMissions) do
-            if IgnoreQuest(id) then continue end
-            currentmissionid = id
+        if hasmissions then
+            for i, questID in pairs(GetCurrentMissions()) do
+                if HasQuest(questID) then
+                    currentmissionid = questID
+                else
+                    continue
+                end
+                break
+            end
         end
 
         if not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
-        if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid or (hasmissions and Settings.DoMissions) then challenge = false end
+        if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid or (hasAMission() and Settings.DoMissions) then challenge = false end
 
         Lobby = FindOpenLobby(challenge, raid)
         task.wait()
         join()
         task.wait(.5)
-        Save()
+
         if not raid then
             if hasAMission() and Settings.DoMissions then
                 local MissionInfo = GetQuestInfo(currentmissionid)
                 MapName = MissionInfo.quest_class.level_id
                 Settings.DoingMission = true
-                Settings.CurrentMission = currentmissionid
                 Save()
                 Create(MapName)
                 task.wait(1)
@@ -1366,23 +1341,25 @@ if game.PlaceId == 8304191830 then
         local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant" or Reward == "star_fruit_epic"
         local hasmissions = hasAMission()
         local currentmissionid
-        local caughtquestid
-        print("currentmission id before: "..tostring(currentmissionid))
-        for id, v in pairs(Settings.CurrentMissions) do
-            print(id)
-            if IgnoreQuest(id) then caughtquestid = id continue end
-            currentmissionid = id
+        
+        if hasmissions then
+            for i, questID in pairs(GetCurrentMissions()) do
+                if HasQuest(questID) then
+                    currentmissionid = questID
+                else
+                    continue
+                end
+                break
+            end
         end
-       
-        print("currentmission id after: "..tostring(currentmissionid))
-        print("caught bad quest id: "..tostring(caughtquestid))
+        print("Current mission id: "..tostring(currentmissionid))
         if raid then
             MapName = raid
         end
         
         print(MapName)
         if not (Settings.Raid or Settings.Raid[MapName] or Settings.Raid[MapName].Enabled) then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
-        if not Settings.DoChallenges or  Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid or (hasmissions and Settings.DoMissions) then  challenge = false end
+        if not Settings.DoChallenges or  Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid or (hasAMission() and Settings.DoMissions) then  challenge = false end
 
         print("Doing raid ".. tostring(raid))
         print("Doing Challenge ".. tostring(challenge))
@@ -1390,9 +1367,8 @@ if game.PlaceId == 8304191830 then
         if not raid then
             if hasmissions and Settings.DoMissions then
                 local Mission = GetQuestInfo(currentmissionid)
-                print(Mission, currentmissionid)
                 local Map = string.split(Mission.quest_class.level_id, "_")[1]
-                print("MISSION: "..Map)
+
                 for Index, name_uuid in pairs(Settings.Maps[Map].Units) do
                     local split = string.split(name_uuid, ":")
                     local name = split[1]
@@ -1522,30 +1498,13 @@ if game.PlaceId == 8304191830 then
     end)
 
     if Settings.DoMissions then
-        local newquests = false
-        for _, id in pairs(GetCurrentMissions()) do
-            if not HasQuest2(id) then
-                Settings.CurrentMissions = {}
-            end
-        end
         for _, QuestID in pairs(GetCurrentMissions()) do
-            if HasQuest2(QuestID) then
-                print("HAS QUEST")
+            if HasQuest(QuestID) then
                 continue
             end
-            if Settings.CompletedMissions[QuestID] then
-                print("Completed... moving on")
-                continue
-            end
-           
-            Settings.CurrentMissions[QuestID] = true
+    
             ClientToServer.request_claim_mission:InvokeServer(QuestID)
-            newquests = true
         end
-        if newquests then
-            Settings.CompletedMissions = {}
-        end
-        Save()
     end
 
     teleport()
@@ -1581,6 +1540,8 @@ elseif game.PlaceId == 8349889591 then
                 task.spawn(function()
                     SendWebhook()
                 end)
+                Settings.DoingMission = false
+                Save()
                 task.wait(.5)
                 teleport()
                 break
@@ -1843,7 +1804,7 @@ elseif game.PlaceId == 8349889591 then
     local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap]) or Settings.Maps[CurrentMap]
 
     print("CurrentMap: ".. CurrentMap)
-
+   
     function SendWebhook()
         task.wait(.5)
         local Seconds = os.time() - StartTime
@@ -2075,7 +2036,6 @@ elseif game.PlaceId == 8349889591 then
         task.wait(2)
         local Seconds = 0
         SolarisLib:Notification("Gems", string.format("You have %s GEMS", tostring(Player:WaitForChild("_stats"):WaitForChild("gem_amount").Value)), 60 * 50)
-        print("Current MIssion: "..Settings.CurrentMission)
         local timelapse = SolarisLib:Notification("Timelapse", string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60), 60 * 60)
         task.spawn(function()
             game:GetService("ReplicatedStorage")["_bounds"]:ClearAllChildren()
@@ -2102,19 +2062,13 @@ elseif game.PlaceId == 8349889591 then
         end
 
         game:GetService("Workspace")["_wave_num"].Changed:Connect(function()
-            local SellAt = Settings.DoingMission and 25 or Settings["Maps"][Settings.Map].SellAt
-            local Leave = Settings.DoingMission and true or MapInfo["LeaveAtWave"]
+            local SellAt = (Settings.DoingMission and 25) or Settings["Maps"][Settings.Map].SellAt
+            local Leave = (Settings.DoingMission and true) or MapInfo["LeaveAtWave"]
             if game:GetService("Workspace")["_wave_num"].Value >= SellAt and not Loader.LevelData._challenge then
                 if Leave then
-                    Settings.DoingMission = false
-                    print("Current MIssion: "..Settings.CurrentMission)
-                    if Settings.CurrentMissions[Settings.CurrentMission] then
-                        Settings.CurrentMissions[Settings.CurrentMission] = nil
-                        Settings.CompletedMissions[Settings.CurrentMission] = true
-                    end
-                    Save()
                     SendWebhook()
-
+                    Settings.DoingMission = false
+                    Save()
                     task.wait()
                     TeleportService:Teleport(8304191830)
                 else
