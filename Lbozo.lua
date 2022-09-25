@@ -1352,7 +1352,7 @@ if game.PlaceId == 8304191830 then
                 break
             end
         end
-
+        print("Current mission id: "..currentmissionid)
         if raid then
             MapName = raid
         end
