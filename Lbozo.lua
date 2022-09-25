@@ -1580,7 +1580,7 @@ elseif game.PlaceId == 8349889591 then
                 SendWebhook()
                 
                 Settings.DoingMission = false
-                print("Current MIssion: "..Settings.CurrentMission)
+                print("Current MIssion: "..tostring(Settings.CurrentMission))
                 if Settings.CurrentMissions[Settings.CurrentMission] then
                     Settings.CurrentMissions[Settings.CurrentMission] = nil
                     Settings.CompletedMissions[Settings.CurrentMission] = true
@@ -2086,7 +2086,7 @@ elseif game.PlaceId == 8349889591 then
         task.wait(2)
         local Seconds = 0
         SolarisLib:Notification("Gems", string.format("You have %s GEMS", tostring(Player:WaitForChild("_stats"):WaitForChild("gem_amount").Value)), 60 * 50)
-        print("Current MIssion: "..Settings.CurrentMission)
+        print("Current MIssion: "..tostring(Settings.CurrentMission))
         local timelapse = SolarisLib:Notification("Timelapse", string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60), 60 * 60)
         task.spawn(function()
             game:GetService("ReplicatedStorage")["_bounds"]:ClearAllChildren()
@@ -2120,7 +2120,7 @@ elseif game.PlaceId == 8349889591 then
                     
                     SendWebhook()
                     Settings.DoingMission = false
-                    print("Current MIssion: "..Settings.CurrentMission)
+                    print("Current MIssion: "..tostring(Settings.CurrentMission))
                     if Settings.CurrentMissions[Settings.CurrentMission] then
                         Settings.CurrentMissions[Settings.CurrentMission] = nil
                         Settings.CompletedMissions[Settings.CurrentMission] = true
