@@ -1373,6 +1373,7 @@ if game.PlaceId == 8304191830 then
         local currentmissionid
         local caughtquestid
         print("currentmission id before: "..tostring(currentmissionid))
+
         if hasmissions then
             for i, questID in pairs(GetCurrentMissions()) do
                 if HasQuest2(questID) then
@@ -1535,6 +1536,7 @@ if game.PlaceId == 8304191830 then
     if Settings.DoMissions then
         for _, QuestID in pairs(GetCurrentMissions()) do
             if HasQuest2(QuestID) then
+                print("HAS QUEST")
                 Settings.CurrentMissions = {}
                 Settings.CompletedMissions = {}
                 continue
