@@ -1202,7 +1202,7 @@ if game.PlaceId == 8304191830 then
         end
 
         if not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
-        if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then challenge = false end
+        if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid or (hasAMission() and Settings.DoMissions) then challenge = false end
 
         Lobby = FindOpenLobby(challenge, raid)
         task.wait()
@@ -1210,7 +1210,7 @@ if game.PlaceId == 8304191830 then
         task.wait(.5)
 
         if not raid then
-            if hasAMission() and Settings.DoMissions then
+            if hasAMission() and Settings.DoMissions and currentmissionid then
                 local MissionInfo = GetQuestInfo(currentmissionid)
                 MapName = MissionInfo.quest_class.level_id
                 Settings.DoingMission = true
@@ -1363,13 +1363,13 @@ if game.PlaceId == 8304191830 then
         
         print(MapName)
         if not (Settings.Raid or Settings.Raid[MapName] or Settings.Raid[MapName].Enabled) then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
-        if not Settings.DoChallenges or  Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid then  challenge = false end
+        if not Settings.DoChallenges or  Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid or (hasAMission() and Settings.DoMissions) then  challenge = false end
 
         print("Doing raid ".. tostring(raid))
         print("Doing Challenge ".. tostring(challenge))
 
         if not raid then
-            if hasmissions and Settings.DoMissions then
+            if hasmissions and Settings.DoMissions and currentmissionid then
                 local Mission = GetQuestInfo(currentmissionid)
                 local Map = string.split(Mission.quest_class.level_id, "_")[1]
 
@@ -1540,6 +1540,8 @@ elseif game.PlaceId == 8349889591 then
         repeat
             task.wait()
             if game:GetService("Workspace"):WaitForChild("_DATA"):WaitForChild("GameFinished").Value then --Checks if reward is ready to claim and claims it
+                Settings.DoingMission = false
+                Save()
                 task.wait(5)
                 task.spawn(function()
                     SendWebhook()
