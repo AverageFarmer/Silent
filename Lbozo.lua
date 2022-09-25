@@ -1362,11 +1362,9 @@ if game.PlaceId == 8304191830 then
         if not (Settings.Raid or Settings.Raid[MapName] or Settings.Raid[MapName].Enabled) then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
         if not Settings.DoChallenges or  not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid or (hasAMission() and Settings.DoMissions) then  challenge = false end
 
-        print("Doing raid ".. tostring(raid))
-        print("Doing Challenge ".. tostring(challenge))
-        print("Mission: "..tostring(hasmissions))
+    --    print("Doing raid ".. tostring(raid))
+    --   print("Doing Challenge ".. tostring(challenge))
         if not raid then
-            print(hasmissions, Settings.DoMissions) 
             if hasmissions and Settings.DoMissions then
                 local Mission = GetQuestInfo(currentmissionid)
                 local Map = string.split(Mission.quest_class.level_id, "_")[1]
