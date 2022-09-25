@@ -1367,7 +1367,7 @@ if game.PlaceId == 8304191830 then
         local caughtquestid
         print("currentmission id before: "..tostring(currentmissionid))
         for id, v in pairs(Settings.CurrentMissions) do
-            print(id)
+            --print(id)
             if IgnoreQuest(id) then caughtquestid = id continue end
             currentmissionid = id
         end
