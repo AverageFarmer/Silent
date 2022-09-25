@@ -1542,6 +1542,7 @@ if game.PlaceId == 8304191830 then
                 break
             end
             if Settings.CompletedMissions[QuestID] then
+                print("Completed... moving on")
                 continue
             end
             Settings.CurrentMissions[QuestID] = true
