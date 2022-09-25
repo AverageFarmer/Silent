@@ -1217,13 +1217,9 @@ if game.PlaceId == 8304191830 then
         end
 
 
-        if hasmissions then
-            for i, questID in pairs(GetCurrentMissions()) do
-                if IgnoreQuest(questID) then continue end
-                currentmissionid = questID
-                break
-            end
-            if currentmissionid == nil then hasmissions = false end
+        for id, v in pairs(Settings.CurrentMissions) do
+            if IgnoreQuest(id) then caughtquestid = id continue end
+            currentmissionid = id
         end
 
         if not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
@@ -1373,19 +1369,11 @@ if game.PlaceId == 8304191830 then
         local currentmissionid
         local caughtquestid
         print("currentmission id before: "..tostring(currentmissionid))
-
-        if hasmissions then
-            for i, questID in pairs(GetCurrentMissions()) do
-                if HasQuest2(questID) then
-                    if IgnoreQuest(questID) then caughtquestid = questID continue end
-                    currentmissionid = questID
-                else
-                    continue
-                end
-                break
-            end
-            if currentmissionid == nil then hasmissions = false end
+        for id, v in pairs(Settings.CurrentMissions) do
+            if IgnoreQuest(id) then caughtquestid = id continue end
+            currentmissionid = id
         end
+       
         print("currentmission id after: "..tostring(currentmissionid))
         print("caught bad quest id: "..tostring(caughtquestid))
         if raid then
