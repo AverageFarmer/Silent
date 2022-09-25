@@ -1363,8 +1363,7 @@ if game.PlaceId == 8304191830 then
         local hasmissions = hasAMission()
         local currentmissionid
         local caughtquestid
-        Settings.CurrentMission = nil
-        Save()
+        
         print("currentmission id before: "..tostring(currentmissionid))
         for id, v in pairs(Settings.CurrentMissions) do
             --print(id)
