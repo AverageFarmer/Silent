@@ -1391,7 +1391,7 @@ if game.PlaceId == 8304191830 then
         if not raid then
             if hasmissions and Settings.DoMissions then
                 local Mission = GetQuestInfo(currentmissionid)
-                print(Mission)
+                print(Mission, currentmissionid)
                 local Map = string.split(Mission.quest_class.level_id, "_")[1]
                 print("MISSION: "..Map)
                 for Index, name_uuid in pairs(Settings.Maps[Map].Units) do
