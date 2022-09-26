@@ -586,7 +586,7 @@ if game.PlaceId == 8304191830 then
     function GetQuestInfo(questID)
         print("Comparing")
         for QuestUUID, QuestInfo in pairs(EndpointsClient.session.profile_data.quest_handler.quests) do
-            print(QuestInfo.quest_info.id, questID.."__quest")
+           -- print(QuestInfo.quest_info.id, questID.."__quest")
             if QuestInfo.quest_info.id and QuestInfo.quest_info.id == questID.."__quest" then
                 return QuestInfo.quest_info -- quest_class > 
             end
@@ -596,7 +596,7 @@ if game.PlaceId == 8304191830 then
     function IgnoreQuest(questID) 
         for _, v in pairs(QuestIgnore) do
             if string.find(questID,v) then
-                print("Ignored quest.")
+             --   print("Ignored quest.")
                 return true
             end
         end
@@ -1191,10 +1191,7 @@ if game.PlaceId == 8304191830 then
 
         return true
     end
-    --script always checks games quests and not your quests so completed quests will be repeated. fix 
-    --make it log your quests
-    --dont forget to add save for settings.doingmission when wave reaches 25
-    --also include ur changes that fixed units not equipping with challenges and missions
+   
     function TeleportToMap()
         local Reward = ChallengeStuff:GetChildren()[1].Reward.Value
         local CurrentRaid = workspace["_LOBBIES"]["_DATA"].current_active_raid.Value
@@ -1364,7 +1361,6 @@ if game.PlaceId == 8304191830 then
         local currentmissionid
         local caughtquestid
         
-        print("currentmission id before: "..tostring(currentmissionid))
         for id, v in pairs(Settings.CurrentMissions) do
             --print(id)
             if not Settings.DoMissions then break end
@@ -1372,7 +1368,7 @@ if game.PlaceId == 8304191830 then
             currentmissionid = id
         end
        
-        print("currentmission id after: "..tostring(currentmissionid))
+        print("currentmission id: "..tostring(currentmissionid))
         print("caught bad quest id: "..tostring(caughtquestid))
         if raid then
             MapName = raid
