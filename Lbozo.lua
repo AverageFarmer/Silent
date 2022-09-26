@@ -1470,6 +1470,35 @@ if game.PlaceId == 8304191830 then
         MakeSpace()
     end
 
+    function ClaimMissions()
+        if Settings.DoMissions then
+            local newquests = false
+            for _, id in pairs(GetCurrentMissions()) do
+                if not HasQuest2(id) and not Settings.CompletedMissions[id] then
+                    Settings.CurrentMissions = {}
+                end
+            end
+            for _, QuestID in pairs(GetCurrentMissions()) do
+                if HasQuest2(QuestID) then
+                    print("HAS QUEST")
+                    continue
+                end
+                if Settings.CompletedMissions[QuestID] then
+                    print("Completed... moving on")
+                    continue
+                end
+            
+                Settings.CurrentMissions[QuestID] = true
+                ClientToServer.request_claim_mission:InvokeServer(QuestID)
+                newquests = true
+            end
+            if newquests then
+                Settings.CompletedMissions = {}
+            end
+            Save()
+        end
+    end
+
     localTeleportWithRetry(game.PlaceId, 5)
 
     task.spawn(function()
@@ -1499,6 +1528,7 @@ if game.PlaceId == 8304191830 then
             AutoDelete()
             AutoSummon()
             ClaimQuest()
+            ClaimMissions()
             task.wait(1)
         until false
     end)
@@ -1514,33 +1544,6 @@ if game.PlaceId == 8304191830 then
             end
         end)
     end)
-
-    if Settings.DoMissions then
-        local newquests = false
-        for _, id in pairs(GetCurrentMissions()) do
-            if not HasQuest2(id) and not Settings.CompletedMissions[id] then
-                Settings.CurrentMissions = {}
-            end
-        end
-        for _, QuestID in pairs(GetCurrentMissions()) do
-            if HasQuest2(QuestID) then
-                print("HAS QUEST")
-                continue
-            end
-            if Settings.CompletedMissions[QuestID] then
-                print("Completed... moving on")
-                continue
-            end
-           
-            Settings.CurrentMissions[QuestID] = true
-            ClientToServer.request_claim_mission:InvokeServer(QuestID)
-            newquests = true
-        end
-        if newquests then
-            Settings.CompletedMissions = {}
-        end
-        Save()
-    end
 
     teleport()
 elseif game.PlaceId == 8349889591 then
