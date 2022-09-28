@@ -1215,7 +1215,7 @@ if game.PlaceId == 8304191830 then
         end
 
         if not Settings.DoRaid or not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
-        if not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid or (currentmissionid and Settings.DoMissions) then challenge = false end
+        if not Settings.DoChallenges or not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid or (currentmissionid and Settings.DoMissions) then challenge = false end
 
         Lobby = FindOpenLobby(challenge, raid)
         task.wait()
