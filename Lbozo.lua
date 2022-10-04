@@ -834,7 +834,7 @@ if game.PlaceId == 8304191830 then
 
     repeat
         task.wait()
-    until EndpointsClient.session
+    until Player:FindFirstChild("_settingsLoaded") and EndpointsClient.session
 
     task.wait(2)
 --- Fully loaded
