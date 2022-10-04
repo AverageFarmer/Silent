@@ -18,6 +18,12 @@ local VirtualUser = game:GetService("VirtualUser")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
+task.delay(60, function()
+    if not game.Players.LocalPlayer:FindFirstChild("_settingsLoaded") then
+        TeleportService:Teleport(8304191830)
+    end
+end)
+
 repeat
     task.wait(1)
 until game.Players.LocalPlayer:FindFirstChild("_stats")
@@ -442,12 +448,6 @@ function ShopItems(Type)
     end
 end
 
-function LoadingError()
-    task.wait(60)
-    if not Player:FindFirstChild("_settingsLoaded") then
-        TeleportService:Teleport(8304191830)
-    end
-end
 
 function DisplayGems(Character)
     task.spawn(function()
@@ -469,9 +469,7 @@ end
 
 if game.PlaceId == 8304191830 then
     --// Lobby
-
     task.spawn(function()
-        LoadingError()
         local CurrentTime = os.time()
 
         repeat
