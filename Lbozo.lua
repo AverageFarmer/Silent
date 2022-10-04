@@ -19,14 +19,10 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
 task.delay(60, function()
-    if not game.Players.LocalPlayer:FindFirstChild("_settingsLoaded") then
+    if not game.Players.LocalPlayer:FindFirstChild("_settingsLoaded") or not game.Players.LocalPlayer["_settingsLoaded"].Value then
         TeleportService:Teleport(8304191830)
     end
 end)
-
-repeat
-    task.wait(1)
-until game.Players.LocalPlayer:FindFirstChild("_stats")
 
 --// Modules
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/Library2.lua"))()
