@@ -81,6 +81,7 @@ local OtherItems = {
 }
 
 local capsules = {
+    "capsule_fairytail",
     "capsule_fairytail_infinite",
     "capsule_hxhant",
     "capsule_bleach",
@@ -441,6 +442,13 @@ function ShopItems(Type)
     end
 end
 
+function LoadingError()
+    task.wait(60)
+    if not Player:FindFirstChild("_settingsLoaded") then
+        TeleportService:Teleport(8304191830)
+    end
+end
+
 function DisplayGems(Character)
     task.spawn(function()
         local Plr = game.Players:GetPlayerFromCharacter(Character)
@@ -463,6 +471,7 @@ if game.PlaceId == 8304191830 then
     --// Lobby
 
     task.spawn(function()
+        LoadingError()
         local CurrentTime = os.time()
 
         repeat
