@@ -17,7 +17,7 @@ local TeleportService = game:GetService("TeleportService")
 local VirtualUser = game:GetService("VirtualUser")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
-
+task.wait(12)
 task.delay(60, function()
     if not game.Players.LocalPlayer:FindFirstChild("_settingsLoaded") or not game.Players.LocalPlayer["_settingsLoaded"].Value then
         TeleportService:Teleport(8304191830)
