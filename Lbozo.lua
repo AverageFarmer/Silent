@@ -1224,7 +1224,12 @@ if game.PlaceId == 8304191830 then
             if IgnoreQuest(id) then continue end
             currentmissionid = id
         end
+        local success, message = pcall(function() 
+            local Map = string.split(GetQuestInfo(currentmissionid).quest_class.level_id, "_")[1]     
+        end)
+        if not success then warn(message) currentmissionid = nil end
 
+        
         if not Settings.DoRaid or not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
         if not Settings.DoChallenges or not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid or (currentmissionid and Settings.DoMissions) then challenge = false end
 
@@ -1378,7 +1383,10 @@ if game.PlaceId == 8304191830 then
             if IgnoreQuest(id) then caughtquestid = id continue end
             currentmissionid = id
         end
-       
+        local success, message = pcall(function() 
+            local Map = string.split(GetQuestInfo(currentmissionid).quest_class.level_id, "_")[1]     
+        end)
+        if not success then warn(message) currentmissionid = nil end
         if raid then
             MapName = raid
         end
@@ -1390,7 +1398,7 @@ if game.PlaceId == 8304191830 then
         if not raid then
             if currentmissionid and Settings.DoMissions then
                 local Mission = GetQuestInfo(currentmissionid)
-                local Map = string.split(Mission.quest_class.level_id, "_")[1]
+                local Map = string.split(Mission.quest_class.level_id, "_")[1]                  
 
                 for Index, name_uuid in pairs(Settings.Maps[Map].Units) do
                     local split = string.split(name_uuid, ":")
