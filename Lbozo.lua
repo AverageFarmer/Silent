@@ -18,11 +18,21 @@ local VirtualUser = game:GetService("VirtualUser")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 --task.wait(12)
-task.delay(60, function()
+local LoadWaitTime = os.time()
+local Loaded = false
+
+repeat
     if not game.Players.LocalPlayer:FindFirstChild("_settingsLoaded") or not game.Players.LocalPlayer["_settingsLoaded"].Value then
-        TeleportService:Teleport(8304191830)
+        if (os.time() - LoadWaitTime) >= 60 then
+            TeleportService:Teleport(8304191830)
+            return
+        end
+    else
+        Loaded = not Loaded
     end
-end)
+    task.wait()
+until Loaded
+
 
 --// Modules
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/Library2.lua"))()
