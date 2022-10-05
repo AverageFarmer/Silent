@@ -17,7 +17,7 @@ local TeleportService = game:GetService("TeleportService")
 local VirtualUser = game:GetService("VirtualUser")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
-
+--task.wait(12)
 task.delay(60, function()
     if not game.Players.LocalPlayer:FindFirstChild("_settingsLoaded") or not game.Players.LocalPlayer["_settingsLoaded"].Value then
         TeleportService:Teleport(8304191830)
@@ -835,7 +835,7 @@ if game.PlaceId == 8304191830 then
 
     repeat
         task.wait()
-    until EndpointsClient.session
+    until Player:FindFirstChild("_settingsLoaded") and EndpointsClient.session
 
     task.wait(2)
 --- Fully loaded
