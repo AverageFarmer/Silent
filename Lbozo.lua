@@ -18,11 +18,21 @@ local VirtualUser = game:GetService("VirtualUser")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 --task.wait(12)
-task.delay(60, function()
+local LoadWaitTime = os.time()
+local Loaded = false
+
+repeat
     if not game.Players.LocalPlayer:FindFirstChild("_settingsLoaded") or not game.Players.LocalPlayer["_settingsLoaded"].Value then
-        TeleportService:Teleport(8304191830)
+        if (os.time() - LoadWaitTime) >= 60 then
+            TeleportService:Teleport(8304191830)
+            return
+        end
+    else
+        Loaded = not Loaded
     end
-end)
+    task.wait()
+until Loaded
+
 
 --// Modules
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/master/Library2.lua"))()
@@ -109,6 +119,7 @@ function isDev()
         end
     end
 end
+
 -- AutoLaunch
 if Player.UserId == 68728334 then
     syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/Andrew/Lbozo.lua"))
@@ -886,7 +897,6 @@ if game.PlaceId == 8304191830 then
         MapSlot:Button("Refresh Units", function()
             SetupUnits()
             for i,v in pairs(MapDropHolder) do
-                print(i)
                 local CurrentUnit = MapInfo.Units[i] or "None"
                 v:Set(CurrentUnit)
                 v:Refresh(Pets)
@@ -961,7 +971,6 @@ if game.PlaceId == 8304191830 then
         MapSlot:Button("Refresh Units", function()
             SetupUnits()
             for i,v in pairs(MapDropHolder) do
-                print(i)
                 local CurrentUnit = MapInfo.Units[i] or "None"
                 v:Set(CurrentUnit)
                 v:Refresh(Pets)
@@ -1030,7 +1039,6 @@ if game.PlaceId == 8304191830 then
         MapSlot:Button("Refresh Units", function()
             SetupUnits()
             for i,v in pairs(MapDropHolder) do
-                print(i)
                 local CurrentUnit = MapInfo.Units[i] or "None"
                 v:Set(CurrentUnit)
                 v:Refresh(Pets)
@@ -1371,8 +1379,6 @@ if game.PlaceId == 8304191830 then
             currentmissionid = id
         end
        
-        print("currentmission id: "..tostring(currentmissionid))
-        print("caught bad quest id: "..tostring(caughtquestid))
         if raid then
             MapName = raid
         end
@@ -1381,15 +1387,11 @@ if game.PlaceId == 8304191830 then
         if not Settings.DoRaid or not Settings.Raid[MapName] or not Settings.Raid[MapName].Enabled then raid = false MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1] end
         if not Settings.DoChallenges or not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid or (currentmissionid and Settings.DoMissions) then  challenge = false end
 
-        print("Doing raid ".. tostring(raid))
-        print("Doing Challenge ".. tostring(challenge))
-
         if not raid then
             if currentmissionid and Settings.DoMissions then
                 local Mission = GetQuestInfo(currentmissionid)
-                print(Mission, currentmissionid)
                 local Map = string.split(Mission.quest_class.level_id, "_")[1]
-                print("MISSION: "..Map)
+
                 for Index, name_uuid in pairs(Settings.Maps[Map].Units) do
                     local split = string.split(name_uuid, ":")
                     local name = split[1]
@@ -1527,11 +1529,9 @@ if game.PlaceId == 8304191830 then
         end
         for _, QuestID in pairs(GetCurrentMissions()) do
             if HasQuest2(QuestID) then
-                print("HAS QUEST")
                 continue
             end
             if Settings.CompletedMissions[QuestID] then
-                print("Completed... moving on")
                 continue
             end
            
@@ -1579,7 +1579,6 @@ elseif game.PlaceId == 8349889591 then
                 SendWebhook()
                 
                 Settings.DoingMission = false
-                print("Current MIssion: "..tostring(Settings.CurrentMission))
                 if Settings.CurrentMissions[Settings.CurrentMission] then
                     Settings.CurrentMissions[Settings.CurrentMission] = nil
                     Settings.CompletedMissions[Settings.CurrentMission] = true
@@ -2086,7 +2085,6 @@ elseif game.PlaceId == 8349889591 then
         task.wait(2)
         local Seconds = 0
         SolarisLib:Notification("Gems", string.format("You have %s GEMS", tostring(Player:WaitForChild("_stats"):WaitForChild("gem_amount").Value)), 60 * 50)
-        print("Current MIssion: "..tostring(Settings.CurrentMission))
         local timelapse = SolarisLib:Notification("Timelapse", string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60), 60 * 60)
         task.spawn(function()
             game:GetService("ReplicatedStorage")["_bounds"]:ClearAllChildren()
