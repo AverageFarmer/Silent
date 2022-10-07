@@ -136,7 +136,7 @@ local SavedSettings = (isfile(FileName .. ".lua") and readfile(FileName .. ".lua
 local PlayerHolder = {}
 local DoingChallenge = false
 
-local RaidMaps = {"aot", "naruto"}
+local RaidMaps = {"aot", "naruto", "demonslayer"}
 local Settings = {
     Map = "namek",
     MapNumber = "1",
@@ -1696,6 +1696,23 @@ elseif game.PlaceId == 8349889591 then
                 CFrame.new(-2886.08, 35.627, -151.399),
             }   
         },
+        ["demonslayer_raid"] = {
+            ["Ground"] = {
+                CFrame.new(19.749, -14.578, 340.994),
+                CFrame.new(28.63, -13.986, 340.9941),
+                CFrame.new(29.957, -13.986, 337.292),
+                CFrame.new(21.71, -13.986, 333.514),
+                CFrame.new(24.353, -13.986, 333.514),
+                CFrame.new(32.08, -13.986, 337.308),
+                CFrame.new(22.214, -13.986, 337.308),
+                CFrame.new(27.195, -13.986, 341.605),
+                CFrame.new(19.044, -13.986, 334.858),
+                CFrame.new(19.044, -13.986, 331.908),
+                CFrame.new(27.528, -13.986, 328.434),
+                CFrame.new(32.569, -13.986, 331.637),
+                CFrame.new(35.887, -13.986, 331.637),
+            }   
+        },
         ["naruto"] = {
             ["Ground"] = {
                 CFrame.new(-888.807, 26.561, 312.594),
@@ -1839,6 +1856,7 @@ elseif game.PlaceId == 8349889591 then
     task.wait(.5)
 
     local nameSplit = string.split(Loader.LevelData.map, "_")
+    print(nameSplit)
     local fullname = ""
     local loadermap
     for i,v in pairs(nameSplit) do
