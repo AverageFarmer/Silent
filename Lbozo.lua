@@ -1854,13 +1854,15 @@ elseif game.PlaceId == 8349889591 then
     end
 
     task.wait(.5)
-
     local nameSplit = string.split(Loader.LevelData.map, "_")
-    print(nameSplit)
+    
     local fullname = ""
     local loadermap
     for i,v in pairs(nameSplit) do
         fullname = fullname .. v
+    end
+    if Loader.LevelData.map == "demonslayer_raid" then
+        fullname = Loader.LevelData.map 
     end
 
     if Maps[fullname] then
@@ -1878,7 +1880,9 @@ elseif game.PlaceId == 8349889591 then
 
     local CurrentMap = loadermap
     local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap]) or Settings.Maps[CurrentMap]
-
+    if CurrentMap == "demonslayer_raid" then
+        MapInfo = Settings.Raid["demonslayer"]
+    end
     print("CurrentMap: ".. CurrentMap)
 
     function SendWebhook()
