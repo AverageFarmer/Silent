@@ -1861,9 +1861,6 @@ elseif game.PlaceId == 8349889591 then
     for i,v in pairs(nameSplit) do
         fullname = fullname .. v
     end
-    if Loader.LevelData.map == "demonslayer_raid" then
-        fullname = Loader.LevelData.map 
-    end
 
     if Maps[fullname] then
         loadermap = fullname
@@ -1880,7 +1877,8 @@ elseif game.PlaceId == 8349889591 then
 
     local CurrentMap = loadermap
     local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap]) or Settings.Maps[CurrentMap]
-    if CurrentMap == "demonslayer_raid" then
+    if Loader.LevelData.map == "demonslayer_raid" then
+        CurrentMap = Loader.LevelData.map
         MapInfo = Settings.Raid["demonslayer"]
     end
     print("CurrentMap: ".. CurrentMap)
