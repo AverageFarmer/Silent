@@ -220,6 +220,13 @@ local Settings = {
             SpawnCaps = {},
             Enabled = false,
         },
+
+        jjk = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            Enabled = false,
+        },
     },
     
     AutoBuy = {
@@ -287,6 +294,13 @@ local Settings = {
         },
 
         magnolia = {
+            Units = {},
+            Upgrades = {},
+            SpawnCaps = {},
+            SellAt = 23,
+        },
+
+        jjk = {
             Units = {},
             Upgrades = {},
             SpawnCaps = {},
@@ -501,7 +515,8 @@ if game.PlaceId == 8304191830 then
         "tokyoghoul",
         "hueco",
         "hxhant",
-        "magnolia"
+        "magnolia",
+        "jjk"
     }
 
     local Numbers = {
@@ -1836,7 +1851,34 @@ elseif game.PlaceId == 8349889591 then
                 CFrame.new(-615.248, 7.367, -841.674)* imlazy,
                 CFrame.new(-625.599, 7.774, -843.246)* imlazy,
                 CFrame.new(-611.732, 7.992, -832.83)* imlazy,
-            }
+            },
+            
+        },
+
+        ["jjk"] = {
+            Ground = {
+                CFrame.new(366.929, 123.528, -59.204) ,
+                CFrame.new(366.929, 123.528, -57.42),
+                CFrame.new(366.929, 123.528, -55.606),
+                CFrame.new(363.758, 123.528, -55.606),
+                CFrame.new(363.758, 123.528, -57.221),
+                CFrame.new(365.347, 123.528, -65.206),
+                CFrame.new(367.186, 123.528, -65.206),
+                CFrame.new(369.395, 123.528, -65.206),
+                CFrame.new(369.395, 123.528, -66.628),
+                CFrame.new(365.346, 123.528, -68.99),
+                CFrame.new(359.159, 123.528, -68.99),
+                CFrame.new(359.159, 123.528, -66.128),
+                CFrame.new(359.159, 123.528, -63.49),
+                CFrame.new(359.159, 123.528, -61.651),
+                CFrame.new(359.159, 123.528, -59.111),
+                CFrame.new(368.957, 123.528, -59.022),
+                CFrame.new(368.957, 123.528, -65.082),
+                CFrame.new(368.957, 123.528, -56.426),
+                CFrame.new(368.957, 123.528, -66.535),
+                CFrame.new(364.232, 123.528, -72.071),
+            },
+            
         }
     }
 
