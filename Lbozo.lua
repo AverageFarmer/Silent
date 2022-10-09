@@ -637,7 +637,7 @@ if game.PlaceId == 8304191830 then
     end
 
     --// UI
-    local Window = Library.CreateWindow("DizHub v1.2h", 6510338924)
+    local Window = Library.CreateWindow("DizHub v1.2i", 6510338924)
 
     local AutoFarmTab = Window:Tab("AutoFarm", 6087485864)
     local UnitTab = Window:Tab("Units")
