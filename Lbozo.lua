@@ -46,6 +46,7 @@ local Loader = require(src:WaitForChild("Loader"));
 local EndpointsClient = Loader.load_client_service(script, "EndpointsClient");
 local GUIService = Loader.load_client_service(script, "GUIService");
 local HatchServiceClient = Loader.load_client_service(script, "HatchServiceClient");
+local InfiniteTowerServiceCore = require(src.core.Services.InfiniteTowerServiceCore)
 local UnitsInfo = require(Data.Units)
 local Items = require(Data:WaitForChild("ItemsForSale"))
 
@@ -145,10 +146,11 @@ local Settings = {
     IsInf = true,
     WaitForBoss = false,
     Pause = true,
+
     DoChallenges = false,
     DoRaid = false,
     DoMissions = false,
-    AutoTowerInf = true,
+    AutoTowerInf = false,
 
     DoingMission = false;
     CurrentMission = nil,
@@ -1429,7 +1431,26 @@ if game.PlaceId == 8304191830 then
         if not Settings.DoChallenges or not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid or (currentmissionid and Settings.DoMissions) then  challenge = false end
 
         if not raid then
-            if currentmissionid and Settings.DoMissions then
+            if Settings.AutoTowerInf then
+                local TowerNum = EndpointsClient.session.profile_data.level_data.infinite_tower.floor_reached
+                local world = InfiniteTowerServiceCore.get_world_for_floor(TowerNum)
+                if world == "tokyo_ghoul" then
+                    world = "tokyoghoul"
+                end
+                print(world)
+
+                for Index, name_uuid in pairs(Settings.Maps[world].Units) do
+                    local split = string.split(name_uuid, ":")
+                    local name = split[1]
+                    local uuid = split[2]
+
+                    if AllUnits[uuid] then
+                        if not table.find(UnitsToEquip, uuid) then
+                            table.insert(UnitsToEquip, uuid)
+                        end
+                    end
+                end
+            elseif currentmissionid and Settings.DoMissions then
                 local Mission = GetQuestInfo(currentmissionid)
                 local Map = string.split(Mission.quest_class.level_id, "_")[1]                  
 
