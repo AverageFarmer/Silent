@@ -49,7 +49,7 @@ local HatchServiceClient = Loader.load_client_service(script, "HatchServiceClien
 local InfiniteTowerServiceCore = require(src.core.Services.InfiniteTowerServiceCore)
 local UnitsInfo = require(Data.Units)
 local Items = require(Data:WaitForChild("ItemsForSale"))
-
+ 
 --//Remotes
 local ClientToServer = ReplicatedStorage:WaitForChild("endpoints"):WaitForChild("client_to_server")
 
