@@ -148,6 +148,7 @@ local Settings = {
     DoChallenges = false,
     DoRaid = false,
     DoMissions = false,
+    AutoTowerInf = true,
 
     DoingMission = false;
     CurrentMission = nil,
@@ -696,6 +697,10 @@ if game.PlaceId == 8304191830 then
     end)
     OtherFarms:Toggle("Missions", Settings.DoMissions, function(val)
         Settings.DoMissions = val
+        Save()
+    end)
+    OtherFarms:Toggle("Auto Tower", Settings.AutoTowerInf, function(val)
+        Settings.AutoTowerInf = val
         Save()
     end)
     
@@ -1257,26 +1262,31 @@ if game.PlaceId == 8304191830 then
         task.wait(.5)
         
         if not raid then
-            if currentmissionid and Settings.DoMissions then
-                local MissionInfo = GetQuestInfo(currentmissionid)
-                MapName = MissionInfo.quest_class.level_id
-                Settings.DoingMission = true
-                Settings.CurrentMission = currentmissionid
-                Save()
-                Create(MapName)
-                task.wait(1)
-                start2()
-                task.wait(1)
-            elseif challenge then
-                task.wait(27)
-                if #ChallengeStuff[Lobby].Players:GetChildren() > 1 then
-                    ClientToServer.request_leave_lobby:InvokeServer(Lobby)
-                end
+            if Settings.AutoTowerInf then
+                local TowerNum = EndpointsClient.session.profile_data.level_data.infinite_tower.floor_reached
+                ClientToServer.request_start_infinite_tower:InvokeServer(TowerNum)
             else
-                Create()
-                task.wait(1)
-                start2()
-                task.wait(1)
+                if currentmissionid and Settings.DoMissions then
+                    local MissionInfo = GetQuestInfo(currentmissionid)
+                    MapName = MissionInfo.quest_class.level_id
+                    Settings.DoingMission = true
+                    Settings.CurrentMission = currentmissionid
+                    Save()
+                    Create(MapName)
+                    task.wait(1)
+                    start2()
+                    task.wait(1)
+                elseif challenge then
+                    task.wait(27)
+                    if #ChallengeStuff[Lobby].Players:GetChildren() > 1 then
+                        ClientToServer.request_leave_lobby:InvokeServer(Lobby)
+                    end
+                else
+                    Create()
+                    task.wait(1)
+                    start2()
+                    task.wait(1)
+                end
             end
         else
             task.wait(27)
@@ -1919,7 +1929,7 @@ elseif game.PlaceId == 8349889591 then
     end
 
     local CurrentMap = loadermap
-    local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap]) or Settings.Maps[CurrentMap]
+    local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap] or Loader.LevelData._gamemode == "infinite_tower" and Settings.Maps[CurrentMap]) or Settings.Maps[CurrentMap]
     if Loader.LevelData.map == "demonslayer_raid" then
         CurrentMap = Loader.LevelData.map
         MapInfo = Settings.Raid["demonslayer"]
@@ -2003,6 +2013,15 @@ elseif game.PlaceId == 8349889591 then
                 ["value"] = string.split(Settings.CurrentMission,"mission")[2] .. Emojis.Swords
             })
         end
+
+        if Loader.LevelData._gamemode == "infinite_tower" then
+            local TowerNum = EndpointsClient.session.profile_data.level_data.infinite_tower.floor_reached
+            table.insert(field, {
+                ["name"] = "Tower Number",
+                ["value"] = tostring(TowerNum) .. Emojis.Swords
+            })
+        end
+        
 
         local data = {
             ["embeds"] = {
