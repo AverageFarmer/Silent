@@ -93,6 +93,7 @@ local OtherItems = {
 }
 
 local capsules = {
+    "capsule_jjk",
     "capsule_fairytail",
     "capsule_fairytail_infinite",
     "capsule_hxhant",
