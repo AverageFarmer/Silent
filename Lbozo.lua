@@ -2126,6 +2126,10 @@ elseif game.PlaceId == 8349889591 then
             [1] = FarmUnits[Index]["uuid"],
             [2] = Maps[CurrentMap][Type][SpawnNum]
         }
+
+        if UnitName == "bulma" or UnitName == "speedwagon" then
+            args[2] = args[2] * CFrame.new(0,20,0)
+        end
         
         local placed
         
