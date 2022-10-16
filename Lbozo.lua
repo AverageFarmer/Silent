@@ -2272,14 +2272,18 @@ elseif game.PlaceId == 8349889591 then
                                     Time = tick(),
                                     Unit = v
                                 }
-                                ClientToServer.use_active_attack:InvokeServer(v)
+                                task.spawn(function()
+                                    ClientToServer.use_active_attack:InvokeServer(v)
+                                end)
                             end
                         else
                             AbilityUnits[activeAttack] = {
                                 Time = tick(),
                                 Unit = v
                             }
-                            ClientToServer.use_active_attack:InvokeServer(v)
+                            task.spawn(function()
+                                ClientToServer.use_active_attack:InvokeServer(v)
+                            end)
                         end
                     end
                 end
