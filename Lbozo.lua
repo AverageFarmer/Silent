@@ -2252,6 +2252,9 @@ elseif game.PlaceId == 8349889591 then
         task.wait(1)
 
         task.spawn(function()
+            local BuffBypass = {
+                erwin = 20
+            }
             local AbilityUnits = {
 
             }
@@ -2265,7 +2268,8 @@ elseif game.PlaceId == 8349889591 then
 
                     if activeAttack then
                         if AbilityUnits[activeAttack] then
-                            if tick() - AbilityUnits[activeAttack]["Time"] >= activeAttackCooldown then
+                            local cooldown = (BuffBypass[Stats.id.Value] or activeAttackCooldown)
+                            if tick() - AbilityUnits[activeAttack]["Time"] >= cooldown then
                                 if AbilityUnits[activeAttack]["Unit"] == v then continue end
                                 if tick() - lastActiveCast < activeAttackCooldown then continue end
 
