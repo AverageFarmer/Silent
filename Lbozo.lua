@@ -875,7 +875,7 @@ if game.PlaceId == 8304191830 then
 --- Fully loaded
     
 
-    ClientToServer.accept_npc_quest:InvokeServer("hxhant_daily")
+    ClientToServer.accept_npc_quest:InvokeServer("jjk_daily")
 
     function SetupUnits()
         Pets = {}
