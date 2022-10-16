@@ -49,6 +49,7 @@ local HatchServiceClient = Loader.load_client_service(script, "HatchServiceClien
 local InfiniteTowerServiceCore = require(src.core.Services.InfiniteTowerServiceCore)
 local UnitsInfo = require(Data.Units)
 local Items = require(Data:WaitForChild("ItemsForSale"))
+local attacks = require(Data.Attacks)
 
 --//Remotes
 local ClientToServer = ReplicatedStorage:WaitForChild("endpoints"):WaitForChild("client_to_server")
@@ -1896,14 +1897,14 @@ elseif game.PlaceId == 8349889591 then
                 CFrame.new(379.491, 122.957, -73.8823),
                 CFrame.new(379.457, 122.357, -78.1883),
                 CFrame.new(379.206, 122.364, -80.2278),
-                CFrame.new(377.771, 122.353, -73.8136),
-                CFrame.new(377.733, 122.357, -75.7505),
-                CFrame.new(377.844, 122.357, -78.0667),
-                CFrame.new(377.607, 122.353, -80.134),
-                CFrame.new(376.053, 122.353, -73.7824),
-                CFrame.new(376.162, 122.353, -75.5871),
-                CFrame.new(376.146, 122.353, -78.1184),
-                CFrame.new(376.131, 122.353, -80.3606),
+                CFrame.new(377, 122.353, -73.8136),
+                CFrame.new(377, 122.357, -75.7505),
+                CFrame.new(377, 122.357, -78.0667),
+                CFrame.new(377, 122.353, -80.134),
+                CFrame.new(376, 122.353, -73.7824),
+                CFrame.new(376, 122.353, -75.5871),
+                CFrame.new(376, 122.353, -78.1184),
+                CFrame.new(376, 122.353, -80.3606),
                 CFrame.new(359.159, 122.528, -59.111),
             },
             
