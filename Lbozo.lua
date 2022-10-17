@@ -2303,8 +2303,6 @@ elseif game.PlaceId == 8349889591 then
     end
 
     function teleport()
-        ClientToServer.teleport_back_to_lobby:InvokeServer()
-        task.wait(10)
         TeleportService:Teleport(8304191830)
     end
 
