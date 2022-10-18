@@ -2279,7 +2279,7 @@ elseif game.PlaceId == 8349889591 then
                         if AbilityUnits[activeAttack] then
                             local cooldown = (BuffBypass[Stats.id.Value] or activeAttackCooldown)
                             if tick() - AbilityUnits[activeAttack]["Time"] >= cooldown then
-                                if AbilityUnits[activeAttack]["Unit"] == v then continue end
+                                --if AbilityUnits[activeAttack]["Unit"] == v then continue end
                                 if tick() - lastActiveCast < activeAttackCooldown then continue end
 
                                 AbilityUnits[activeAttack] = {
