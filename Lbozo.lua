@@ -2151,6 +2151,7 @@ elseif game.PlaceId == 8349889591 then
     end
 
     local Units_to_Upgrade = {}
+    local UnitsDown = {}
 
     function SetUpgradeUnits()
         for i, v in pairs(Units:GetChildren()) do
@@ -2159,6 +2160,7 @@ elseif game.PlaceId == 8349889591 then
                     if v._stats:FindFirstChild("player") and  v._stats:FindFirstChild("player").Value == Player then
                         if v._stats:FindFirstChild("parent_unit") and v._stats:FindFirstChild("parent_unit").Value then return end
                         table.insert(Units_to_Upgrade, v)
+                        table.insert(UnitsDown, v)
                     end
                 end
             end)
@@ -2166,10 +2168,11 @@ elseif game.PlaceId == 8349889591 then
     end
 
     function upgradeUnits()
+        if #Units_to_Upgrade == 0 then return end
         for i, v in pairs(Units_to_Upgrade) do               
             local MaxUpgrade = GetUpgrades(v._stats.id.Value) or 5
-            print(MaxUpgrade, v.Name)
             if v._stats.upgrade.Value ~= MaxUpgrade then 
+                print(MaxUpgrade, v.Name)
 
                 local Upgraded 
 
@@ -2179,6 +2182,8 @@ elseif game.PlaceId == 8349889591 then
                 until Upgraded or Break
 
                 if Break then return end
+            else
+                Units_to_Upgrade[i] = nil
             end
         end
         task.wait(.1)
@@ -2193,7 +2198,7 @@ elseif game.PlaceId == 8349889591 then
 
     function SellAll()
         Break = true
-        for i, v in pairs(Units_to_Upgrade) do
+        for i, v in pairs(UnitsDown) do
             ClientToServer:WaitForChild("sell_unit_ingame"):InvokeServer(v)
             task.wait(.1)
         end
@@ -2263,7 +2268,7 @@ elseif game.PlaceId == 8349889591 then
 
             }
             repeat
-                for i,v in pairs(Units_to_Upgrade) do
+                for i,v in pairs(UnitsDown) do
                     local Stats = v._stats
                     if not Stats:FindFirstChild("active_attack_cooldown") then continue end
                     local activeAttack = Stats.active_attack.Value
