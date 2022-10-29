@@ -95,6 +95,7 @@ local OtherItems = {
 }
 
 local capsules = {
+    "capsule_halloween",
     "capsule_jjk",
     "capsule_fairytail",
     "capsule_fairytail_infinite",
@@ -1558,7 +1559,7 @@ if game.PlaceId == 8304191830 then
                     ClientToServer.use_item:InvokeServer(v)
                 end
             end
-            task.wait(.3)
+            task.wait(.1)
         until false
     end)
 
@@ -1957,6 +1958,19 @@ elseif game.PlaceId == 8349889591 then
     function SendWebhook()
         task.wait(.5)
         local Seconds = os.time() - StartTime
+        local enddata = GUIService.results_ui.settings
+        -- gem_reward
+        local endstats = enddata.stats
+        -- time_taken
+        -- waves_completed
+        -- num_waves
+        local resource_rewards = enddata.resource_rewards
+        -- candies
+        local new_units = enddata.new_units
+        local new_items = enddata.new_items
+
+        local listofItems = ""
+        
         local holder = {
             ["TotalGems"] = {
                 ["name"] = "Total Gems:",
@@ -1985,19 +1999,19 @@ elseif game.PlaceId == 8349889591 then
         local field = {
             {
                 ["name"] = "Gems recived:",
-                ["value"] = string.match(PlayerGui.Waves.HealthBar.GemRewardTotal.Main.Amount.Text, "%d+") .. Emojis.Diamond,
+                ["value"] = string.match(enddata.gem_reward, "%d+") .. Emojis.Diamond,
                 ["inline"] = true
             },
-
+            
             {
                 ["name"] = "Wave ended:",
-                ["value"] = tostring(game:GetService("Workspace")["_wave_num"].Value) .. Emojis.Wave,
+                ["value"] = tostring(endstats.num_waves) .. Emojis.Wave,
                 ["inline"] = true
             },
-
+            
             {
                 ["name"] = "Time Finished:",
-                ["value"] = (string.format("%s:%s", math.floor(Seconds/60%60), Seconds%60)) .. Emojis.Time,
+                ["value"] = (string.format("%s:%s", math.floor(endstats.time_taken/60%60), endstats.time_taken%60)) .. Emojis.Time,
                 ["inline"] = true
             },
         }
@@ -2018,6 +2032,8 @@ elseif game.PlaceId == 8349889591 then
                 ["name"] = "Reward Type",
                 ["value"] = Loader.LevelData._reward .. Emojis.Bag
             })
+
+            
         end
         if (Loader.LevelData.is_raid) then
             table.insert(field, {
@@ -2039,8 +2055,22 @@ elseif game.PlaceId == 8349889591 then
                 ["value"] = tostring(TowerNum) .. Emojis.Swords
             })
         end
-        
 
+        if new_items and #new_items >= 1 then
+            for i,v in pairs(new_items) do
+                if i == 1 then
+                    listofItems = listofItems .. string.format("x%s %s", v.amount, v.item_id)
+                else
+                    listofItems = listofItems .. string.format(", x%s %s", v.amount, v.item_id)
+                end
+            end
+
+            table.insert(field, {
+                ["name"] = "Items Received",
+                ["value"] = listofItems
+            })
+        end
+        
         local data = {
             ["embeds"] = {
                 {
