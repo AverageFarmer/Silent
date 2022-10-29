@@ -1640,7 +1640,9 @@ elseif game.PlaceId == 8349889591 then
             if game:GetService("Workspace"):WaitForChild("_DATA"):WaitForChild("GameFinished").Value then --Checks if reward is ready to claim and claims it
                 task.wait(5)
               
-                SendWebhook()
+                task.spawn(function()
+                    SendWebhook()
+                end)
                 
                 Settings.DoingMission = false
                 if Settings.CurrentMissions[Settings.CurrentMission] then
