@@ -15,7 +15,7 @@ repeat
                 task.spawn(function()
                     game:GetService("ReplicatedStorage").endpoints.client_to_server.use_active_attack:InvokeServer(v)
                 end)
-                task.wait(20)
+                task.wait(20.5)
             end
         end
     end
