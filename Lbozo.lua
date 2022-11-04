@@ -156,7 +156,6 @@ local Settings = {
 
     PrioritizeFarm = false,
 
-
     DoingMission = false;
     CurrentMission = nil,
     CurrentMissions = {},
@@ -2202,7 +2201,7 @@ elseif game.PlaceId == 8349889591 then
                 if v:FindFirstChild("_stats") then
                     if v._stats:FindFirstChild("player") and  v._stats:FindFirstChild("player").Value == Player then
                         if v._stats:FindFirstChild("parent_unit") and v._stats:FindFirstChild("parent_unit").Value then return end
-                        if Settings.PrioritizeFarm and v._stats:FindFirstChild("farm_amount") ~= 0 then
+                        if Settings.PrioritizeFarm and v._stats:FindFirstChild("farm_amount").Value ~= 0 then
                             table.insert(moneyUnits, v)
                         else
                             table.insert(Units_to_Upgrade, v)
@@ -2234,22 +2233,23 @@ elseif game.PlaceId == 8349889591 then
                     moneyUnits[i] = nil
                 end
             end
-        end
-        for i, v in pairs(Units_to_Upgrade) do               
-            local MaxUpgrade = GetUpgrades(v._stats.id.Value) or 5
-            if v._stats.upgrade.Value ~= MaxUpgrade then 
-                print(MaxUpgrade, v.Name)
-
-                local Upgraded 
-
-                repeat
-                    task.wait(2)
-                    Upgraded = ClientToServer:WaitForChild("upgrade_unit_ingame"):InvokeServer(v)
-                until Upgraded or Break
-
-                if Break then return end
-            else
-                Units_to_Upgrade[i] = nil
+        else
+            for i, v in pairs(Units_to_Upgrade) do               
+                local MaxUpgrade = GetUpgrades(v._stats.id.Value) or 5
+                if v._stats.upgrade.Value ~= MaxUpgrade then 
+                    print(MaxUpgrade, v.Name)
+    
+                    local Upgraded 
+    
+                    repeat
+                        task.wait(2)
+                        Upgraded = ClientToServer:WaitForChild("upgrade_unit_ingame"):InvokeServer(v)
+                    until Upgraded or Break
+    
+                    if Break then return end
+                else
+                    Units_to_Upgrade[i] = nil
+                end
             end
         end
         task.wait(.1)
