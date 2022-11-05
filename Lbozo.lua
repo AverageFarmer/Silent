@@ -2106,7 +2106,6 @@ elseif game.PlaceId == 8349889591 then
         CurrentMap = Loader.LevelData.map
         MapInfo = Settings.Raid["demonslayer"]
     end
-    print("CurrentMap: ".. CurrentMap)
 
     function SendWebhook()
         task.wait(.5)
