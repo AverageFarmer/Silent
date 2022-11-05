@@ -1343,9 +1343,7 @@ if game.PlaceId == 8304191830 then
             end
         end
 
-        TeleportToMap()
-
-        return true
+        return TeleportToMap()
     end
    
     function TeleportToMap()
