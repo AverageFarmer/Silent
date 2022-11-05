@@ -2090,7 +2090,7 @@ elseif game.PlaceId == 8349889591 then
 
     if Maps[Loader.LevelData.map] then
         loadermap = Loader.LevelData.map
-    if Maps[fullname] then
+    elseif Maps[fullname] then
         loadermap = fullname
     elseif Maps[nameSplit[1]] then
         loadermap = nameSplit[1]
