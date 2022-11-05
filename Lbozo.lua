@@ -2104,7 +2104,7 @@ elseif game.PlaceId == 8349889591 then
     end
 
     local CurrentMap = loadermap
-    local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap] or Loader.LevelData._gamemode == "infinite_tower" and Settings.Maps[CurrentMap]) or Settings.Maps[CurrentMap]
+    local MapInfo = (Loader.LevelData._challenge and Settings.Challenges[CurrentMap] or Loader.LevelData._IS_EVENT_RAID_ and Settings.Events[CurrentMap] or Loader.LevelData.is_raid and Settings.Raid[CurrentMap] or Loader.LevelData._gamemode == "infinite_tower" and Settings.Maps[CurrentMap]) or Settings.Maps[CurrentMap]
     if Loader.LevelData.map == "demonslayer_raid" then
         CurrentMap = Loader.LevelData.map
         MapInfo = Settings.Raid["demonslayer"]
