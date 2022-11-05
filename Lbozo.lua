@@ -1555,7 +1555,19 @@ if game.PlaceId == 8304191830 then
         if not Settings.DoChallenges or not Settings.Challenges[MapName] or not Settings.Challenges[MapName].Enabled or LastChallenge == ChallengeInfo.current_challenge_uuid.Value or raid or (currentmissionid and Settings.DoMissions) then  challenge = false end
 
         if not raid then
-            if Settings.AutoTowerInf then
+            if Settings.DoEvent then
+                for Index, name_uuid in pairs(Settings.Events["thriller_bark"].Units) do
+                    local split = string.split(name_uuid, ":")
+                    local name = split[1]
+                    local uuid = split[2]
+
+                    if AllUnits[uuid] then
+                        if not table.find(UnitsToEquip, uuid) then
+                            table.insert(UnitsToEquip, uuid)
+                        end
+                    end
+                end
+            elseif Settings.AutoTowerInf then
                 local TowerNum = EndpointsClient.session.profile_data.level_data.infinite_tower.floor_reached
                 local world = InfiniteTowerServiceCore.get_world_for_floor(TowerNum)
                 if world == "tokyo_ghoul" then
