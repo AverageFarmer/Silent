@@ -653,7 +653,7 @@ if game.PlaceId == 8304191830 then
     end
 
     --// UI
-    local Window = Library.CreateWindow("DizHub v1.2i", 6510338924)
+    local Window = Library.CreateWindow("DizHub v1.3a", 6510338924)
 
     local AutoFarmTab = Window:Tab("AutoFarm", 6087485864)
     local UnitTab = Window:Tab("Units")
@@ -1158,7 +1158,7 @@ if game.PlaceId == 8304191830 then
         for _, Map in pairs(Maps) do
             Map = Map:lower()
             local MapInfo = Settings["Events"][Map]
-            local MapSlot = UnitTab:Section(Map)
+            local MapSlot = EventTab:Section(Map)
      
     
             local MapDropHolder = {}
@@ -1424,10 +1424,7 @@ if game.PlaceId == 8304191830 then
             end
         end
 
-        repeat
-            LastCheck()
-            task.wait(3)
-        until false
+        return LastCheck()
     end
 
     function teleport()
