@@ -1,10 +1,6 @@
 if _G.Loaded then return end
 _G.Loaded =  true
 
-pcall(function()
-    getgenv().hookfunction = gdfg
-end) 
-
 repeat
     task.wait()
 until game.Players.LocalPlayer
