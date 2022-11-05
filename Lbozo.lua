@@ -1386,7 +1386,7 @@ if game.PlaceId == 8304191830 then
         
         if not raid then
             if Settings.DoEvent then
-                task.wait(18)
+                task.wait(17)
                 local lob = game:GetService("Workspace")["_DUNGEONS"].Lobbies["_lobbytemplate_event330"]
                 if #lob.Players:GetChildren() > 1 then
                     ClientToServer.request_leave_lobby:InvokeServer(Lobby)
