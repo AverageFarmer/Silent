@@ -1356,7 +1356,7 @@ if game.PlaceId == 8304191830 then
         local MapName = string.split(ChallengeInfo.current_level_id.Value,"_")[1]
         
         local raid = isRaid()
-        local challenge =  Reward == "star_fruit_random" or Reward == "star_remnant"  or Reward == "star_fruit_epic"
+        local challenge = Reward == "star_fruit_random" or Reward == "star_remnant"  or Reward == "star_fruit_epic"
         local hasmissions = hasAMission()
         local currentmissionid
         
