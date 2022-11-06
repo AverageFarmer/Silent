@@ -119,7 +119,7 @@ function isDev()
         end
     end
 end
-
+ 
 -- AutoLaunch
 if Player.UserId == 68728334 then
     syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AverageFarmer/Silent/Andrew/Lbozo.lua"))
