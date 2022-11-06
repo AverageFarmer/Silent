@@ -1398,7 +1398,7 @@ if game.PlaceId == 8304191830 then
                         print("player in")
                     end
                 end
-
+ 
                 if not playerIn then 
                     print("doing teleport soon")
                     task.wait(7)
