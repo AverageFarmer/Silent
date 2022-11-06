@@ -1300,6 +1300,7 @@ if game.PlaceId == 8304191830 then
     end
 
     function join() -- join teleporter
+        local Lobby = Lobby
         local args = {
             [1] = Lobby
         }
@@ -1308,8 +1309,10 @@ if game.PlaceId == 8304191830 then
 
         repeat
             InLobby = ClientToServer.request_join_lobby:InvokeServer(unpack(args))
+            print("Trying lobby")
             task.wait(2)
         until InLobby
+        print("In Lobby")
     end
         
     function Create(map) -- Creates the map
@@ -1339,6 +1342,7 @@ if game.PlaceId == 8304191830 then
             end
         end
 
+        print("Redoing teleport")
         return TeleportToMap()
     end
    
@@ -1380,10 +1384,35 @@ if game.PlaceId == 8304191830 then
         
         if not raid then
             if Settings.DoEvent then
-                task.wait(17)
+                local playerIn = false
                 local lob = game:GetService("Workspace")["_DUNGEONS"].Lobbies["_lobbytemplate_event330"]
+
+                print("Starting event")
+
+                for i,v in pairs(lob.Players:GetChildren()) do
+                    if v.Value == Player then
+                        playerIn = true 
+                        print("player in")
+                    end
+                end
+
+                if not playerIn then 
+                    print("doing teleport soon")
+                    task.wait(7)
+                    return LastCheck()
+                end
+
+                task.wait(17)
                 if #lob.Players:GetChildren() > 1 then
                     ClientToServer.request_leave_lobby:InvokeServer(Lobby)
+                else
+                    for i,v in pairs(lob.Players:GetChildren()) do
+                        if v.Value == Player then
+                            return 
+                        end
+                    end
+                    task.wait(7)
+                    return LastCheck()
                 end
             elseif Settings.AutoTowerInf then
                 local TowerNum = EndpointsClient.session.profile_data.level_data.infinite_tower.floor_reached
@@ -1418,6 +1447,7 @@ if game.PlaceId == 8304191830 then
             end
         end
 
+        task.wait(5)
         return LastCheck()
     end
 
