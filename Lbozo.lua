@@ -1300,16 +1300,19 @@ if game.PlaceId == 8304191830 then
     end
 
     function join() -- join teleporter
-        local Lobby = Lobby
-        local args = {
-            [1] = Lobby
-        }
-        
+        local lobby = Lobby
+ 
         local InLobby
 
         repeat
-            InLobby = ClientToServer.request_join_lobby:InvokeServer(unpack(args))
-            print("Trying lobby")
+            if lobby == nil then
+                repeat
+                    lobby = FindOpenLobby(false, false)
+                    task.wait(1)
+                until lobby
+            end
+            InLobby = ClientToServer.request_join_lobby:InvokeServer(lobby)
+            print("Trying lobby: " .. lobby)
             task.wait(2)
         until InLobby
         print("In Lobby")
