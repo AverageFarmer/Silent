@@ -82,6 +82,12 @@ local EvoItems = {
     "netero_rose",
     "kite_dice",
     "pitou_puppet",
+    "asta_wing",
+    "noelle_scale",
+    "yuno_crown",
+    "yami_katana",
+    "luck_horns",
+    "six_eyes"
 }
 
 local OtherItems = {
