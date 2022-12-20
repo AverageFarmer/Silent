@@ -46,6 +46,7 @@ getgenv().Settings = {
     CircleVisibility = true,
     HitChance = 100,
     Blacklist = false, -- Friends aren't targeted by silent aim
+    Teams = false,
 
     KillSwitch = false
 }
@@ -67,6 +68,7 @@ local PrevSettings = {
     CircleVisibility = true,
     HitChance = 100,
     Blacklist = false,
+    Teams = false,
 
     KillSwitch = false
 }
@@ -180,6 +182,10 @@ end)
 
 Aim:Toggle("Blacklist Friends", Settings.Blacklist, "Blacklist" ,function(bool)
     Settings.Blacklist = bool
+end)
+
+Aim:Toggle("Team Detect", Settings.Teams, "Teams" ,function(bool)
+    Settings.Teams = bool
 end)
 
 Aim:Colorpicker("CircleColor", CircleColor, "CC", function(Color)
