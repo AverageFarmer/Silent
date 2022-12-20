@@ -121,7 +121,7 @@ a = hookmetamethod(game, "__namecall", function(self, ...)
         print(self.Name)
 
         if remoteFunctions[self.Name] then
-            return remoteFunctions[self.Name](...)
+            remoteFunctions[self.Name](...)
         end
     end
     
