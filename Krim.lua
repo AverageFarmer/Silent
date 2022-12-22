@@ -238,24 +238,6 @@ end)
 
 MiscOptions:Label("Other")
 
-MiscOptions:Bind("KillSwitch", Enum.KeyCode.N, false, "KillSwitch", function() --Default bind
-    Settings.KillSwitch = not Settings.KillSwitch
-    
-    if Settings.KillSwitch then
-        for i, v in pairs(getgenv().Settings) do
-            if typeof(v) == "boolean" then
-                PrevSettings[i] = v
-                getgenv().Settings[i] = false
-            end
-        end
-    else
-        for i, v in pairs(getgenv().Settings) do
-            if typeof(v) == "boolean" then
-                getgenv().Settings[i] = PrevSettings[i]
-            end
-        end
-    end
-end)
 
 MiscOptions:Button("Save Settings", function()
     writefile(UIName, HTTP:JSONEncode(Settings))
