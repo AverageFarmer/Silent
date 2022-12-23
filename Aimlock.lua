@@ -95,7 +95,6 @@ local OldNamecall; OldNamecall = hookmetamethod(game, "__namecall", function(sel
                 if #ValidTargets ~= 0 then
                     local Target = ValidTargets[1]
                     local Hitbox = Target[2]
-                    args[1] = Hitbox.Position
                     args[2] = (Hitbox.Position - (Root.CFrame * CFrame.new(0, Root.Size.Y/2, -1.3)).Position ).Unit * (Hitbox.Position - Camera.CFrame.Position).Magnitude
                 end
             end
