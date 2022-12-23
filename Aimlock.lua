@@ -104,5 +104,3 @@ local OldNamecall; OldNamecall = hookmetamethod(game, "__namecall", function(sel
 
     return OldNamecall(self, unpack(args))
 end)
-
-workspace:Raycast()
