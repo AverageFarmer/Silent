@@ -44,7 +44,7 @@ local AimbotLoop = RunService:BindToRenderStep("updateAimbot", 1, function()
     Params.IgnoreWater                = true
     Params.FilterDescendantsInstances = {Camera, SelfCharacter, Filter, Debris}
 
-    local Closest      = 999999
+    local Closest      = 0
 
     local CameraPosition = Camera.CFrame.Position
     local MousePosition  = Vector2.new(Mouse.X, Mouse.Y)
@@ -62,7 +62,7 @@ local AimbotLoop = RunService:BindToRenderStep("updateAimbot", 1, function()
         local Head = Character:FindFirstChild("Head")
         if not Head then continue end
 
-        local DistanceFromCharacter = (Camera.CFrame.Position - RootPart.Position).Magnitude
+        local DistanceFromCharacter = (CameraPosition - RootPart.Position).Magnitude
 
         local Pos, OnScreen = Camera:WorldToViewportPoint(RootPart.Position)
         if not OnScreen then continue end
@@ -95,6 +95,7 @@ local OldNamecall; OldNamecall = hookmetamethod(game, "__namecall", function(sel
                 if #ValidTargets ~= 0 then
                     local Target = ValidTargets[1]
                     local Hitbox = Target[2]
+                    args[1] = Hitbox.Position
                     args[2] = (Hitbox.Position - (Root.CFrame * CFrame.new(0, Root.Size.Y/2, -1.3)).Position ).Unit * (Hitbox.Position - Camera.CFrame.Position).Magnitude
                 end
             end
@@ -103,3 +104,5 @@ local OldNamecall; OldNamecall = hookmetamethod(game, "__namecall", function(sel
 
     return OldNamecall(self, unpack(args))
 end)
+
+workspace:Raycast()
